@@ -1,65 +1,129 @@
-import Image from "next/image";
+'use client';
+
+import Link from 'next/link';
 
 export default function Home() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <div className="min-h-screen bg-[var(--sepia-50)]">
+      {/* Header */}
+      <header className="border-b border-[var(--sepia-200)] bg-white/80 backdrop-blur-sm sticky top-0 z-50">
+        <div className="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
+          <h1 className="text-2xl font-serif text-[var(--sepia-800)]">
+            <span className="font-bold">Feng Shui</span> Banana
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+          <nav className="flex gap-6">
+            <Link href="/bazi" className="text-[var(--sepia-600)] hover:text-[var(--sepia-800)] transition-colors">
+              BaZi Analysis
+            </Link>
+            <Link href="/outfit" className="text-[var(--sepia-600)] hover:text-[var(--sepia-800)] transition-colors">
+              Outfit Check
+            </Link>
+          </nav>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      </header>
+
+      {/* Hero Section */}
+      <main className="max-w-6xl mx-auto px-4 py-16">
+        <div className="text-center mb-16 animate-fade-in">
+          <div className="text-6xl mb-6">🍌</div>
+          <h2 className="text-4xl md:text-5xl font-serif text-[var(--sepia-900)] mb-4">
+            八字分析 · BaZi Analysis
+          </h2>
+          <p className="text-xl text-[var(--sepia-600)] max-w-2xl mx-auto mb-8">
+            Discover your lucky colors based on the ancient wisdom of Five Elements.
+            Let AI guide your daily outfit choices.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link
+              href="/bazi"
+              className="px-8 py-4 bg-[var(--sepia-700)] text-white rounded-lg hover:bg-[var(--sepia-800)] transition-colors text-lg font-medium"
+            >
+              Start Analysis · 开始分析
+            </Link>
+            <Link
+              href="/outfit"
+              className="px-8 py-4 border-2 border-[var(--sepia-400)] text-[var(--sepia-700)] rounded-lg hover:bg-[var(--sepia-100)] transition-colors text-lg font-medium"
+            >
+              Check Outfit · 检查穿搭
+            </Link>
+          </div>
+        </div>
+
+        {/* Features */}
+        <div className="grid md:grid-cols-3 gap-8 mb-16">
+          <div className="bg-white p-8 rounded-xl shadow-sm border border-[var(--sepia-200)] animate-fade-in" style={{animationDelay: '0.1s'}}>
+            <div className="text-4xl mb-4">🔮</div>
+            <h3 className="text-xl font-serif text-[var(--sepia-800)] mb-2">
+              BaZi Chart · 八字命盘
+            </h3>
+            <p className="text-[var(--sepia-600)]">
+              Input your birth date to generate your personal Four Pillars chart and discover your elemental balance.
+            </p>
+          </div>
+
+          <div className="bg-white p-8 rounded-xl shadow-sm border border-[var(--sepia-200)] animate-fade-in" style={{animationDelay: '0.2s'}}>
+            <div className="text-4xl mb-4">🎨</div>
+            <h3 className="text-xl font-serif text-[var(--sepia-800)] mb-2">
+              Lucky Colors · 幸运色彩
+            </h3>
+            <p className="text-[var(--sepia-600)]">
+              Get personalized color recommendations based on the Five Elements to enhance your daily fortune.
+            </p>
+          </div>
+
+          <div className="bg-white p-8 rounded-xl shadow-sm border border-[var(--sepia-200)] animate-fade-in" style={{animationDelay: '0.3s'}}>
+            <div className="text-4xl mb-4">📸</div>
+            <h3 className="text-xl font-serif text-[var(--sepia-800)] mb-2">
+              AI Analysis · 智能分析
+            </h3>
+            <p className="text-[var(--sepia-600)]">
+              Upload your outfit or use live camera for instant AI feedback on how well your clothes align with your lucky colors.
+            </p>
+          </div>
+        </div>
+
+        {/* Five Elements */}
+        <div className="bg-white p-8 rounded-xl shadow-sm border border-[var(--sepia-200)] mb-16">
+          <h3 className="text-2xl font-serif text-[var(--sepia-800)] mb-6 text-center">
+            The Five Elements · 五行
+          </h3>
+          <div className="grid grid-cols-5 gap-4">
+            <div className="text-center p-4">
+              <div className="w-16 h-16 mx-auto rounded-full bg-element-metal flex items-center justify-center text-2xl mb-2">🪙</div>
+              <div className="font-serif text-lg">金</div>
+              <div className="text-sm text-[var(--sepia-500)]">Metal</div>
+            </div>
+            <div className="text-center p-4">
+              <div className="w-16 h-16 mx-auto rounded-full bg-element-wood flex items-center justify-center text-2xl mb-2">🌳</div>
+              <div className="font-serif text-lg">木</div>
+              <div className="text-sm text-[var(--sepia-500)]">Wood</div>
+            </div>
+            <div className="text-center p-4">
+              <div className="w-16 h-16 mx-auto rounded-full bg-element-water flex items-center justify-center text-2xl mb-2">💧</div>
+              <div className="font-serif text-lg">水</div>
+              <div className="text-sm text-[var(--sepia-500)]">Water</div>
+            </div>
+            <div className="text-center p-4">
+              <div className="w-16 h-16 mx-auto rounded-full bg-element-fire flex items-center justify-center text-2xl mb-2">🔥</div>
+              <div className="font-serif text-lg">火</div>
+              <div className="text-sm text-[var(--sepia-500)]">Fire</div>
+            </div>
+            <div className="text-center p-4">
+              <div className="w-16 h-16 mx-auto rounded-full bg-element-earth flex items-center justify-center text-2xl mb-2">🌍</div>
+              <div className="font-serif text-lg">土</div>
+              <div className="text-sm text-[var(--sepia-500)]">Earth</div>
+            </div>
+          </div>
         </div>
       </main>
+
+      {/* Footer */}
+      <footer className="border-t border-[var(--sepia-200)] bg-white/50 py-8">
+        <div className="max-w-6xl mx-auto px-4 text-center text-[var(--sepia-500)]">
+          <p>Feng Shui Banana · Powered by Gemini AI</p>
+          <p className="text-sm mt-2">Ancient wisdom meets modern technology</p>
+        </div>
+      </footer>
     </div>
   );
 }

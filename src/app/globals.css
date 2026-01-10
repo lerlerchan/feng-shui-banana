@@ -1,26 +1,113 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Primary Sepia Tones */
+  --sepia-50: #fdf8f3;
+  --sepia-100: #f5ebe0;
+  --sepia-200: #e8d5c4;
+  --sepia-300: #d4b896;
+  --sepia-400: #c4a574;
+  --sepia-500: #a67c52;
+  --sepia-600: #8b6342;
+  --sepia-700: #6f4e34;
+  --sepia-800: #5a3e2b;
+  --sepia-900: #3d2b1f;
+
+  /* Five Element Colors */
+  --element-metal: #C0C0C0;
+  --element-metal-light: #E8E8E8;
+  --element-wood: #2D5A27;
+  --element-wood-light: #90EE90;
+  --element-water: #1E3A5F;
+  --element-water-light: #87CEEB;
+  --element-fire: #B22222;
+  --element-fire-light: #FFB6C1;
+  --element-earth: #8B7355;
+  --element-earth-light: #DEB887;
+
+  /* Theme colors */
+  --background: var(--sepia-50);
+  --foreground: var(--sepia-900);
+  --card-background: #ffffff;
+  --card-border: var(--sepia-200);
+  --muted: var(--sepia-500);
+  --accent: var(--sepia-600);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-sepia-50: var(--sepia-50);
+  --color-sepia-100: var(--sepia-100);
+  --color-sepia-200: var(--sepia-200);
+  --color-sepia-300: var(--sepia-300);
+  --color-sepia-400: var(--sepia-400);
+  --color-sepia-500: var(--sepia-500);
+  --color-sepia-600: var(--sepia-600);
+  --color-sepia-700: var(--sepia-700);
+  --color-sepia-800: var(--sepia-800);
+  --color-sepia-900: var(--sepia-900);
+  --font-sans: var(--font-inter);
+  --font-serif: var(--font-noto-serif-sc);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  box-sizing: border-box;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+  min-height: 100vh;
+}
+
+/* Custom scrollbar with sepia theme */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--sepia-100);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--sepia-400);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--sepia-500);
+}
+
+/* Utility classes for elements */
+.element-metal { color: var(--element-metal); }
+.element-wood { color: var(--element-wood); }
+.element-water { color: var(--element-water); }
+.element-fire { color: var(--element-fire); }
+.element-earth { color: var(--element-earth); }
+
+.bg-element-metal { background-color: var(--element-metal-light); }
+.bg-element-wood { background-color: var(--element-wood-light); }
+.bg-element-water { background-color: var(--element-water-light); }
+.bg-element-fire { background-color: var(--element-fire-light); }
+.bg-element-earth { background-color: var(--element-earth-light); }
+
+/* Animation utilities */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+@keyframes pulse-gentle {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+.animate-pulse-gentle {
+  animation: pulse-gentle 2s ease-in-out infinite;
 }

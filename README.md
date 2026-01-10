@@ -1,36 +1,100 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Feng Shui Banana
+
+A Next.js application for BaZi (八字) analysis that provides personalized clothing color recommendations based on the Five Elements, with AI-powered outfit analysis via Google Gemini API.
+
+## Features
+
+### BaZi Analysis (八字分析)
+- Input your gender and birth date (birth time optional)
+- Calculate your Four Pillars (四柱): Year, Month, Day, and Hour pillars
+- Analyze your Five Elements (五行) balance: Metal, Wood, Water, Fire, Earth
+- Get personalized lucky and unlucky color recommendations
+
+### Outfit Analysis
+- **Photo Upload**: Upload an outfit photo for AI analysis
+- **Live Camera**: Real-time camera feed with instant AI feedback
+- Gemini AI compares your outfit colors against your lucky colors
+- Get personalized suggestions to improve your outfit alignment
+
+## Tech Stack
+
+- **Framework**: Next.js 14 (App Router)
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS (custom sepia theme)
+- **BaZi Logic**: lunar-javascript library
+- **AI**: Google Gemini API
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
 
+- Node.js 18+
+- Google Gemini API key
+
+### Installation
+
+1. Clone the repository:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone <your-repo-url>
+cd feng-shui-banana
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Install dependencies:
+```bash
+npm install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. Create a `.env.local` file with your Gemini API key:
+```
+GEMINI_API_KEY=your_api_key_here
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+4. Run the development server:
+```bash
+npm run dev
+```
 
-## Learn More
+5. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-To learn more about Next.js, take a look at the following resources:
+## Project Structure
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```
+src/
+├── app/
+│   ├── page.tsx              # Landing page
+│   ├── bazi/
+│   │   ├── page.tsx          # BaZi input form
+│   │   └── result/page.tsx   # BaZi results display
+│   ├── outfit/page.tsx       # Outfit analysis (camera/upload)
+│   └── api/
+│       ├── bazi/route.ts     # BaZi calculation endpoint
+│       └── gemini/analyze/route.ts  # Gemini analysis endpoint
+├── lib/
+│   ├── bazi.ts               # BaZi calculation logic
+│   └── elements.ts           # Five Elements definitions
+└── types/
+    └── lunar-javascript.d.ts # Type declarations
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Five Elements Color Mapping
 
-## Deploy on Vercel
+| Element | Chinese | Colors |
+|---------|---------|--------|
+| Metal | 金 | White, Gold, Silver, Gray |
+| Wood | 木 | Green, Teal, Emerald |
+| Water | 水 | Blue, Black, Navy |
+| Fire | 火 | Red, Orange, Pink, Purple |
+| Earth | 土 | Yellow, Brown, Beige, Tan |
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Deployment
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Deploy on Vercel:
+
+1. Push your code to GitHub
+2. Connect your repository to Vercel
+3. Add `GEMINI_API_KEY` to environment variables
+4. Deploy
+
+## License
+
+MIT
