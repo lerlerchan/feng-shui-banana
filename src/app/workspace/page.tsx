@@ -95,11 +95,14 @@ export default function WorkspacePage() {
   const [currentDirection, setCurrentDirection] = useState<CardinalDirection | null>(null);
   const [deviceHeading, setDeviceHeading] = useState<number | null>(null);
   const [isOrientationSupported, setIsOrientationSupported] = useState(false);
+  const [orientationPermission, setOrientationPermission] = useState<'prompt' | 'granted' | 'denied' | 'unsupported'>('prompt');
+  const [showPermissionPrompt, setShowPermissionPrompt] = useState(false);
   const [combined360Result, setCombined360Result] = useState<Combined360Result | null>(null);
   const [analyzing360, setAnalyzing360] = useState(false);
   const stabilityCountRef = useRef(0);
   const lastCapturedDirectionRef = useRef<CardinalDirection | null>(null);
-  const STABILITY_THRESHOLD = 10; // frames to wait before auto-capture
+  const orientationListenerRef = useRef<((event: DeviceOrientationEvent) => void) | null>(null);
+  const STABILITY_THRESHOLD = 15; // frames to wait before auto-capture (increased for stability)
 
   // Load BaZi colors and directional analysis from sessionStorage
   useEffect(() => {
@@ -338,79 +341,163 @@ export default function WorkspacePage() {
     };
   }, [isLiveMode, cameraReady, mode, is360Mode, performLiveAnalysis]);
 
-  // Device orientation for 360 mode
-  useEffect(() => {
-    if (!is360Mode) return;
+  // Check if device orientation is available
+  const checkOrientationSupport = useCallback(() => {
+    if (typeof window === 'undefined') return false;
+    return 'DeviceOrientationEvent' in window;
+  }, []);
 
-    const handleOrientation = (event: DeviceOrientationEvent) => {
-      // Get compass heading (alpha is 0-360, where 0 is North)
-      let heading = event.alpha;
-      if (heading === null) return;
+  // Handle orientation event
+  const handleOrientation = useCallback((event: DeviceOrientationEvent) => {
+    // Get compass heading
+    let heading: number | null = null;
 
-      // On iOS, webkitCompassHeading gives true north
-      if ('webkitCompassHeading' in event) {
-        heading = (event as DeviceOrientationEvent & { webkitCompassHeading?: number }).webkitCompassHeading || heading;
-      }
+    // iOS provides webkitCompassHeading for true north
+    if ('webkitCompassHeading' in event && (event as DeviceOrientationEvent & { webkitCompassHeading?: number }).webkitCompassHeading !== undefined) {
+      heading = (event as DeviceOrientationEvent & { webkitCompassHeading?: number }).webkitCompassHeading as number;
+    }
+    // For Android/others, use alpha (but note: alpha is relative to starting position, not true north)
+    // When absolute is true, alpha is compass heading
+    else if (event.absolute && event.alpha !== null) {
+      // On Android with absolute orientation, alpha 0 = North
+      // But the phone's back camera faces opposite direction, so we may need to adjust
+      heading = event.alpha;
+    }
+    // Fallback to alpha even if not absolute (will be relative, not compass)
+    else if (event.alpha !== null) {
+      heading = event.alpha;
+    }
 
-      setDeviceHeading(heading);
+    if (heading === null) return;
 
-      // Map heading to cardinal direction
-      let direction: CardinalDirection;
-      if (heading >= 315 || heading < 45) {
-        direction = 'N';
-      } else if (heading >= 45 && heading < 135) {
-        direction = 'E';
-      } else if (heading >= 135 && heading < 225) {
-        direction = 'S';
-      } else {
-        direction = 'W';
-      }
+    setDeviceHeading(heading);
 
-      setCurrentDirection(direction);
+    // Map heading to cardinal direction
+    // Heading: 0 = North, 90 = East, 180 = South, 270 = West
+    let direction: CardinalDirection;
+    if (heading >= 315 || heading < 45) {
+      direction = 'N';
+    } else if (heading >= 45 && heading < 135) {
+      direction = 'E';
+    } else if (heading >= 135 && heading < 225) {
+      direction = 'S';
+    } else {
+      direction = 'W';
+    }
 
-      // Auto-capture when stable at a direction not yet captured
-      if (direction === currentDirection && !captures360.has(direction) && direction !== lastCapturedDirectionRef.current) {
-        stabilityCountRef.current++;
-        if (stabilityCountRef.current >= STABILITY_THRESHOLD) {
-          // Auto capture this direction
-          const imageData = capturePhoto();
-          if (imageData) {
-            setCaptures360(prev => new Map(prev).set(direction, imageData));
-            lastCapturedDirectionRef.current = direction;
-            stabilityCountRef.current = 0;
-          }
-        }
-      } else if (direction !== currentDirection) {
-        stabilityCountRef.current = 0;
-      }
+    setCurrentDirection(direction);
+  }, []);
+
+  // Request orientation permission (must be called from user gesture on iOS)
+  const requestOrientationPermission = useCallback(async () => {
+    if (!checkOrientationSupport()) {
+      setOrientationPermission('unsupported');
+      setIsOrientationSupported(false);
+      return false;
+    }
+
+    // Check if iOS 13+ which requires permission
+    const deviceOrientationEvent = DeviceOrientationEvent as unknown as {
+      requestPermission?: () => Promise<'granted' | 'denied' | 'default'>
     };
 
-    // Request permission on iOS
-    const requestPermission = async () => {
-      if (typeof (DeviceOrientationEvent as unknown as { requestPermission?: () => Promise<string> }).requestPermission === 'function') {
-        try {
-          const permission = await (DeviceOrientationEvent as unknown as { requestPermission: () => Promise<string> }).requestPermission();
-          if (permission === 'granted') {
-            setIsOrientationSupported(true);
-            window.addEventListener('deviceorientation', handleOrientation);
-          }
-        } catch (err) {
-          console.error('Orientation permission error:', err);
+    if (typeof deviceOrientationEvent.requestPermission === 'function') {
+      // iOS 13+ - must be called from user gesture
+      try {
+        const permission = await deviceOrientationEvent.requestPermission();
+        if (permission === 'granted') {
+          setOrientationPermission('granted');
+          setIsOrientationSupported(true);
+          return true;
+        } else {
+          setOrientationPermission('denied');
           setIsOrientationSupported(false);
+          return false;
         }
-      } else {
-        // Non-iOS, just add listener
-        setIsOrientationSupported(true);
-        window.addEventListener('deviceorientation', handleOrientation);
+      } catch (err) {
+        console.error('Orientation permission error:', err);
+        setOrientationPermission('denied');
+        setIsOrientationSupported(false);
+        return false;
       }
-    };
+    } else {
+      // Android and other browsers - no permission needed
+      // Test if events are actually firing
+      setOrientationPermission('granted');
+      setIsOrientationSupported(true);
+      return true;
+    }
+  }, [checkOrientationSupport]);
 
-    requestPermission();
+  // Handle permission button click
+  const handlePermissionRequest = useCallback(async () => {
+    const granted = await requestOrientationPermission();
+    setShowPermissionPrompt(false);
+    if (granted) {
+      // Permission granted, 360 mode will start listening
+      setIs360Mode(true);
+    }
+  }, [requestOrientationPermission]);
+
+  // Auto-capture effect (separate from orientation handling)
+  const lastDirectionRef = useRef<CardinalDirection | null>(null);
+
+  useEffect(() => {
+    if (!is360Mode || !currentDirection) return;
+
+    // Check if direction changed
+    if (currentDirection !== lastDirectionRef.current) {
+      lastDirectionRef.current = currentDirection;
+      stabilityCountRef.current = 0;
+      return;
+    }
+
+    // Same direction - check for auto-capture
+    if (!captures360.has(currentDirection) && currentDirection !== lastCapturedDirectionRef.current) {
+      stabilityCountRef.current++;
+      if (stabilityCountRef.current >= STABILITY_THRESHOLD) {
+        const imageData = capturePhoto();
+        if (imageData) {
+          setCaptures360(prev => new Map(prev).set(currentDirection, imageData));
+          lastCapturedDirectionRef.current = currentDirection;
+          stabilityCountRef.current = 0;
+        }
+      }
+    }
+  }, [is360Mode, currentDirection, captures360, capturePhoto]);
+
+  // Set up orientation listener when 360 mode is active and permission granted
+  useEffect(() => {
+    if (!is360Mode || orientationPermission !== 'granted') {
+      // Clean up listener if exists
+      if (orientationListenerRef.current) {
+        window.removeEventListener('deviceorientation', orientationListenerRef.current);
+        window.removeEventListener('deviceorientationabsolute', orientationListenerRef.current as EventListener);
+        orientationListenerRef.current = null;
+      }
+      return;
+    }
+
+    // Store the handler reference for cleanup
+    orientationListenerRef.current = handleOrientation;
+
+    // Try to use absolute orientation first (Android)
+    // Using type assertion for deviceorientationabsolute which is not in standard typings
+    const win = window as Window & { ondeviceorientationabsolute?: unknown };
+    if ('ondeviceorientationabsolute' in win) {
+      window.addEventListener('deviceorientationabsolute' as keyof WindowEventMap, handleOrientation as EventListener);
+    } else {
+      window.addEventListener('deviceorientation', handleOrientation);
+    }
 
     return () => {
-      window.removeEventListener('deviceorientation', handleOrientation);
+      if (orientationListenerRef.current) {
+        window.removeEventListener('deviceorientation', orientationListenerRef.current);
+        window.removeEventListener('deviceorientationabsolute' as keyof WindowEventMap, orientationListenerRef.current as EventListener);
+        orientationListenerRef.current = null;
+      }
     };
-  }, [is360Mode, currentDirection, captures360, capturePhoto]);
+  }, [is360Mode, orientationPermission, handleOrientation]);
 
   // Handle file upload
   const handleFileUpload = useCallback((file: File) => {
@@ -558,14 +645,39 @@ export default function WorkspacePage() {
     }
   };
 
-  const toggle360Mode = () => {
+  const toggle360Mode = async () => {
     if (is360Mode) {
       setIs360Mode(false);
       setCaptures360(new Map());
       setCombined360Result(null);
       lastCapturedDirectionRef.current = null;
       stabilityCountRef.current = 0;
+      setCurrentDirection(null);
+      setDeviceHeading(null);
     } else {
+      // Check if we need to request permission (iOS)
+      const deviceOrientationEvent = DeviceOrientationEvent as unknown as {
+        requestPermission?: () => Promise<'granted' | 'denied' | 'default'>
+      };
+
+      if (typeof deviceOrientationEvent.requestPermission === 'function' && orientationPermission === 'prompt') {
+        // iOS - show permission prompt first
+        setShowPermissionPrompt(true);
+        return;
+      }
+
+      // If permission was already denied, show message
+      if (orientationPermission === 'denied') {
+        setError('Compass access was denied. Please enable it in your device settings to use 360° mode.');
+        return;
+      }
+
+      // For Android/others or if already granted, just enable
+      if (orientationPermission === 'prompt') {
+        // Android - request permission (will auto-grant)
+        await requestOrientationPermission();
+      }
+
       setIs360Mode(true);
       setIsLiveMode(false);
       setResult(null);
@@ -766,7 +878,14 @@ export default function WorkspacePage() {
                         <div className="absolute top-2 sm:top-3 left-2 sm:left-3 right-12 sm:right-14">
                           <div className="bg-black/60 backdrop-blur-sm px-3 py-2 rounded-lg">
                             <div className="flex items-center justify-between mb-2">
-                              <span className="text-white text-xs font-medium">360° Scan</span>
+                              <div className="flex items-center gap-2">
+                                <span className="text-white text-xs font-medium">360° Scan</span>
+                                {deviceHeading !== null && (
+                                  <span className="text-green-400 text-xs">
+                                    {Math.round(deviceHeading)}°
+                                  </span>
+                                )}
+                              </div>
                               <span className="text-amber-400 text-xs">{captures360.size}/4 captured</span>
                             </div>
                             <div className="flex justify-center gap-3">
@@ -785,14 +904,31 @@ export default function WorkspacePage() {
                                 </div>
                               ))}
                             </div>
-                            {currentDirection && !captures360.has(currentDirection) && (
+                            {/* Status messages */}
+                            {orientationPermission === 'granted' && deviceHeading !== null && currentDirection && !captures360.has(currentDirection) && (
                               <p className="text-center text-white text-xs mt-2">
                                 Facing {getDirectionName(currentDirection)} - Hold steady to capture
                               </p>
                             )}
-                            {!isOrientationSupported && (
+                            {orientationPermission === 'granted' && deviceHeading !== null && currentDirection && captures360.has(currentDirection) && (
+                              <p className="text-center text-green-400 text-xs mt-2">
+                                {getDirectionName(currentDirection)} captured! Turn to next direction
+                              </p>
+                            )}
+                            {orientationPermission === 'granted' && deviceHeading === null && (
                               <p className="text-center text-amber-300 text-xs mt-2">
-                                Compass not available - use manual capture
+                                <span className="inline-block animate-spin mr-1">⟳</span>
+                                Waiting for compass signal...
+                              </p>
+                            )}
+                            {orientationPermission !== 'granted' && (
+                              <p className="text-center text-amber-300 text-xs mt-2">
+                                Compass not available - use manual capture below
+                              </p>
+                            )}
+                            {captures360.size === 4 && (
+                              <p className="text-center text-green-400 text-xs mt-2 font-medium">
+                                All directions captured! Tap &quot;Analyze All&quot; below
                               </p>
                             )}
                           </div>
@@ -868,27 +1004,64 @@ export default function WorkspacePage() {
                       {/* 360 Mode Controls */}
                       {is360Mode && (
                         <>
-                          <button
-                            onClick={capture360Direction}
-                            disabled={!currentDirection || captures360.has(currentDirection)}
-                            className="flex-1 py-2 sm:py-2.5 bg-[var(--sepia-700)] text-white rounded-lg hover:bg-[var(--sepia-800)] font-medium text-xs sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-                          >
-                            📸 Capture {currentDirection || ''}
-                          </button>
-                          {captures360.size === 4 && (
+                          {/* Manual direction buttons when compass not available */}
+                          {(orientationPermission !== 'granted' || deviceHeading === null) && captures360.size < 4 && (
+                            <div className="flex gap-1">
+                              {(['N', 'E', 'S', 'W'] as CardinalDirection[]).map((dir) => (
+                                <button
+                                  key={dir}
+                                  onClick={() => {
+                                    if (!captures360.has(dir)) {
+                                      const imageData = capturePhoto();
+                                      if (imageData) {
+                                        setCaptures360(prev => new Map(prev).set(dir, imageData));
+                                      }
+                                    }
+                                  }}
+                                  disabled={captures360.has(dir)}
+                                  className={`flex-1 py-2 rounded-lg font-bold text-xs transition-all ${
+                                    captures360.has(dir)
+                                      ? 'bg-green-500 text-white'
+                                      : 'bg-[var(--sepia-700)] text-white hover:bg-[var(--sepia-800)]'
+                                  } disabled:opacity-70`}
+                                >
+                                  {captures360.has(dir) ? '✓' : dir}
+                                </button>
+                              ))}
+                            </div>
+                          )}
+                          {/* Auto-capture button when compass is working */}
+                          {orientationPermission === 'granted' && deviceHeading !== null && captures360.size < 4 && (
                             <button
-                              onClick={analyze360Workspace}
-                              disabled={analyzing360}
-                              className="flex-1 py-2 sm:py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 font-medium text-xs sm:text-sm disabled:opacity-50 flex items-center justify-center gap-1"
+                              onClick={capture360Direction}
+                              disabled={!currentDirection || captures360.has(currentDirection)}
+                              className="flex-1 py-2 sm:py-2.5 bg-[var(--sepia-700)] text-white rounded-lg hover:bg-[var(--sepia-800)] font-medium text-xs sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                             >
-                              {analyzing360 ? (
-                                <span className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full" />
-                              ) : (
-                                '✨ Analyze All'
-                              )}
+                              📸 Capture {currentDirection || ''}
                             </button>
                           )}
-                          {captures360.size > 0 && (
+                          {captures360.size === 4 && (
+                            <>
+                              <button
+                                onClick={analyze360Workspace}
+                                disabled={analyzing360}
+                                className="flex-1 py-2 sm:py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 font-medium text-xs sm:text-sm disabled:opacity-50 flex items-center justify-center gap-1"
+                              >
+                                {analyzing360 ? (
+                                  <span className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full" />
+                                ) : (
+                                  '✨ Analyze All'
+                                )}
+                              </button>
+                              <button
+                                onClick={reset360}
+                                className="px-3 py-2 text-[var(--sepia-600)] hover:text-[var(--sepia-800)] border border-[var(--sepia-300)] rounded-lg text-xs"
+                              >
+                                Reset
+                              </button>
+                            </>
+                          )}
+                          {captures360.size > 0 && captures360.size < 4 && (
                             <button
                               onClick={reset360}
                               className="px-3 py-2 text-[var(--sepia-600)] hover:text-[var(--sepia-800)] border border-[var(--sepia-300)] rounded-lg text-xs"
@@ -1172,6 +1345,59 @@ export default function WorkspacePage() {
           </div>
         </div>
       </main>
+
+      {/* Compass Permission Modal */}
+      {showPermissionPrompt && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-sm w-full overflow-hidden border border-[var(--sepia-200)]">
+            {/* Modal Header */}
+            <div className="p-6 text-center">
+              <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-amber-100 to-amber-200 rounded-full flex items-center justify-center">
+                <span className="text-3xl">🧭</span>
+              </div>
+              <h2 className="font-serif text-xl text-[var(--sepia-800)] mb-2">Enable Compass</h2>
+              <p className="text-sm text-[var(--sepia-600)] leading-relaxed">
+                360° mode needs access to your device&apos;s compass to detect which direction you&apos;re facing.
+              </p>
+            </div>
+
+            {/* Features List */}
+            <div className="px-6 pb-4">
+              <div className="bg-[var(--sepia-50)] rounded-lg p-3 space-y-2">
+                <div className="flex items-center gap-2 text-xs text-[var(--sepia-700)]">
+                  <span className="text-green-500">✓</span>
+                  <span>Auto-detect North, East, South, West</span>
+                </div>
+                <div className="flex items-center gap-2 text-xs text-[var(--sepia-700)]">
+                  <span className="text-green-500">✓</span>
+                  <span>Auto-capture when holding steady</span>
+                </div>
+                <div className="flex items-center gap-2 text-xs text-[var(--sepia-700)]">
+                  <span className="text-green-500">✓</span>
+                  <span>Complete 360° Feng Shui analysis</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="p-4 border-t border-[var(--sepia-200)] flex gap-3">
+              <button
+                onClick={() => setShowPermissionPrompt(false)}
+                className="flex-1 py-2.5 border border-[var(--sepia-300)] text-[var(--sepia-700)] rounded-lg hover:bg-[var(--sepia-50)] font-medium text-sm transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handlePermissionRequest}
+                className="flex-1 py-2.5 bg-amber-500 text-white rounded-lg hover:bg-amber-600 font-medium text-sm transition-colors flex items-center justify-center gap-2"
+              >
+                <span>🧭</span>
+                Allow Access
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
