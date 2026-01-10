@@ -17,6 +17,11 @@ interface BaziColors {
   unluckyColors: { color: string; code: string; element: string }[];
 }
 
+interface BaziData extends BaziColors {
+  dayMaster?: string;
+  dayMasterElement?: string;
+}
+
 export default function OutfitPage() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -26,11 +31,17 @@ export default function OutfitPage() {
   const [analyzing, setAnalyzing] = useState(false);
   const [result, setResult] = useState<AnalysisResult | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [baziColors, setBaziColors] = useState<BaziColors | null>(null);
+  const [baziData, setBaziData] = useState<BaziData | null>(null);
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const [cameraReady, setCameraReady] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  // Report modal states
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [reportContent, setReportContent] = useState<string | null>(null);
+  const [generatingReport, setGeneratingReport] = useState(false);
+  const lastCapturedImageRef = useRef<string | null>(null);
 
   // Live analysis states
   const [isLiveMode, setIsLiveMode] = useState(false);
@@ -39,9 +50,11 @@ export default function OutfitPage() {
   const liveIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const compareCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const previousImageDataRef = useRef<ImageData | null>(null);
+  const changeFrameCountRef = useRef(0); // For debouncing - count consecutive "changed" frames
+  const REQUIRED_CHANGE_FRAMES = 2; // Require 2 consecutive frames showing change
 
-  // Compare two images by sampling pixels - returns true if images are different
-  const hasImageChanged = useCallback((currentImageData: ImageData): boolean => {
+  // Compare two images by sampling pixels - returns true if images are significantly different
+  const checkImageDifference = useCallback((currentImageData: ImageData): boolean => {
     const previousData = previousImageDataRef.current;
     if (!previousData) return true; // First frame, always analyze
 
@@ -52,7 +65,7 @@ export default function OutfitPage() {
     const sampleStep = 50;
     let diffCount = 0;
     let sampleCount = 0;
-    const threshold = 30; // Color difference threshold per channel
+    const threshold = 50; // Increased threshold to account for camera noise
 
     for (let i = 0; i < current.length; i += sampleStep * 4) {
       const rDiff = Math.abs(current[i] - previous[i]);
@@ -66,9 +79,47 @@ export default function OutfitPage() {
       sampleCount++;
     }
 
-    // If more than 15% of sampled pixels are different, outfit has changed
+    // Require 30% of sampled pixels to be different (up from 15%)
     const diffRatio = diffCount / sampleCount;
-    return diffRatio > 0.15;
+    return diffRatio > 0.30;
+  }, []);
+
+  // Debounced image change detection - requires multiple consecutive "changed" frames
+  const hasImageChanged = useCallback((currentImageData: ImageData): boolean => {
+    const imageIsDifferent = checkImageDifference(currentImageData);
+
+    if (imageIsDifferent) {
+      changeFrameCountRef.current++;
+      // Only trigger analysis after REQUIRED_CHANGE_FRAMES consecutive changed frames
+      if (changeFrameCountRef.current >= REQUIRED_CHANGE_FRAMES) {
+        changeFrameCountRef.current = 0;
+        return true;
+      }
+    } else {
+      // Reset counter if image is stable
+      changeFrameCountRef.current = 0;
+    }
+
+    return false;
+  }, [checkImageDifference]);
+
+  // Check if analysis result is meaningfully different (prevents UI flashing)
+  const isResultDifferent = useCallback((newResult: AnalysisResult, oldResult: AnalysisResult | null): boolean => {
+    if (!oldResult) return true; // No previous result, always update
+
+    // If colorMatch rating changed, definitely update
+    if (newResult.colorMatch !== oldResult.colorMatch) return true;
+
+    // Check if detected colors are mostly different
+    const oldColors = new Set(oldResult.detectedColors || []);
+    const newColors = newResult.detectedColors || [];
+
+    if (newColors.length === 0 && oldColors.size === 0) return false;
+    if (newColors.length === 0 || oldColors.size === 0) return true;
+
+    const matchCount = newColors.filter(c => oldColors.has(c)).length;
+    // Only update if more than 50% of colors are different
+    return matchCount < newColors.length * 0.5;
   }, []);
 
   // Capture low-res image data for comparison
@@ -90,12 +141,17 @@ export default function OutfitPage() {
     return ctx.getImageData(0, 0, 160, 120);
   }, [cameraReady]);
 
-  // Load BaZi colors from sessionStorage
+  // Load BaZi data from sessionStorage
   useEffect(() => {
     const stored = sessionStorage.getItem('baziResult');
     if (stored) {
       const data = JSON.parse(stored);
-      setBaziColors({ luckyColors: data.luckyColors || [], unluckyColors: data.unluckyColors || [] });
+      setBaziData({
+        luckyColors: data.luckyColors || [],
+        unluckyColors: data.unluckyColors || [],
+        dayMaster: data.dayMaster,
+        dayMasterElement: data.dayMasterElement,
+      });
     }
   }, []);
 
@@ -187,29 +243,32 @@ export default function OutfitPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           image: imageData,
-          luckyColors: baziColors?.luckyColors || [],
-          unluckyColors: baziColors?.unluckyColors || [],
+          luckyColors: baziData?.luckyColors || [],
+          unluckyColors: baziData?.unluckyColors || [],
         }),
       });
 
       if (response.ok) {
         const data = await response.json();
-        setLiveResult(data);
+        // Only update UI if result is meaningfully different (prevents flashing)
+        if (isResultDifferent(data, liveResult)) {
+          setLiveResult(data);
+        }
       }
     } catch (err) {
       console.error('Live analysis error:', err);
     } finally {
       setLiveAnalyzing(false);
     }
-  }, [cameraReady, liveAnalyzing, capturePhoto, captureCompareData, hasImageChanged, liveResult, baziColors]);
+  }, [cameraReady, liveAnalyzing, capturePhoto, captureCompareData, hasImageChanged, isResultDifferent, liveResult, baziData]);
 
-  // Live mode interval effect (2 second checks - fast since we skip API when no change)
+  // Live mode interval effect (4 second checks - balanced for stability)
   useEffect(() => {
     if (isLiveMode && cameraReady && mode === 'camera') {
       performLiveAnalysis();
       liveIntervalRef.current = setInterval(() => {
         performLiveAnalysis();
-      }, 2000);
+      }, 4000);
     } else {
       if (liveIntervalRef.current) {
         clearInterval(liveIntervalRef.current);
@@ -292,8 +351,8 @@ export default function OutfitPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           image: imageData,
-          luckyColors: baziColors?.luckyColors || [],
-          unluckyColors: baziColors?.unluckyColors || [],
+          luckyColors: baziData?.luckyColors || [],
+          unluckyColors: baziData?.unluckyColors || [],
         }),
       });
 
@@ -306,7 +365,7 @@ export default function OutfitPage() {
     } finally {
       setAnalyzing(false);
     }
-  }, [mode, capturePhoto, uploadedImage, baziColors]);
+  }, [mode, capturePhoto, uploadedImage, baziData]);
 
   const getColorMatchStyles = (match: string) => {
     switch (match) {
@@ -343,12 +402,59 @@ export default function OutfitPage() {
       setIsLiveMode(false);
       setLiveResult(null);
       previousImageDataRef.current = null; // Reset image comparison
+      changeFrameCountRef.current = 0; // Reset debounce counter
     } else {
       setIsLiveMode(true);
       setResult(null);
       previousImageDataRef.current = null; // Start fresh
+      changeFrameCountRef.current = 0; // Reset debounce counter
     }
   };
+
+  // Generate detailed report
+  const generateReport = useCallback(async () => {
+    setGeneratingReport(true);
+    setShowReportModal(true);
+    setReportContent(null);
+
+    try {
+      // Get current image
+      let imageData: string | null = null;
+      if (mode === 'camera') {
+        imageData = capturePhoto();
+      } else {
+        imageData = uploadedImage;
+      }
+
+      if (!imageData) {
+        setReportContent('Unable to capture image for report.');
+        setGeneratingReport(false);
+        return;
+      }
+
+      lastCapturedImageRef.current = imageData;
+
+      const response = await fetch('/api/gemini/report', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          image: imageData,
+          luckyColors: baziData?.luckyColors || [],
+          unluckyColors: baziData?.unluckyColors || [],
+          dayMaster: baziData?.dayMaster,
+        }),
+      });
+
+      if (!response.ok) throw new Error('Failed to generate report');
+      const data = await response.json();
+      setReportContent(data.report);
+    } catch (err) {
+      console.error('Report generation error:', err);
+      setReportContent('Failed to generate report. Please try again.');
+    } finally {
+      setGeneratingReport(false);
+    }
+  }, [mode, capturePhoto, uploadedImage, baziData]);
 
   const currentResult = isLiveMode ? liveResult : result;
 
@@ -487,7 +593,7 @@ export default function OutfitPage() {
                     <div className="flex gap-2">
                       <button
                         onClick={toggleLiveMode}
-                        disabled={!cameraReady || !baziColors}
+                        disabled={!cameraReady || !baziData}
                         className={`flex-1 py-2 sm:py-2.5 rounded-lg font-medium text-xs sm:text-sm transition-all flex items-center justify-center gap-1.5 sm:gap-2 ${
                           isLiveMode ? 'bg-red-500 hover:bg-red-600 text-white' : 'bg-green-600 hover:bg-green-700 text-white'
                         } disabled:opacity-50 disabled:cursor-not-allowed`}
@@ -566,15 +672,15 @@ export default function OutfitPage() {
           {/* Right Column - BaZi Colors + Analysis */}
           <div className="lg:w-80 flex-shrink-0 flex flex-col gap-3 overflow-y-auto">
             {/* BaZi Colors */}
-            {baziColors && (baziColors.luckyColors.length > 0 || baziColors.unluckyColors.length > 0) ? (
+            {baziData && (baziData.luckyColors.length > 0 || baziData.unluckyColors.length > 0) ? (
               <div className="bg-white p-3 sm:p-4 rounded-xl shadow-sm border border-[var(--sepia-200)]">
                 <h3 className="font-serif text-sm text-[var(--sepia-800)] mb-2 sm:mb-3">Your BaZi Colors</h3>
                 <div className="flex flex-col sm:flex-row lg:flex-col gap-3">
-                  {baziColors.luckyColors.length > 0 && (
+                  {baziData.luckyColors.length > 0 && (
                     <div className="flex-1">
                       <p className="text-xs text-[var(--sepia-600)] mb-1.5">Lucky</p>
                       <div className="flex flex-wrap gap-1.5">
-                        {baziColors.luckyColors.map((c, i) => (
+                        {baziData.luckyColors.map((c, i) => (
                           <div key={i} className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-green-50 border border-green-200">
                             <span className="w-3 h-3 rounded-full border" style={{ backgroundColor: c.code }} />
                             <span className="text-xs text-[var(--sepia-700)]">{c.color}</span>
@@ -583,11 +689,11 @@ export default function OutfitPage() {
                       </div>
                     </div>
                   )}
-                  {baziColors.unluckyColors.length > 0 && (
+                  {baziData.unluckyColors.length > 0 && (
                     <div className="flex-1">
                       <p className="text-xs text-[var(--sepia-600)] mb-1.5">Avoid</p>
                       <div className="flex flex-wrap gap-1.5">
-                        {baziColors.unluckyColors.map((c, i) => (
+                        {baziData.unluckyColors.map((c, i) => (
                           <div key={i} className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-red-50 border border-red-200">
                             <span className="w-3 h-3 rounded-full border" style={{ backgroundColor: c.code }} />
                             <span className="text-xs text-[var(--sepia-700)]">{c.color}</span>
@@ -666,6 +772,16 @@ export default function OutfitPage() {
                     </ul>
                   </div>
                 )}
+
+                {/* Generate Report Button */}
+                <button
+                  onClick={generateReport}
+                  disabled={generatingReport}
+                  className="w-full mt-3 py-2 px-3 bg-gradient-to-r from-[var(--sepia-600)] to-[var(--sepia-700)] text-white rounded-lg hover:from-[var(--sepia-700)] hover:to-[var(--sepia-800)] font-medium text-xs transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                >
+                  <span>📜</span>
+                  {generatingReport ? 'Generating...' : 'Generate Full Report'}
+                </button>
               </div>
             )}
 
@@ -681,6 +797,92 @@ export default function OutfitPage() {
           </div>
         </div>
       </main>
+
+      {/* Report Modal */}
+      {showReportModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+          <div className="bg-[var(--sepia-50)] rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] flex flex-col border border-[var(--sepia-200)] overflow-hidden">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between p-4 border-b border-[var(--sepia-200)] bg-white">
+              <div className="flex items-center gap-3">
+                <span className="text-2xl">📜</span>
+                <div>
+                  <h2 className="font-serif text-lg text-[var(--sepia-800)]">BaZi Outfit Report</h2>
+                  <p className="text-xs text-[var(--sepia-500)]">Your personalized Feng Shui analysis</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowReportModal(false)}
+                className="p-2 hover:bg-[var(--sepia-100)] rounded-full transition-colors"
+              >
+                <svg className="w-5 h-5 text-[var(--sepia-600)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Modal Content */}
+            <div className="flex-1 overflow-y-auto p-4 sm:p-6">
+              {generatingReport ? (
+                <div className="flex flex-col items-center justify-center py-12">
+                  <div className="relative">
+                    <div className="w-16 h-16 border-4 border-[var(--sepia-200)] rounded-full"></div>
+                    <div className="absolute inset-0 w-16 h-16 border-4 border-[var(--sepia-600)] border-t-transparent rounded-full animate-spin"></div>
+                  </div>
+                  <p className="mt-4 text-[var(--sepia-700)] font-medium">Consulting the Five Elements...</p>
+                  <p className="text-sm text-[var(--sepia-500)] mt-1">Generating your personalized report</p>
+                </div>
+              ) : reportContent ? (
+                <div className="prose prose-sm max-w-none prose-headings:font-serif prose-headings:text-[var(--sepia-800)] prose-p:text-[var(--sepia-700)] prose-li:text-[var(--sepia-700)] prose-strong:text-[var(--sepia-800)]">
+                  <div
+                    className="report-content"
+                    dangerouslySetInnerHTML={{
+                      __html: reportContent
+                        .replace(/^### (.*$)/gim, '<h3 class="text-lg font-serif text-[var(--sepia-800)] mt-4 mb-2">$1</h3>')
+                        .replace(/^## (.*$)/gim, '<h2 class="text-xl font-serif text-[var(--sepia-800)] mt-5 mb-3">$1</h2>')
+                        .replace(/^# (.*$)/gim, '<h1 class="text-2xl font-serif text-[var(--sepia-900)] mt-6 mb-4">$1</h1>')
+                        .replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold text-[var(--sepia-800)]">$1</strong>')
+                        .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                        .replace(/^- (.*$)/gim, '<li class="ml-4 text-[var(--sepia-700)]">$1</li>')
+                        .replace(/^(\d+)\. (.*$)/gim, '<li class="ml-4 text-[var(--sepia-700)]"><span class="font-medium">$1.</span> $2</li>')
+                        .replace(/\n\n/g, '</p><p class="text-[var(--sepia-700)] leading-relaxed mb-3">')
+                        .replace(/\n/g, '<br/>')
+                    }}
+                  />
+                </div>
+              ) : (
+                <div className="text-center py-8 text-[var(--sepia-500)]">
+                  No report content available.
+                </div>
+              )}
+            </div>
+
+            {/* Modal Footer */}
+            <div className="p-4 border-t border-[var(--sepia-200)] bg-white flex gap-3">
+              <button
+                onClick={() => setShowReportModal(false)}
+                className="flex-1 py-2.5 border border-[var(--sepia-300)] text-[var(--sepia-700)] rounded-lg hover:bg-[var(--sepia-50)] font-medium text-sm transition-colors"
+              >
+                Close
+              </button>
+              {reportContent && !generatingReport && (
+                <button
+                  onClick={() => {
+                    navigator.clipboard.writeText(reportContent);
+                    alert('Report copied to clipboard!');
+                  }}
+                  className="flex-1 py-2.5 bg-[var(--sepia-700)] text-white rounded-lg hover:bg-[var(--sepia-800)] font-medium text-sm transition-colors flex items-center justify-center gap-2"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                  </svg>
+                  Copy Report
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
