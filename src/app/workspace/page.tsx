@@ -75,14 +75,27 @@ export default function WorkspacePage() {
     }
   }, []);
 
+  // Track if camera is initializing to prevent duplicate calls
+  const cameraInitializingRef = useRef(false);
+  const streamRef = useRef<MediaStream | null>(null);
+
   // Initialize camera when mode is 'camera'
   const startCamera = useCallback(async () => {
+    // Prevent multiple simultaneous camera initializations
+    if (cameraInitializingRef.current) return;
+    if (streamRef.current) return; // Already have a stream
+
+    cameraInitializingRef.current = true;
+
     try {
       setError(null);
       const mediaStream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: facingMode, width: { ideal: 1280 }, height: { ideal: 720 } }
       });
+
+      streamRef.current = mediaStream;
       setStream(mediaStream);
+
       if (videoRef.current) {
         videoRef.current.srcObject = mediaStream;
         videoRef.current.onloadedmetadata = () => {
@@ -93,17 +106,20 @@ export default function WorkspacePage() {
       console.error('Camera error:', err);
       setError('Unable to access camera. Please check permissions or try uploading an image instead.');
       setCameraReady(false);
+    } finally {
+      cameraInitializingRef.current = false;
     }
   }, [facingMode]);
 
   // Stop camera stream
   const stopCamera = useCallback(() => {
-    if (stream) {
-      stream.getTracks().forEach(track => track.stop());
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(track => track.stop());
+      streamRef.current = null;
       setStream(null);
       setCameraReady(false);
     }
-  }, [stream]);
+  }, []);
 
   // Flip camera between selfie and environment
   const flipCamera = useCallback(async () => {
@@ -118,9 +134,12 @@ export default function WorkspacePage() {
     } else {
       stopCamera();
     }
+
     return () => {
-      if (stream) {
-        stream.getTracks().forEach(track => track.stop());
+      // Use ref for cleanup to avoid stale closure
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach(track => track.stop());
+        streamRef.current = null;
       }
     };
   }, [mode, facingMode, startCamera, stopCamera]);
