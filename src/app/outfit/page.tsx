@@ -38,29 +38,35 @@ export default function OutfitPage() {
   const liveIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const previousResultRef = useRef<AnalysisResult | null>(null);
 
-  // Helper to check if results are meaningfully different
+  // Helper to check if results are meaningfully different (stricter comparison)
   const isResultDifferent = useCallback((newResult: AnalysisResult, oldResult: AnalysisResult | null): boolean => {
     if (!oldResult) return true;
 
-    // Different rating is always a meaningful change
+    // Only update if rating changed - this is the key signal
     if (newResult.colorMatch !== oldResult.colorMatch) return true;
 
-    // Compare detected colors - if the set of colors changed significantly
-    const newColors = new Set(newResult.detectedColors?.map(c => c.toLowerCase()) || []);
-    const oldColors = new Set(oldResult.detectedColors?.map(c => c.toLowerCase()) || []);
+    // Compare detected colors - must be significantly different to update
+    const newColors = (newResult.detectedColors || []).map(c => c.toLowerCase().trim()).sort();
+    const oldColors = (oldResult.detectedColors || []).map(c => c.toLowerCase().trim()).sort();
 
-    // Check if colors are different (not just reordered)
-    if (newColors.size !== oldColors.size) return true;
+    // If color count differs by more than 2, it's different
+    if (Math.abs(newColors.length - oldColors.length) > 2) return true;
 
+    // Check overlap - need at least 50% different colors to be considered a change
+    const newSet = new Set(newColors);
+    const oldSet = new Set(oldColors);
     let matchCount = 0;
-    newColors.forEach(color => {
-      if (oldColors.has(color)) matchCount++;
+    newSet.forEach(color => {
+      if (oldSet.has(color)) matchCount++;
     });
 
-    // If less than 60% colors match, consider it a different outfit
-    const similarity = oldColors.size > 0 ? matchCount / oldColors.size : 0;
-    if (similarity < 0.6) return true;
+    const totalUnique = new Set([...newColors, ...oldColors]).size;
+    const similarity = totalUnique > 0 ? matchCount / totalUnique : 1;
 
+    // Only update if less than 40% colors match (very different outfit)
+    if (similarity < 0.4) return true;
+
+    // Otherwise keep showing the previous result
     return false;
   }, []);
 
@@ -168,13 +174,13 @@ export default function OutfitPage() {
     }
   }, [cameraReady, liveAnalyzing, capturePhoto, baziColors, isResultDifferent]);
 
-  // Live mode interval effect
+  // Live mode interval effect (5 second intervals for stability)
   useEffect(() => {
     if (isLiveMode && cameraReady && mode === 'camera') {
       performLiveAnalysis();
       liveIntervalRef.current = setInterval(() => {
         performLiveAnalysis();
-      }, 3000);
+      }, 5000);
     } else {
       if (liveIntervalRef.current) {
         clearInterval(liveIntervalRef.current);
@@ -406,21 +412,21 @@ export default function OutfitPage() {
                       </div>
                     )}
 
-                    {/* Live Analysis Overlay */}
+                    {/* Live Analysis Overlay - with smooth transitions */}
                     {isLiveMode && liveResult && (
-                      <div className="absolute inset-0 pointer-events-none">
+                      <div className="absolute inset-0 pointer-events-none transition-opacity duration-300">
                         <div className="absolute top-2 sm:top-3 left-2 sm:left-3 right-2 sm:right-3 flex justify-between items-start">
                           <div className="flex items-center gap-1.5 sm:gap-2 bg-black/60 backdrop-blur-sm px-2 py-1 rounded-full">
                             <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
                             <span className="text-white text-xs font-medium">LIVE</span>
                           </div>
-                          <div className={`px-2 sm:px-3 py-1 rounded-full font-bold text-xs sm:text-sm ${getColorMatchStyles(liveResult.colorMatch)}`}>
+                          <div className={`px-2 sm:px-3 py-1 rounded-full font-bold text-xs sm:text-sm transition-all duration-300 ${getColorMatchStyles(liveResult.colorMatch)}`}>
                             {getColorMatchIcon(liveResult.colorMatch)} {getColorMatchLabel(liveResult.colorMatch)}
                           </div>
                         </div>
 
                         <div className="absolute bottom-2 sm:bottom-3 left-2 sm:left-3 right-2 sm:right-3">
-                          <div className="bg-black/70 backdrop-blur-sm rounded-lg p-2 sm:p-3 text-white">
+                          <div className="bg-black/70 backdrop-blur-sm rounded-lg p-2 sm:p-3 text-white transition-all duration-300">
                             <p className="text-xs leading-relaxed line-clamp-2">{liveResult.analysis}</p>
                             {liveResult.detectedColors?.length > 0 && (
                               <div className="flex flex-wrap gap-1 mt-1.5 sm:mt-2">
@@ -432,7 +438,8 @@ export default function OutfitPage() {
                           </div>
                         </div>
 
-                        {liveAnalyzing && (
+                        {/* Only show analyzing spinner on first analysis, not subsequent ones */}
+                        {liveAnalyzing && !liveResult && (
                           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
                             <div className="bg-black/60 backdrop-blur-sm px-3 py-1.5 rounded-full flex items-center gap-2">
                               <span className="animate-spin w-3 h-3 border-2 border-white border-t-transparent rounded-full" />
