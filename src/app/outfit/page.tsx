@@ -43,6 +43,12 @@ export default function OutfitPage() {
   const [generatingReport, setGeneratingReport] = useState(false);
   const lastCapturedImageRef = useRef<string | null>(null);
 
+  // Voice/speech states
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [speechScript, setSpeechScript] = useState<string | null>(null);
+  const [isGeneratingSpeech, setIsGeneratingSpeech] = useState(false);
+  const speechSynthRef = useRef<SpeechSynthesisUtterance | null>(null);
+
   // Live analysis states
   const [isLiveMode, setIsLiveMode] = useState(false);
   const [liveResult, setLiveResult] = useState<AnalysisResult | null>(null);
@@ -456,6 +462,98 @@ export default function OutfitPage() {
     }
   }, [mode, capturePhoto, uploadedImage, baziData]);
 
+  // Generate speech script and play it
+  const generateAndPlaySpeech = useCallback(async () => {
+    if (!reportContent) return;
+
+    // If already speaking, stop
+    if (isSpeaking) {
+      window.speechSynthesis.cancel();
+      setIsSpeaking(false);
+      return;
+    }
+
+    setIsGeneratingSpeech(true);
+
+    try {
+      // Generate conversational script if we don't have one
+      if (!speechScript) {
+        const response = await fetch('/api/gemini/speech-script', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            report: reportContent,
+            type: 'outfit',
+          }),
+        });
+
+        if (!response.ok) throw new Error('Failed to generate speech script');
+        const data = await response.json();
+        setSpeechScript(data.script);
+
+        // Play the speech
+        const utterance = new SpeechSynthesisUtterance(data.script);
+        utterance.rate = 0.95; // Slightly slower for clarity
+        utterance.pitch = 1.0;
+
+        // Try to find a natural-sounding voice
+        const voices = window.speechSynthesis.getVoices();
+        const preferredVoice = voices.find(v =>
+          v.name.includes('Google') ||
+          v.name.includes('Samantha') ||
+          v.name.includes('Karen') ||
+          v.lang.startsWith('en')
+        );
+        if (preferredVoice) utterance.voice = preferredVoice;
+
+        utterance.onend = () => setIsSpeaking(false);
+        utterance.onerror = () => setIsSpeaking(false);
+
+        speechSynthRef.current = utterance;
+        window.speechSynthesis.speak(utterance);
+        setIsSpeaking(true);
+      } else {
+        // Reuse existing script
+        const utterance = new SpeechSynthesisUtterance(speechScript);
+        utterance.rate = 0.95;
+        utterance.pitch = 1.0;
+
+        const voices = window.speechSynthesis.getVoices();
+        const preferredVoice = voices.find(v =>
+          v.name.includes('Google') ||
+          v.name.includes('Samantha') ||
+          v.name.includes('Karen') ||
+          v.lang.startsWith('en')
+        );
+        if (preferredVoice) utterance.voice = preferredVoice;
+
+        utterance.onend = () => setIsSpeaking(false);
+        utterance.onerror = () => setIsSpeaking(false);
+
+        speechSynthRef.current = utterance;
+        window.speechSynthesis.speak(utterance);
+        setIsSpeaking(true);
+      }
+    } catch (err) {
+      console.error('Speech generation error:', err);
+    } finally {
+      setIsGeneratingSpeech(false);
+    }
+  }, [reportContent, speechScript, isSpeaking]);
+
+  // Stop speech when modal closes
+  useEffect(() => {
+    if (!showReportModal && isSpeaking) {
+      window.speechSynthesis.cancel();
+      setIsSpeaking(false);
+    }
+  }, [showReportModal, isSpeaking]);
+
+  // Reset speech script when report changes
+  useEffect(() => {
+    setSpeechScript(null);
+  }, [reportContent]);
+
   const currentResult = isLiveMode ? liveResult : result;
 
   return (
@@ -861,23 +959,56 @@ export default function OutfitPage() {
             <div className="p-4 border-t border-[var(--sepia-200)] bg-white flex gap-3">
               <button
                 onClick={() => setShowReportModal(false)}
-                className="flex-1 py-2.5 border border-[var(--sepia-300)] text-[var(--sepia-700)] rounded-lg hover:bg-[var(--sepia-50)] font-medium text-sm transition-colors"
+                className="py-2.5 px-4 border border-[var(--sepia-300)] text-[var(--sepia-700)] rounded-lg hover:bg-[var(--sepia-50)] font-medium text-sm transition-colors"
               >
                 Close
               </button>
               {reportContent && !generatingReport && (
-                <button
-                  onClick={() => {
-                    navigator.clipboard.writeText(reportContent);
-                    alert('Report copied to clipboard!');
-                  }}
-                  className="flex-1 py-2.5 bg-[var(--sepia-700)] text-white rounded-lg hover:bg-[var(--sepia-800)] font-medium text-sm transition-colors flex items-center justify-center gap-2"
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                  </svg>
-                  Copy Report
-                </button>
+                <>
+                  <button
+                    onClick={generateAndPlaySpeech}
+                    disabled={isGeneratingSpeech}
+                    className={`flex-1 py-2.5 rounded-lg font-medium text-sm transition-colors flex items-center justify-center gap-2 ${
+                      isSpeaking
+                        ? 'bg-red-500 hover:bg-red-600 text-white'
+                        : 'bg-green-600 hover:bg-green-700 text-white'
+                    } disabled:opacity-50`}
+                  >
+                    {isGeneratingSpeech ? (
+                      <>
+                        <span className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full" />
+                        Preparing...
+                      </>
+                    ) : isSpeaking ? (
+                      <>
+                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                          <rect x="6" y="4" width="4" height="16" rx="1" />
+                          <rect x="14" y="4" width="4" height="16" rx="1" />
+                        </svg>
+                        Stop
+                      </>
+                    ) : (
+                      <>
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+                        </svg>
+                        Listen
+                      </>
+                    )}
+                  </button>
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText(reportContent);
+                      alert('Report copied to clipboard!');
+                    }}
+                    className="py-2.5 px-4 bg-[var(--sepia-700)] text-white rounded-lg hover:bg-[var(--sepia-800)] font-medium text-sm transition-colors flex items-center justify-center gap-2"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                    </svg>
+                    Copy
+                  </button>
+                </>
               )}
             </div>
           </div>
