@@ -30,6 +30,12 @@ export default function OutfitPage() {
   const [cameraReady, setCameraReady] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
 
+  // Live analysis states
+  const [isLiveMode, setIsLiveMode] = useState(false);
+  const [liveResult, setLiveResult] = useState<AnalysisResult | null>(null);
+  const [liveAnalyzing, setLiveAnalyzing] = useState(false);
+  const liveIntervalRef = useRef<NodeJS.Timeout | null>(null);
+
   // Load BaZi colors from sessionStorage
   useEffect(() => {
     const stored = sessionStorage.getItem('baziResult');
@@ -75,6 +81,7 @@ export default function OutfitPage() {
       startCamera();
     } else {
       stopCamera();
+      setIsLiveMode(false);
     }
     return () => {
       if (stream) {
@@ -98,6 +105,62 @@ export default function OutfitPage() {
     ctx.drawImage(video, 0, 0);
     return canvas.toDataURL('image/jpeg', 0.8);
   }, [cameraReady]);
+
+  // Live analysis function
+  const performLiveAnalysis = useCallback(async () => {
+    if (!cameraReady || liveAnalyzing) return;
+
+    const imageData = capturePhoto();
+    if (!imageData) return;
+
+    setLiveAnalyzing(true);
+    try {
+      const response = await fetch('/api/gemini/analyze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          image: imageData,
+          luckyColors: baziColors?.luckyColors || [],
+          unluckyColors: baziColors?.unluckyColors || [],
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setLiveResult(data);
+      }
+    } catch (err) {
+      console.error('Live analysis error:', err);
+    } finally {
+      setLiveAnalyzing(false);
+    }
+  }, [cameraReady, liveAnalyzing, capturePhoto, baziColors]);
+
+  // Live mode interval effect
+  useEffect(() => {
+    if (isLiveMode && cameraReady && mode === 'camera') {
+      // Perform initial analysis
+      performLiveAnalysis();
+
+      // Set up interval for continuous analysis (every 3 seconds)
+      liveIntervalRef.current = setInterval(() => {
+        performLiveAnalysis();
+      }, 3000);
+    } else {
+      // Clear interval when live mode is off
+      if (liveIntervalRef.current) {
+        clearInterval(liveIntervalRef.current);
+        liveIntervalRef.current = null;
+      }
+    }
+
+    return () => {
+      if (liveIntervalRef.current) {
+        clearInterval(liveIntervalRef.current);
+        liveIntervalRef.current = null;
+      }
+    };
+  }, [isLiveMode, cameraReady, mode, performLiveAnalysis]);
 
   // Handle file upload
   const handleFileUpload = useCallback((file: File) => {
@@ -147,7 +210,7 @@ export default function OutfitPage() {
     }
   }, [handleFileUpload]);
 
-  // Analyze outfit
+  // Analyze outfit (manual)
   const analyzeOutfit = useCallback(async () => {
     setAnalyzing(true);
     setError(null);
@@ -198,30 +261,56 @@ export default function OutfitPage() {
   const getColorMatchStyles = (match: string) => {
     switch (match) {
       case 'excellent':
-        return 'bg-green-100 text-green-800 border-green-300';
+        return 'bg-green-500 text-white';
       case 'good':
-        return 'bg-blue-100 text-blue-800 border-blue-300';
+        return 'bg-blue-500 text-white';
       case 'neutral':
-        return 'bg-yellow-100 text-yellow-800 border-yellow-300';
+        return 'bg-yellow-500 text-white';
       case 'poor':
-        return 'bg-red-100 text-red-800 border-red-300';
+        return 'bg-red-500 text-white';
       default:
-        return 'bg-gray-100 text-gray-800 border-gray-300';
+        return 'bg-gray-500 text-white';
     }
   };
 
   const getColorMatchLabel = (match: string) => {
     switch (match) {
       case 'excellent':
-        return 'Excellent Match';
+        return 'Excellent';
       case 'good':
-        return 'Good Match';
+        return 'Good';
       case 'neutral':
         return 'Neutral';
       case 'poor':
-        return 'Poor Match';
+        return 'Poor';
       default:
         return match;
+    }
+  };
+
+  const getColorMatchIcon = (match: string) => {
+    switch (match) {
+      case 'excellent':
+        return '✨';
+      case 'good':
+        return '👍';
+      case 'neutral':
+        return '😐';
+      case 'poor':
+        return '⚠️';
+      default:
+        return '❓';
+    }
+  };
+
+  // Toggle live mode
+  const toggleLiveMode = () => {
+    if (isLiveMode) {
+      setIsLiveMode(false);
+      setLiveResult(null);
+    } else {
+      setIsLiveMode(true);
+      setResult(null);
     }
   };
 
@@ -250,10 +339,10 @@ export default function OutfitPage() {
         <div className="text-center mb-8 animate-fade-in">
           <div className="text-5xl mb-4">📸</div>
           <h1 className="text-3xl font-serif text-[var(--sepia-900)] mb-2">
-            Outfit Analysis
+            Live Outfit Analysis
           </h1>
           <p className="text-[var(--sepia-600)]">
-            Capture or upload your outfit to see how it aligns with your lucky colors
+            Get real-time AI feedback on your outfit alignment with lucky colors
           </p>
         </div>
 
@@ -295,7 +384,7 @@ export default function OutfitPage() {
         <div className="bg-white p-6 rounded-xl shadow-sm border border-[var(--sepia-200)] mb-6 animate-fade-in" style={{animationDelay: '0.2s'}}>
           {mode === 'camera' ? (
             <div className="space-y-4">
-              {/* Video Feed */}
+              {/* Video Feed with Live Overlay */}
               <div className="relative aspect-video bg-black rounded-lg overflow-hidden">
                 <video
                   ref={videoRef}
@@ -304,6 +393,8 @@ export default function OutfitPage() {
                   muted
                   className="w-full h-full object-cover"
                 />
+
+                {/* Camera loading state */}
                 {!cameraReady && !error && (
                   <div className="absolute inset-0 flex items-center justify-center bg-[var(--sepia-900)]/80">
                     <div className="text-center text-white">
@@ -312,24 +403,115 @@ export default function OutfitPage() {
                     </div>
                   </div>
                 )}
+
+                {/* Live Analysis Overlay */}
+                {isLiveMode && liveResult && (
+                  <div className="absolute inset-0 pointer-events-none">
+                    {/* Top status bar */}
+                    <div className="absolute top-4 left-4 right-4 flex justify-between items-start">
+                      {/* Live indicator */}
+                      <div className="flex items-center gap-2 bg-black/60 backdrop-blur-sm px-3 py-2 rounded-full">
+                        <span className="w-3 h-3 bg-red-500 rounded-full animate-pulse" />
+                        <span className="text-white text-sm font-medium">LIVE</span>
+                      </div>
+
+                      {/* Match status badge */}
+                      <div className={`px-4 py-2 rounded-full font-bold text-lg ${getColorMatchStyles(liveResult.colorMatch)}`}>
+                        {getColorMatchIcon(liveResult.colorMatch)} {getColorMatchLabel(liveResult.colorMatch)}
+                      </div>
+                    </div>
+
+                    {/* Bottom feedback panel */}
+                    <div className="absolute bottom-4 left-4 right-4">
+                      <div className="bg-black/70 backdrop-blur-sm rounded-xl p-4 text-white">
+                        <p className="text-sm leading-relaxed mb-2">{liveResult.analysis}</p>
+                        {liveResult.detectedColors && liveResult.detectedColors.length > 0 && (
+                          <div className="flex flex-wrap gap-2 mt-2">
+                            {liveResult.detectedColors.slice(0, 4).map((color, i) => (
+                              <span key={i} className="px-2 py-1 bg-white/20 rounded text-xs">
+                                {color}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Analyzing indicator */}
+                    {liveAnalyzing && (
+                      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                        <div className="bg-black/60 backdrop-blur-sm px-4 py-2 rounded-full flex items-center gap-2">
+                          <span className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full" />
+                          <span className="text-white text-sm">Analyzing...</span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Live mode inactive overlay hint */}
+                {!isLiveMode && cameraReady && (
+                  <div className="absolute bottom-4 left-4 right-4 text-center">
+                    <p className="text-white/80 text-sm bg-black/40 backdrop-blur-sm py-2 px-4 rounded-lg inline-block">
+                      Enable Live Analysis for real-time feedback
+                    </p>
+                  </div>
+                )}
               </div>
+
               {/* Hidden canvas for capturing */}
               <canvas ref={canvasRef} className="hidden" />
-              {/* Capture Button */}
-              <button
-                onClick={analyzeOutfit}
-                disabled={!cameraReady || analyzing}
-                className="w-full py-4 bg-[var(--sepia-700)] text-white rounded-lg hover:bg-[var(--sepia-800)] transition-colors font-medium text-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-              >
-                {analyzing ? (
-                  <>
-                    <span className="animate-spin w-5 h-5 border-2 border-white border-t-transparent rounded-full" />
-                    Analyzing...
-                  </>
-                ) : (
-                  'Capture & Analyze'
+
+              {/* Control Buttons */}
+              <div className="flex gap-3">
+                {/* Live Mode Toggle */}
+                <button
+                  onClick={toggleLiveMode}
+                  disabled={!cameraReady || !baziColors}
+                  className={`flex-1 py-4 rounded-lg font-medium text-lg transition-all flex items-center justify-center gap-2 ${
+                    isLiveMode
+                      ? 'bg-red-500 hover:bg-red-600 text-white'
+                      : 'bg-green-600 hover:bg-green-700 text-white'
+                  } disabled:opacity-50 disabled:cursor-not-allowed`}
+                >
+                  {isLiveMode ? (
+                    <>
+                      <span className="w-3 h-3 bg-white rounded-full animate-pulse" />
+                      Stop Live Analysis
+                    </>
+                  ) : (
+                    <>
+                      <span>▶</span>
+                      Start Live Analysis
+                    </>
+                  )}
+                </button>
+
+                {/* Manual Capture Button */}
+                {!isLiveMode && (
+                  <button
+                    onClick={analyzeOutfit}
+                    disabled={!cameraReady || analyzing}
+                    className="flex-1 py-4 bg-[var(--sepia-700)] text-white rounded-lg hover:bg-[var(--sepia-800)] transition-colors font-medium text-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  >
+                    {analyzing ? (
+                      <>
+                        <span className="animate-spin w-5 h-5 border-2 border-white border-t-transparent rounded-full" />
+                        Analyzing...
+                      </>
+                    ) : (
+                      'Capture & Analyze'
+                    )}
+                  </button>
                 )}
-              </button>
+              </div>
+
+              {/* Live mode info */}
+              {isLiveMode && (
+                <p className="text-center text-sm text-[var(--sepia-500)]">
+                  Analysis updates every 3 seconds. Change your outfit to see instant feedback!
+                </p>
+              )}
             </div>
           ) : (
             <div className="space-y-4">
@@ -471,19 +653,19 @@ export default function OutfitPage() {
           </div>
         )}
 
-        {/* Results Card */}
-        {result && (
+        {/* Manual Results Card (shown when not in live mode) */}
+        {result && !isLiveMode && (
           <div className="bg-white p-6 rounded-xl shadow-sm border border-[var(--sepia-200)] animate-fade-in">
             <h2 className="text-xl font-serif text-[var(--sepia-900)] mb-4">Analysis Results</h2>
 
             {/* Color Match Badge */}
             <div className="mb-6">
               <span
-                className={`inline-block px-4 py-2 rounded-full text-sm font-medium border ${getColorMatchStyles(
+                className={`inline-block px-4 py-2 rounded-full text-sm font-medium ${getColorMatchStyles(
                   result.colorMatch
                 )}`}
               >
-                {getColorMatchLabel(result.colorMatch)}
+                {getColorMatchIcon(result.colorMatch)} {getColorMatchLabel(result.colorMatch)} Match
               </span>
             </div>
 
@@ -527,14 +709,42 @@ export default function OutfitPage() {
           </div>
         )}
 
+        {/* Live Analysis Details (expanded view when live mode is on) */}
+        {isLiveMode && liveResult && (
+          <div className="bg-white p-6 rounded-xl shadow-sm border border-[var(--sepia-200)] animate-fade-in">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-serif text-[var(--sepia-900)]">Live Analysis Details</h2>
+              <div className="flex items-center gap-2 text-sm text-[var(--sepia-500)]">
+                <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                Auto-updating
+              </div>
+            </div>
+
+            {/* Suggestions */}
+            {liveResult.suggestions && liveResult.suggestions.length > 0 && (
+              <div>
+                <h3 className="text-sm font-medium text-[var(--sepia-600)] mb-2">Suggestions</h3>
+                <ul className="space-y-2">
+                  {liveResult.suggestions.map((suggestion, i) => (
+                    <li key={i} className="flex items-start gap-2 text-[var(--sepia-700)]">
+                      <span className="text-[var(--sepia-400)]">•</span>
+                      <span>{suggestion}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Tips Section */}
         <div className="mt-8 p-6 bg-[var(--sepia-100)] rounded-xl animate-fade-in" style={{animationDelay: '0.3s'}}>
           <h3 className="font-serif text-lg text-[var(--sepia-800)] mb-2">Tips for Best Results</h3>
           <ul className="text-[var(--sepia-600)] text-sm leading-relaxed space-y-1">
-            <li>• Ensure good lighting when capturing your outfit</li>
+            <li>• Ensure good lighting when using live analysis</li>
             <li>• Include your full outfit in the frame</li>
             <li>• Stand against a neutral background for better color detection</li>
-            <li>• Remove filters from uploaded images for accurate analysis</li>
+            <li>• Try changing accessories to see instant feedback changes</li>
           </ul>
         </div>
       </main>
