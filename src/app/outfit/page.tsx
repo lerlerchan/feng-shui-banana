@@ -46,7 +46,9 @@ export default function OutfitPage() {
   // Voice/speech states
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [speechScript, setSpeechScript] = useState<string | null>(null);
+  const [speechAudio, setSpeechAudio] = useState<string | null>(null);
   const [isGeneratingSpeech, setIsGeneratingSpeech] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
   const speechSynthRef = useRef<SpeechSynthesisUtterance | null>(null);
 
   // Live analysis states
@@ -468,6 +470,10 @@ export default function OutfitPage() {
 
     // If already speaking, stop
     if (isSpeaking) {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+      }
       window.speechSynthesis.cancel();
       setIsSpeaking(false);
       return;
@@ -491,59 +497,82 @@ export default function OutfitPage() {
         const data = await response.json();
         setSpeechScript(data.script);
 
-        // Play the speech
-        const utterance = new SpeechSynthesisUtterance(data.script);
-        utterance.rate = 0.95; // Slightly slower for clarity
-        utterance.pitch = 1.0;
+        // If we have audio from Google Cloud TTS, use it
+        if (data.audioBase64) {
+          setSpeechAudio(data.audioBase64);
+          const audio = new Audio(`data:audio/mp3;base64,${data.audioBase64}`);
+          audioRef.current = audio;
+          audio.onended = () => setIsSpeaking(false);
+          audio.onerror = () => setIsSpeaking(false);
+          audio.play();
+          setIsSpeaking(true);
+        } else {
+          // Fallback to Web Speech API
+          const utterance = new SpeechSynthesisUtterance(data.script);
+          utterance.rate = 1.0;
+          utterance.pitch = 1.1;
 
-        // Try to find a natural-sounding voice
-        const voices = window.speechSynthesis.getVoices();
-        const preferredVoice = voices.find(v =>
-          v.name.includes('Google') ||
-          v.name.includes('Samantha') ||
-          v.name.includes('Karen') ||
-          v.lang.startsWith('en')
-        );
-        if (preferredVoice) utterance.voice = preferredVoice;
+          const voices = window.speechSynthesis.getVoices();
+          const preferredVoice = voices.find(v =>
+            v.lang.includes('en-SG') ||
+            v.lang.includes('en-GB') ||
+            v.name.includes('Google') ||
+            v.lang.startsWith('en')
+          );
+          if (preferredVoice) utterance.voice = preferredVoice;
 
-        utterance.onend = () => setIsSpeaking(false);
-        utterance.onerror = () => setIsSpeaking(false);
+          utterance.onend = () => setIsSpeaking(false);
+          utterance.onerror = () => setIsSpeaking(false);
 
-        speechSynthRef.current = utterance;
-        window.speechSynthesis.speak(utterance);
-        setIsSpeaking(true);
+          speechSynthRef.current = utterance;
+          window.speechSynthesis.speak(utterance);
+          setIsSpeaking(true);
+        }
       } else {
-        // Reuse existing script
-        const utterance = new SpeechSynthesisUtterance(speechScript);
-        utterance.rate = 0.95;
-        utterance.pitch = 1.0;
+        // Reuse existing audio/script
+        if (speechAudio) {
+          const audio = new Audio(`data:audio/mp3;base64,${speechAudio}`);
+          audioRef.current = audio;
+          audio.onended = () => setIsSpeaking(false);
+          audio.onerror = () => setIsSpeaking(false);
+          audio.play();
+          setIsSpeaking(true);
+        } else {
+          const utterance = new SpeechSynthesisUtterance(speechScript);
+          utterance.rate = 1.0;
+          utterance.pitch = 1.1;
 
-        const voices = window.speechSynthesis.getVoices();
-        const preferredVoice = voices.find(v =>
-          v.name.includes('Google') ||
-          v.name.includes('Samantha') ||
-          v.name.includes('Karen') ||
-          v.lang.startsWith('en')
-        );
-        if (preferredVoice) utterance.voice = preferredVoice;
+          const voices = window.speechSynthesis.getVoices();
+          const preferredVoice = voices.find(v =>
+            v.lang.includes('en-SG') ||
+            v.lang.includes('en-GB') ||
+            v.name.includes('Google') ||
+            v.lang.startsWith('en')
+          );
+          if (preferredVoice) utterance.voice = preferredVoice;
 
-        utterance.onend = () => setIsSpeaking(false);
-        utterance.onerror = () => setIsSpeaking(false);
+          utterance.onend = () => setIsSpeaking(false);
+          utterance.onerror = () => setIsSpeaking(false);
 
-        speechSynthRef.current = utterance;
-        window.speechSynthesis.speak(utterance);
-        setIsSpeaking(true);
+          speechSynthRef.current = utterance;
+          window.speechSynthesis.speak(utterance);
+          setIsSpeaking(true);
+        }
       }
     } catch (err) {
       console.error('Speech generation error:', err);
     } finally {
       setIsGeneratingSpeech(false);
     }
-  }, [reportContent, speechScript, isSpeaking]);
+  }, [reportContent, speechScript, speechAudio, isSpeaking]);
 
   // Stop speech when modal closes
   useEffect(() => {
     if (!showReportModal && isSpeaking) {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+      }
       window.speechSynthesis.cancel();
       setIsSpeaking(false);
     }
@@ -552,6 +581,7 @@ export default function OutfitPage() {
   // Reset speech script when report changes
   useEffect(() => {
     setSpeechScript(null);
+    setSpeechAudio(null);
   }, [reportContent]);
 
   const currentResult = isLiveMode ? liveResult : result;
