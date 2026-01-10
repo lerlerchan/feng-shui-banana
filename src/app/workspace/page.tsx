@@ -41,6 +41,27 @@ interface DirectionalAnalysisData {
   wealthCorner: WealthCornerRecommendation;
 }
 
+type CardinalDirection = 'N' | 'E' | 'S' | 'W';
+
+interface Combined360Result {
+  overallScore: 'excellent' | 'good' | 'neutral' | 'poor';
+  overallAnalysis: string;
+  directionBreakdown: {
+    direction: CardinalDirection;
+    analysis: string;
+    score: string;
+    flyingStarNote: string;
+    recommendations: string[];
+  }[];
+  elementBalance: {
+    element: string;
+    percentage: number;
+    location: string;
+  }[];
+  prioritizedRecommendations: string[];
+  flyingStarInsights: string;
+}
+
 export default function WorkspacePage() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -58,6 +79,28 @@ export default function WorkspacePage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [directionalAnalysis, setDirectionalAnalysis] = useState<DirectionalAnalysisData | null>(null);
 
+  // Live analysis states
+  const [isLiveMode, setIsLiveMode] = useState(false);
+  const [liveResult, setLiveResult] = useState<AnalysisResult | null>(null);
+  const [liveAnalyzing, setLiveAnalyzing] = useState(false);
+  const liveIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const compareCanvasRef = useRef<HTMLCanvasElement | null>(null);
+  const previousImageDataRef = useRef<ImageData | null>(null);
+  const changeFrameCountRef = useRef(0);
+  const REQUIRED_CHANGE_FRAMES = 2;
+
+  // 360-degree mode states
+  const [is360Mode, setIs360Mode] = useState(false);
+  const [captures360, setCaptures360] = useState<Map<CardinalDirection, string>>(new Map());
+  const [currentDirection, setCurrentDirection] = useState<CardinalDirection | null>(null);
+  const [deviceHeading, setDeviceHeading] = useState<number | null>(null);
+  const [isOrientationSupported, setIsOrientationSupported] = useState(false);
+  const [combined360Result, setCombined360Result] = useState<Combined360Result | null>(null);
+  const [analyzing360, setAnalyzing360] = useState(false);
+  const stabilityCountRef = useRef(0);
+  const lastCapturedDirectionRef = useRef<CardinalDirection | null>(null);
+  const STABILITY_THRESHOLD = 10; // frames to wait before auto-capture
+
   // Load BaZi colors and directional analysis from sessionStorage
   useEffect(() => {
     const stored = sessionStorage.getItem('baziResult');
@@ -71,6 +114,84 @@ export default function WorkspacePage() {
   // Track if camera is initializing to prevent duplicate calls
   const cameraInitializingRef = useRef(false);
   const streamRef = useRef<MediaStream | null>(null);
+
+  // Compare two images by sampling pixels - returns true if images are significantly different
+  const checkImageDifference = useCallback((currentImageData: ImageData): boolean => {
+    const previousData = previousImageDataRef.current;
+    if (!previousData) return true;
+
+    const current = currentImageData.data;
+    const previous = previousData.data;
+
+    const sampleStep = 50;
+    let diffCount = 0;
+    let sampleCount = 0;
+    const threshold = 50;
+
+    for (let i = 0; i < current.length; i += sampleStep * 4) {
+      const rDiff = Math.abs(current[i] - previous[i]);
+      const gDiff = Math.abs(current[i + 1] - previous[i + 1]);
+      const bDiff = Math.abs(current[i + 2] - previous[i + 2]);
+
+      if (rDiff > threshold || gDiff > threshold || bDiff > threshold) {
+        diffCount++;
+      }
+      sampleCount++;
+    }
+
+    const diffRatio = diffCount / sampleCount;
+    return diffRatio > 0.30;
+  }, []);
+
+  // Debounced image change detection
+  const hasImageChanged = useCallback((currentImageData: ImageData): boolean => {
+    const imageIsDifferent = checkImageDifference(currentImageData);
+
+    if (imageIsDifferent) {
+      changeFrameCountRef.current++;
+      if (changeFrameCountRef.current >= REQUIRED_CHANGE_FRAMES) {
+        changeFrameCountRef.current = 0;
+        return true;
+      }
+    } else {
+      changeFrameCountRef.current = 0;
+    }
+
+    return false;
+  }, [checkImageDifference]);
+
+  // Check if analysis result is meaningfully different
+  const isResultDifferent = useCallback((newResult: AnalysisResult, oldResult: AnalysisResult | null): boolean => {
+    if (!oldResult) return true;
+    if (newResult.colorMatch !== oldResult.colorMatch) return true;
+
+    const oldColors = new Set(oldResult.detectedColors || []);
+    const newColors = newResult.detectedColors || [];
+
+    if (newColors.length === 0 && oldColors.size === 0) return false;
+    if (newColors.length === 0 || oldColors.size === 0) return true;
+
+    const matchCount = newColors.filter(c => oldColors.has(c)).length;
+    return matchCount < newColors.length * 0.5;
+  }, []);
+
+  // Capture low-res image data for comparison
+  const captureCompareData = useCallback((): ImageData | null => {
+    if (!videoRef.current || !cameraReady) return null;
+
+    if (!compareCanvasRef.current) {
+      compareCanvasRef.current = document.createElement('canvas');
+      compareCanvasRef.current.width = 160;
+      compareCanvasRef.current.height = 120;
+    }
+
+    const canvas = compareCanvasRef.current;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return null;
+
+    ctx.drawImage(videoRef.current, 0, 0, 160, 120);
+    return ctx.getImageData(0, 0, 160, 120);
+  }, [cameraReady]);
 
   // Initialize camera when mode is 'camera'
   const startCamera = useCallback(async () => {
@@ -125,6 +246,8 @@ export default function WorkspacePage() {
       startCamera();
     } else {
       stopCamera();
+      setIsLiveMode(false);
+      setIs360Mode(false);
     }
 
     return () => {
@@ -150,6 +273,144 @@ export default function WorkspacePage() {
     ctx.drawImage(video, 0, 0);
     return canvas.toDataURL('image/jpeg', 0.8);
   }, [cameraReady]);
+
+  // Live analysis function
+  const performLiveAnalysis = useCallback(async () => {
+    if (!cameraReady || liveAnalyzing) return;
+
+    const currentCompareData = captureCompareData();
+    if (!currentCompareData) return;
+
+    if (!hasImageChanged(currentCompareData) && liveResult) {
+      return;
+    }
+
+    const imageData = capturePhoto();
+    if (!imageData) return;
+
+    previousImageDataRef.current = currentCompareData;
+
+    setLiveAnalyzing(true);
+    try {
+      const response = await fetch('/api/gemini/workspace-analyze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          image: imageData,
+          luckyColors: baziColors?.luckyColors || [],
+          unluckyColors: baziColors?.unluckyColors || [],
+          directionalAnalysis: directionalAnalysis,
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (isResultDifferent(data, liveResult)) {
+          setLiveResult(data);
+        }
+      }
+    } catch (err) {
+      console.error('Live analysis error:', err);
+    } finally {
+      setLiveAnalyzing(false);
+    }
+  }, [cameraReady, liveAnalyzing, capturePhoto, captureCompareData, hasImageChanged, isResultDifferent, liveResult, baziColors, directionalAnalysis]);
+
+  // Live mode interval effect
+  useEffect(() => {
+    if (isLiveMode && cameraReady && mode === 'camera' && !is360Mode) {
+      performLiveAnalysis();
+      liveIntervalRef.current = setInterval(() => {
+        performLiveAnalysis();
+      }, 4000);
+    } else {
+      if (liveIntervalRef.current) {
+        clearInterval(liveIntervalRef.current);
+        liveIntervalRef.current = null;
+      }
+    }
+
+    return () => {
+      if (liveIntervalRef.current) {
+        clearInterval(liveIntervalRef.current);
+        liveIntervalRef.current = null;
+      }
+    };
+  }, [isLiveMode, cameraReady, mode, is360Mode, performLiveAnalysis]);
+
+  // Device orientation for 360 mode
+  useEffect(() => {
+    if (!is360Mode) return;
+
+    const handleOrientation = (event: DeviceOrientationEvent) => {
+      // Get compass heading (alpha is 0-360, where 0 is North)
+      let heading = event.alpha;
+      if (heading === null) return;
+
+      // On iOS, webkitCompassHeading gives true north
+      if ('webkitCompassHeading' in event) {
+        heading = (event as DeviceOrientationEvent & { webkitCompassHeading?: number }).webkitCompassHeading || heading;
+      }
+
+      setDeviceHeading(heading);
+
+      // Map heading to cardinal direction
+      let direction: CardinalDirection;
+      if (heading >= 315 || heading < 45) {
+        direction = 'N';
+      } else if (heading >= 45 && heading < 135) {
+        direction = 'E';
+      } else if (heading >= 135 && heading < 225) {
+        direction = 'S';
+      } else {
+        direction = 'W';
+      }
+
+      setCurrentDirection(direction);
+
+      // Auto-capture when stable at a direction not yet captured
+      if (direction === currentDirection && !captures360.has(direction) && direction !== lastCapturedDirectionRef.current) {
+        stabilityCountRef.current++;
+        if (stabilityCountRef.current >= STABILITY_THRESHOLD) {
+          // Auto capture this direction
+          const imageData = capturePhoto();
+          if (imageData) {
+            setCaptures360(prev => new Map(prev).set(direction, imageData));
+            lastCapturedDirectionRef.current = direction;
+            stabilityCountRef.current = 0;
+          }
+        }
+      } else if (direction !== currentDirection) {
+        stabilityCountRef.current = 0;
+      }
+    };
+
+    // Request permission on iOS
+    const requestPermission = async () => {
+      if (typeof (DeviceOrientationEvent as unknown as { requestPermission?: () => Promise<string> }).requestPermission === 'function') {
+        try {
+          const permission = await (DeviceOrientationEvent as unknown as { requestPermission: () => Promise<string> }).requestPermission();
+          if (permission === 'granted') {
+            setIsOrientationSupported(true);
+            window.addEventListener('deviceorientation', handleOrientation);
+          }
+        } catch (err) {
+          console.error('Orientation permission error:', err);
+          setIsOrientationSupported(false);
+        }
+      } else {
+        // Non-iOS, just add listener
+        setIsOrientationSupported(true);
+        window.addEventListener('deviceorientation', handleOrientation);
+      }
+    };
+
+    requestPermission();
+
+    return () => {
+      window.removeEventListener('deviceorientation', handleOrientation);
+    };
+  }, [is360Mode, currentDirection, captures360, capturePhoto]);
 
   // Handle file upload
   const handleFileUpload = useCallback((file: File) => {
@@ -193,7 +454,7 @@ export default function WorkspacePage() {
     if (file) handleFileUpload(file);
   }, [handleFileUpload]);
 
-  // Analyze workspace
+  // Analyze workspace (single capture)
   const analyzeWorkspace = useCallback(async () => {
     setAnalyzing(true);
     setError(null);
@@ -235,6 +496,94 @@ export default function WorkspacePage() {
     }
   }, [mode, capturePhoto, uploadedImage, baziColors, directionalAnalysis]);
 
+  // Analyze 360 workspace (all 4 directions)
+  const analyze360Workspace = useCallback(async () => {
+    if (captures360.size < 4) return;
+
+    setAnalyzing360(true);
+    setError(null);
+
+    try {
+      const images = Array.from(captures360.entries()).map(([direction, image]) => ({
+        direction,
+        image,
+      }));
+
+      const response = await fetch('/api/gemini/workspace-360-analyze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          images,
+          luckyColors: baziColors?.luckyColors || [],
+          unluckyColors: baziColors?.unluckyColors || [],
+          directionalAnalysis: directionalAnalysis,
+        }),
+      });
+
+      if (!response.ok) throw new Error('Failed to analyze 360 workspace');
+      const data = await response.json();
+      setCombined360Result(data);
+    } catch (err) {
+      console.error('360 Analysis error:', err);
+      setError('Failed to analyze 360 workspace. Please try again.');
+    } finally {
+      setAnalyzing360(false);
+    }
+  }, [captures360, baziColors, directionalAnalysis]);
+
+  // Manual capture for 360 mode
+  const capture360Direction = useCallback(() => {
+    if (!currentDirection || captures360.has(currentDirection)) return;
+
+    const imageData = capturePhoto();
+    if (imageData) {
+      setCaptures360(prev => new Map(prev).set(currentDirection, imageData));
+      lastCapturedDirectionRef.current = currentDirection;
+    }
+  }, [currentDirection, captures360, capturePhoto]);
+
+  // Toggle functions
+  const toggleLiveMode = () => {
+    if (isLiveMode) {
+      setIsLiveMode(false);
+      setLiveResult(null);
+      previousImageDataRef.current = null;
+      changeFrameCountRef.current = 0;
+    } else {
+      setIsLiveMode(true);
+      setIs360Mode(false);
+      setResult(null);
+      previousImageDataRef.current = null;
+      changeFrameCountRef.current = 0;
+    }
+  };
+
+  const toggle360Mode = () => {
+    if (is360Mode) {
+      setIs360Mode(false);
+      setCaptures360(new Map());
+      setCombined360Result(null);
+      lastCapturedDirectionRef.current = null;
+      stabilityCountRef.current = 0;
+    } else {
+      setIs360Mode(true);
+      setIsLiveMode(false);
+      setResult(null);
+      setLiveResult(null);
+      setCaptures360(new Map());
+      setCombined360Result(null);
+      lastCapturedDirectionRef.current = null;
+      stabilityCountRef.current = 0;
+    }
+  };
+
+  const reset360 = () => {
+    setCaptures360(new Map());
+    setCombined360Result(null);
+    lastCapturedDirectionRef.current = null;
+    stabilityCountRef.current = 0;
+  };
+
   const getColorMatchStyles = (match: string) => {
     switch (match) {
       case 'excellent': return 'bg-green-500 text-white';
@@ -264,6 +613,17 @@ export default function WorkspacePage() {
       default: return '❓';
     }
   };
+
+  const getDirectionName = (dir: CardinalDirection) => {
+    switch (dir) {
+      case 'N': return 'North';
+      case 'E': return 'East';
+      case 'S': return 'South';
+      case 'W': return 'West';
+    }
+  };
+
+  const currentResult = isLiveMode ? liveResult : result;
 
   return (
     <div className="min-h-screen lg:h-screen flex flex-col lg:overflow-hidden bg-[var(--sepia-50)]">
@@ -349,7 +709,7 @@ export default function WorkspacePage() {
                     <button
                       onClick={flipCamera}
                       disabled={!cameraReady}
-                      className="absolute top-2 sm:top-3 right-2 sm:right-3 p-2 bg-white/90 hover:bg-white rounded-full shadow-lg transition-all disabled:opacity-50"
+                      className="absolute top-2 sm:top-3 right-2 sm:right-3 p-2 bg-white/90 hover:bg-white rounded-full shadow-lg transition-all disabled:opacity-50 z-10"
                       title="Flip camera"
                     >
                       <svg className="w-5 h-5 text-[var(--sepia-700)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -365,23 +725,180 @@ export default function WorkspacePage() {
                         </div>
                       </div>
                     )}
+
+                    {/* Live Analysis Overlay */}
+                    {isLiveMode && liveResult && !is360Mode && (
+                      <div className="absolute inset-0 pointer-events-none transition-opacity duration-300">
+                        <div className="absolute top-2 sm:top-3 left-2 sm:left-3 right-12 sm:right-14 flex justify-between items-start">
+                          <div className="flex items-center gap-1.5 sm:gap-2 bg-black/60 backdrop-blur-sm px-2 py-1 rounded-full">
+                            <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+                            <span className="text-white text-xs font-medium">LIVE</span>
+                          </div>
+                          <div className={`px-2 sm:px-3 py-1 rounded-full font-bold text-xs sm:text-sm transition-all duration-300 ${getColorMatchStyles(liveResult.colorMatch)}`}>
+                            {getColorMatchIcon(liveResult.colorMatch)} {getColorMatchLabel(liveResult.colorMatch)}
+                          </div>
+                        </div>
+
+                        <div className="absolute bottom-2 sm:bottom-3 left-2 sm:left-3 right-2 sm:right-3">
+                          <div className="bg-black/70 backdrop-blur-sm rounded-lg p-2 sm:p-3 text-white transition-all duration-300">
+                            <p className="text-xs leading-relaxed line-clamp-2">{liveResult.analysis}</p>
+                            {liveResult.flyingStarNotes && (
+                              <p className="text-xs text-amber-300 mt-1 line-clamp-1">⭐ {liveResult.flyingStarNotes}</p>
+                            )}
+                          </div>
+                        </div>
+
+                        {liveAnalyzing && !liveResult && (
+                          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                            <div className="bg-black/60 backdrop-blur-sm px-3 py-1.5 rounded-full flex items-center gap-2">
+                              <span className="animate-spin w-3 h-3 border-2 border-white border-t-transparent rounded-full" />
+                              <span className="text-white text-xs">Analyzing...</span>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {/* 360 Mode Overlay */}
+                    {is360Mode && (
+                      <div className="absolute inset-0 pointer-events-none">
+                        {/* Compass Indicator */}
+                        <div className="absolute top-2 sm:top-3 left-2 sm:left-3 right-12 sm:right-14">
+                          <div className="bg-black/60 backdrop-blur-sm px-3 py-2 rounded-lg">
+                            <div className="flex items-center justify-between mb-2">
+                              <span className="text-white text-xs font-medium">360° Scan</span>
+                              <span className="text-amber-400 text-xs">{captures360.size}/4 captured</span>
+                            </div>
+                            <div className="flex justify-center gap-3">
+                              {(['N', 'E', 'S', 'W'] as CardinalDirection[]).map((dir) => (
+                                <div
+                                  key={dir}
+                                  className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
+                                    captures360.has(dir)
+                                      ? 'bg-green-500 text-white'
+                                      : currentDirection === dir
+                                      ? 'bg-amber-500 text-white animate-pulse'
+                                      : 'bg-white/20 text-white/60'
+                                  }`}
+                                >
+                                  {captures360.has(dir) ? '✓' : dir}
+                                </div>
+                              ))}
+                            </div>
+                            {currentDirection && !captures360.has(currentDirection) && (
+                              <p className="text-center text-white text-xs mt-2">
+                                Facing {getDirectionName(currentDirection)} - Hold steady to capture
+                              </p>
+                            )}
+                            {!isOrientationSupported && (
+                              <p className="text-center text-amber-300 text-xs mt-2">
+                                Compass not available - use manual capture
+                              </p>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Captured Thumbnails */}
+                        {captures360.size > 0 && (
+                          <div className="absolute bottom-2 sm:bottom-3 left-2 sm:left-3 right-2 sm:right-3">
+                            <div className="bg-black/60 backdrop-blur-sm rounded-lg p-2 flex gap-2 overflow-x-auto">
+                              {Array.from(captures360.entries()).map(([dir, img]) => (
+                                <div key={dir} className="flex-shrink-0">
+                                  <div className="relative w-16 h-12 rounded overflow-hidden">
+                                    <img src={img} alt={dir} className="w-full h-full object-cover" />
+                                    <span className="absolute bottom-0 left-0 right-0 bg-black/60 text-white text-xs text-center py-0.5">
+                                      {dir}
+                                    </span>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
 
                   <canvas ref={canvasRef} className="hidden" />
 
                   {/* Control Bar */}
                   <div className="flex-shrink-0 p-2 sm:p-3 border-t border-[var(--sepia-200)] bg-[var(--sepia-50)]">
-                    <button
-                      onClick={analyzeWorkspace}
-                      disabled={!cameraReady || analyzing}
-                      className="w-full py-2 sm:py-2.5 bg-[var(--sepia-700)] text-white rounded-lg hover:bg-[var(--sepia-800)] font-medium text-xs sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                    >
-                      {analyzing ? (
-                        <><span className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full" /> Analyzing...</>
-                      ) : (
-                        <><span>📸</span> Capture & Analyze</>
+                    <div className="flex gap-2">
+                      {/* Live Mode Toggle */}
+                      <button
+                        onClick={toggleLiveMode}
+                        disabled={!cameraReady || !baziColors}
+                        className={`flex-1 py-2 sm:py-2.5 rounded-lg font-medium text-xs sm:text-sm transition-all flex items-center justify-center gap-1.5 ${
+                          isLiveMode ? 'bg-red-500 hover:bg-red-600 text-white' : 'bg-green-600 hover:bg-green-700 text-white'
+                        } disabled:opacity-50 disabled:cursor-not-allowed`}
+                      >
+                        {isLiveMode ? (
+                          <><span className="w-2 h-2 bg-white rounded-full animate-pulse" /> Stop</>
+                        ) : (
+                          <><span>▶</span> Live</>
+                        )}
+                      </button>
+
+                      {/* 360 Mode Toggle */}
+                      <button
+                        onClick={toggle360Mode}
+                        disabled={!cameraReady || !baziColors}
+                        className={`flex-1 py-2 sm:py-2.5 rounded-lg font-medium text-xs sm:text-sm transition-all flex items-center justify-center gap-1.5 ${
+                          is360Mode ? 'bg-amber-500 hover:bg-amber-600 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white'
+                        } disabled:opacity-50 disabled:cursor-not-allowed`}
+                      >
+                        {is360Mode ? '✕ Exit 360' : '🧭 360°'}
+                      </button>
+
+                      {/* Capture/Analyze Button */}
+                      {!isLiveMode && !is360Mode && (
+                        <button
+                          onClick={analyzeWorkspace}
+                          disabled={!cameraReady || analyzing}
+                          className="flex-1 py-2 sm:py-2.5 bg-[var(--sepia-700)] text-white rounded-lg hover:bg-[var(--sepia-800)] font-medium text-xs sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                        >
+                          {analyzing ? (
+                            <><span className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full" /></>
+                          ) : (
+                            <><span>📸</span> Capture</>
+                          )}
+                        </button>
                       )}
-                    </button>
+
+                      {/* 360 Mode Controls */}
+                      {is360Mode && (
+                        <>
+                          <button
+                            onClick={capture360Direction}
+                            disabled={!currentDirection || captures360.has(currentDirection)}
+                            className="flex-1 py-2 sm:py-2.5 bg-[var(--sepia-700)] text-white rounded-lg hover:bg-[var(--sepia-800)] font-medium text-xs sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                          >
+                            📸 Capture {currentDirection || ''}
+                          </button>
+                          {captures360.size === 4 && (
+                            <button
+                              onClick={analyze360Workspace}
+                              disabled={analyzing360}
+                              className="flex-1 py-2 sm:py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 font-medium text-xs sm:text-sm disabled:opacity-50 flex items-center justify-center gap-1"
+                            >
+                              {analyzing360 ? (
+                                <span className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full" />
+                              ) : (
+                                '✨ Analyze All'
+                              )}
+                            </button>
+                          )}
+                          {captures360.size > 0 && (
+                            <button
+                              onClick={reset360}
+                              className="px-3 py-2 text-[var(--sepia-600)] hover:text-[var(--sepia-800)] border border-[var(--sepia-300)] rounded-lg text-xs"
+                            >
+                              Reset
+                            </button>
+                          )}
+                        </>
+                      )}
+                    </div>
                   </div>
                 </>
               ) : (
@@ -519,53 +1036,117 @@ export default function WorkspacePage() {
               </div>
             )}
 
-            {/* Analysis Results */}
-            {result && (
+            {/* 360 Combined Results */}
+            {combined360Result && (
               <div className="bg-white p-3 sm:p-4 rounded-xl shadow-sm border border-[var(--sepia-200)] lg:flex-1 overflow-y-auto">
-                <h3 className="font-serif text-sm text-[var(--sepia-800)] mb-2 sm:mb-3">Feng Shui Analysis</h3>
+                <h3 className="font-serif text-sm text-[var(--sepia-800)] mb-2 sm:mb-3">360° Feng Shui Analysis</h3>
 
-                <div className="flex items-center gap-2 mb-2">
-                  <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${getColorMatchStyles(result.colorMatch)}`}>
-                    {getColorMatchIcon(result.colorMatch)} {getColorMatchLabel(result.colorMatch)}
+                <div className="flex items-center gap-2 mb-3">
+                  <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${getColorMatchStyles(combined360Result.overallScore)}`}>
+                    {getColorMatchIcon(combined360Result.overallScore)} {getColorMatchLabel(combined360Result.overallScore)}
                   </span>
-                  {result.reason && (
-                    <span className="text-xs text-[var(--sepia-600)]">{result.reason}</span>
-                  )}
                 </div>
 
-                <p className="text-[var(--sepia-700)] text-xs sm:text-sm leading-relaxed mb-3">{result.analysis}</p>
+                <p className="text-[var(--sepia-700)] text-xs sm:text-sm leading-relaxed mb-3">{combined360Result.overallAnalysis}</p>
 
-                {result.flyingStarNotes && (
+                {combined360Result.flyingStarInsights && (
                   <div className="mb-3 p-2 bg-amber-50 rounded-lg border border-amber-200">
                     <p className="text-xs text-amber-800">
-                      <span className="font-medium">2026 Flying Stars:</span> {result.flyingStarNotes}
+                      <span className="font-medium">2026 Flying Stars:</span> {combined360Result.flyingStarInsights}
                     </p>
                   </div>
                 )}
 
-                {result.elementAlignment && (
+                {/* Direction Breakdown */}
+                {combined360Result.directionBreakdown?.length > 0 && (
                   <div className="mb-3">
-                    <p className="text-xs text-[var(--sepia-600)] mb-1">Dominant Elements</p>
-                    <p className="text-xs text-[var(--sepia-700)]">{result.elementAlignment}</p>
+                    <p className="text-xs text-[var(--sepia-600)] mb-1.5">By Direction</p>
+                    <div className="space-y-2">
+                      {combined360Result.directionBreakdown.map((db, i) => (
+                        <div key={i} className="p-2 bg-[var(--sepia-50)] rounded-lg">
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="text-xs font-medium text-[var(--sepia-800)]">{getDirectionName(db.direction)}</span>
+                            <span className={`px-2 py-0.5 rounded text-xs ${getColorMatchStyles(db.score)}`}>{db.score}</span>
+                          </div>
+                          <p className="text-xs text-[var(--sepia-600)] line-clamp-2">{db.analysis}</p>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 )}
 
-                {result.detectedColors?.length > 0 && (
+                {/* Prioritized Recommendations */}
+                {combined360Result.prioritizedRecommendations?.length > 0 && (
+                  <div>
+                    <p className="text-xs text-[var(--sepia-600)] mb-1.5">Top Recommendations</p>
+                    <ul className="space-y-1">
+                      {combined360Result.prioritizedRecommendations.slice(0, 5).map((rec, i) => (
+                        <li key={i} className="flex items-start gap-1.5 text-[var(--sepia-700)] text-xs">
+                          <span className="text-amber-500 font-bold">{i + 1}.</span>
+                          <span>{rec}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Single Analysis Results */}
+            {currentResult && !combined360Result && (
+              <div className="bg-white p-3 sm:p-4 rounded-xl shadow-sm border border-[var(--sepia-200)] lg:flex-1 overflow-y-auto">
+                <div className="flex items-center justify-between mb-2 sm:mb-3">
+                  <h3 className="font-serif text-sm text-[var(--sepia-800)]">Feng Shui Analysis</h3>
+                  {isLiveMode && (
+                    <div className="flex items-center gap-1 text-xs text-[var(--sepia-500)]">
+                      <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
+                      Live
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex items-center gap-2 mb-2">
+                  <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${getColorMatchStyles(currentResult.colorMatch)}`}>
+                    {getColorMatchIcon(currentResult.colorMatch)} {getColorMatchLabel(currentResult.colorMatch)}
+                  </span>
+                  {currentResult.reason && (
+                    <span className="text-xs text-[var(--sepia-600)]">{currentResult.reason}</span>
+                  )}
+                </div>
+
+                <p className="text-[var(--sepia-700)] text-xs sm:text-sm leading-relaxed mb-3">{currentResult.analysis}</p>
+
+                {currentResult.flyingStarNotes && (
+                  <div className="mb-3 p-2 bg-amber-50 rounded-lg border border-amber-200">
+                    <p className="text-xs text-amber-800">
+                      <span className="font-medium">2026 Flying Stars:</span> {currentResult.flyingStarNotes}
+                    </p>
+                  </div>
+                )}
+
+                {currentResult.elementAlignment && (
+                  <div className="mb-3">
+                    <p className="text-xs text-[var(--sepia-600)] mb-1">Dominant Elements</p>
+                    <p className="text-xs text-[var(--sepia-700)]">{currentResult.elementAlignment}</p>
+                  </div>
+                )}
+
+                {currentResult.detectedColors?.length > 0 && (
                   <div className="mb-3">
                     <p className="text-xs text-[var(--sepia-600)] mb-1.5">Detected Colors</p>
                     <div className="flex flex-wrap gap-1">
-                      {result.detectedColors.map((color, i) => (
+                      {currentResult.detectedColors.map((color, i) => (
                         <span key={i} className="px-2 py-0.5 rounded-full bg-[var(--sepia-100)] text-[var(--sepia-700)] text-xs">{color}</span>
                       ))}
                     </div>
                   </div>
                 )}
 
-                {result.suggestions?.length > 0 && (
+                {currentResult.suggestions?.length > 0 && (
                   <div>
                     <p className="text-xs text-[var(--sepia-600)] mb-1.5">Feng Shui Recommendations</p>
                     <ul className="space-y-1">
-                      {result.suggestions.slice(0, 4).map((suggestion, i) => (
+                      {currentResult.suggestions.slice(0, 4).map((suggestion, i) => (
                         <li key={i} className="flex items-start gap-1.5 text-[var(--sepia-700)] text-xs">
                           <span className="text-[var(--sepia-400)]">•</span>
                           <span>{suggestion}</span>
@@ -578,11 +1159,13 @@ export default function WorkspacePage() {
             )}
 
             {/* Placeholder when no results */}
-            {!result && !error && (
+            {!currentResult && !error && !combined360Result && (
               <div className="bg-white p-4 rounded-xl shadow-sm border border-[var(--sepia-200)] lg:flex-1 flex items-center justify-center min-h-[120px]">
                 <div className="text-center text-[var(--sepia-500)]">
                   <div className="text-2xl sm:text-3xl mb-2">🖥️</div>
-                  <p className="text-xs sm:text-sm">Capture your workspace to see analysis</p>
+                  <p className="text-xs sm:text-sm">
+                    {is360Mode ? 'Capture all 4 directions for 360° analysis' : 'Start live analysis or capture to see results'}
+                  </p>
                 </div>
               </div>
             )}
