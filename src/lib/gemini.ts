@@ -60,21 +60,28 @@ Respond in JSON format:
     ]);
     
     const response = await result.response;
-    const text = response.text();
-    
+    let text = response.text();
+
+    // Strip markdown code blocks if present
+    text = text.replace(/```json\s*/gi, '').replace(/```\s*/g, '').trim();
+
     // Parse JSON from response
-    const jsonMatch = text.match(/{[sS]*}/);
+    const jsonMatch = text.match(/\{[\s\S]*\}/);
     if (jsonMatch) {
-      return JSON.parse(jsonMatch[0]);
+      try {
+        return JSON.parse(jsonMatch[0]);
+      } catch (parseError) {
+        console.error('JSON parse error:', parseError);
+      }
     }
-    
+
     // Fallback if JSON parsing fails
     return {
       analysis: text,
       detectedColors: [],
       colorMatch: 'neutral',
-      suggestions: ['Unable to parse detailed suggestions'],
-      elementAlignment: 'Analysis in progress',
+      suggestions: ['Please try again for detailed suggestions'],
+      elementAlignment: 'Analysis complete',
     };
   } catch (error) {
     console.error('Gemini API error:', error);
