@@ -315,6 +315,7 @@ export default function OutfitPage() {
             <nav className="flex gap-4">
               <Link href="/bazi" className="text-sm text-[var(--sepia-600)] hover:text-[var(--sepia-800)]">BaZi</Link>
               <Link href="/outfit" className="text-sm text-[var(--sepia-800)] font-medium">Outfit</Link>
+              <Link href="/workspace" className="text-sm text-[var(--sepia-600)] hover:text-[var(--sepia-800)]">Workspace</Link>
             </nav>
           </div>
         </div>
