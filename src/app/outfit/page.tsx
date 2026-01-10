@@ -36,39 +36,58 @@ export default function OutfitPage() {
   const [liveResult, setLiveResult] = useState<AnalysisResult | null>(null);
   const [liveAnalyzing, setLiveAnalyzing] = useState(false);
   const liveIntervalRef = useRef<NodeJS.Timeout | null>(null);
-  const previousResultRef = useRef<AnalysisResult | null>(null);
+  const compareCanvasRef = useRef<HTMLCanvasElement | null>(null);
+  const previousImageDataRef = useRef<ImageData | null>(null);
 
-  // Helper to check if results are meaningfully different (stricter comparison)
-  const isResultDifferent = useCallback((newResult: AnalysisResult, oldResult: AnalysisResult | null): boolean => {
-    if (!oldResult) return true;
+  // Compare two images by sampling pixels - returns true if images are different
+  const hasImageChanged = useCallback((currentImageData: ImageData): boolean => {
+    const previousData = previousImageDataRef.current;
+    if (!previousData) return true; // First frame, always analyze
 
-    // Only update if rating changed - this is the key signal
-    if (newResult.colorMatch !== oldResult.colorMatch) return true;
+    const current = currentImageData.data;
+    const previous = previousData.data;
 
-    // Compare detected colors - must be significantly different to update
-    const newColors = (newResult.detectedColors || []).map(c => c.toLowerCase().trim()).sort();
-    const oldColors = (oldResult.detectedColors || []).map(c => c.toLowerCase().trim()).sort();
+    // Sample every 50th pixel for performance (checking ~2% of pixels)
+    const sampleStep = 50;
+    let diffCount = 0;
+    let sampleCount = 0;
+    const threshold = 30; // Color difference threshold per channel
 
-    // If color count differs by more than 2, it's different
-    if (Math.abs(newColors.length - oldColors.length) > 2) return true;
+    for (let i = 0; i < current.length; i += sampleStep * 4) {
+      const rDiff = Math.abs(current[i] - previous[i]);
+      const gDiff = Math.abs(current[i + 1] - previous[i + 1]);
+      const bDiff = Math.abs(current[i + 2] - previous[i + 2]);
 
-    // Check overlap - need at least 50% different colors to be considered a change
-    const newSet = new Set(newColors);
-    const oldSet = new Set(oldColors);
-    let matchCount = 0;
-    newSet.forEach(color => {
-      if (oldSet.has(color)) matchCount++;
-    });
+      // If any channel differs significantly, count as different pixel
+      if (rDiff > threshold || gDiff > threshold || bDiff > threshold) {
+        diffCount++;
+      }
+      sampleCount++;
+    }
 
-    const totalUnique = new Set([...newColors, ...oldColors]).size;
-    const similarity = totalUnique > 0 ? matchCount / totalUnique : 1;
-
-    // Only update if less than 40% colors match (very different outfit)
-    if (similarity < 0.4) return true;
-
-    // Otherwise keep showing the previous result
-    return false;
+    // If more than 15% of sampled pixels are different, outfit has changed
+    const diffRatio = diffCount / sampleCount;
+    return diffRatio > 0.15;
   }, []);
+
+  // Capture low-res image data for comparison
+  const captureCompareData = useCallback((): ImageData | null => {
+    if (!videoRef.current || !cameraReady) return null;
+
+    // Create or reuse comparison canvas (small size for fast comparison)
+    if (!compareCanvasRef.current) {
+      compareCanvasRef.current = document.createElement('canvas');
+      compareCanvasRef.current.width = 160;
+      compareCanvasRef.current.height = 120;
+    }
+
+    const canvas = compareCanvasRef.current;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return null;
+
+    ctx.drawImage(videoRef.current, 0, 0, 160, 120);
+    return ctx.getImageData(0, 0, 160, 120);
+  }, [cameraReady]);
 
   // Load BaZi colors from sessionStorage
   useEffect(() => {
@@ -140,12 +159,25 @@ export default function OutfitPage() {
     return canvas.toDataURL('image/jpeg', 0.8);
   }, [cameraReady]);
 
-  // Live analysis function
+  // Live analysis function - only calls API if outfit changed
   const performLiveAnalysis = useCallback(async () => {
     if (!cameraReady || liveAnalyzing) return;
 
+    // First, check if the image has changed
+    const currentCompareData = captureCompareData();
+    if (!currentCompareData) return;
+
+    // If outfit hasn't changed and we have a result, skip API call
+    if (!hasImageChanged(currentCompareData) && liveResult) {
+      return; // Keep showing previous result
+    }
+
+    // Outfit changed - capture full image and call API
     const imageData = capturePhoto();
     if (!imageData) return;
+
+    // Store current frame for next comparison
+    previousImageDataRef.current = currentCompareData;
 
     setLiveAnalyzing(true);
     try {
@@ -161,26 +193,22 @@ export default function OutfitPage() {
 
       if (response.ok) {
         const data = await response.json();
-        // Only update if result is meaningfully different (prevents flashing)
-        if (isResultDifferent(data, previousResultRef.current)) {
-          setLiveResult(data);
-          previousResultRef.current = data;
-        }
+        setLiveResult(data);
       }
     } catch (err) {
       console.error('Live analysis error:', err);
     } finally {
       setLiveAnalyzing(false);
     }
-  }, [cameraReady, liveAnalyzing, capturePhoto, baziColors, isResultDifferent]);
+  }, [cameraReady, liveAnalyzing, capturePhoto, captureCompareData, hasImageChanged, liveResult, baziColors]);
 
-  // Live mode interval effect (5 second intervals for stability)
+  // Live mode interval effect (2 second checks - fast since we skip API when no change)
   useEffect(() => {
     if (isLiveMode && cameraReady && mode === 'camera') {
       performLiveAnalysis();
       liveIntervalRef.current = setInterval(() => {
         performLiveAnalysis();
-      }, 5000);
+      }, 2000);
     } else {
       if (liveIntervalRef.current) {
         clearInterval(liveIntervalRef.current);
@@ -313,11 +341,11 @@ export default function OutfitPage() {
     if (isLiveMode) {
       setIsLiveMode(false);
       setLiveResult(null);
-      previousResultRef.current = null; // Reset for next live session
+      previousImageDataRef.current = null; // Reset image comparison
     } else {
       setIsLiveMode(true);
       setResult(null);
-      previousResultRef.current = null; // Start fresh
+      previousImageDataRef.current = null; // Start fresh
     }
   };
 
