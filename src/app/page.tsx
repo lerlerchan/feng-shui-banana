@@ -44,6 +44,12 @@ export default function Home() {
               >
                 Outfit Check
               </Link>
+              <Link
+                href="/workspace"
+                className="text-white/90 hover:text-white text-sm tracking-widest uppercase transition-colors"
+              >
+                Workspace
+              </Link>
             </nav>
 
             {/* Center Logo */}
@@ -57,15 +63,8 @@ export default function Home() {
               />
             </Link>
 
-            {/* Right Nav */}
-            <nav className="hidden md:flex items-center gap-8">
-              <Link
-                href="/workspace"
-                className="text-white/90 hover:text-white text-sm tracking-widest uppercase transition-colors"
-              >
-                Workspace
-              </Link>
-            </nav>
+            {/* Empty right side for balance */}
+            <div className="hidden md:block" />
 
             {/* Mobile Menu Button */}
             <button
@@ -115,12 +114,12 @@ export default function Home() {
         {/* Hero Content */}
         <main className="flex-1 flex flex-col items-center justify-center px-6 text-center">
           <h1 className="font-serif text-white text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-tight mb-6">
-            Dress with<br />
+            Dress and Work with<br />
             <span className="italic">Destiny</span>
           </h1>
 
           <p className="text-white/80 text-base sm:text-lg md:text-xl max-w-2xl leading-relaxed mb-8">
-            Ancient BaZi wisdom meets modern AI.<br />
+            Ancient FengShui Wisdom meets modern AI.<br />
             Discover your lucky colors and align your style with the Five Elements.
           </p>
 
