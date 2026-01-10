@@ -179,6 +179,9 @@ export default function BaziResultPage() {
           <Link href="/outfit" className="px-6 sm:px-8 py-3 sm:py-4 bg-[var(--sepia-700)] text-white rounded-lg text-center text-sm sm:text-base font-medium">
             Check My Outfit
           </Link>
+          <Link href="/workspace" className="px-6 sm:px-8 py-3 sm:py-4 bg-[var(--sepia-700)] text-white rounded-lg text-center text-sm sm:text-base font-medium">
+            Check My Space
+          </Link>
           <Link href="/bazi" className="px-6 sm:px-8 py-3 sm:py-4 border-2 border-[var(--sepia-400)] text-[var(--sepia-700)] rounded-lg text-center text-sm sm:text-base font-medium">
             New Analysis
           </Link>
