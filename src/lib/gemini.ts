@@ -7,6 +7,7 @@ export interface OutfitAnalysisResult {
   analysis: string;
   detectedColors: string[];
   colorMatch: 'excellent' | 'good' | 'neutral' | 'poor';
+  reason: string;
   suggestions: string[];
   elementAlignment: string;
 }
@@ -36,19 +37,21 @@ The colors they should avoid are: ${unluckyColorNames}
 Please analyze the outfit in the image and provide:
 1. A brief description of the colors visible in the outfit
 2. How well the outfit aligns with their lucky colors (excellent/good/neutral/poor)
-3. Short actionable suggestions (MAX 8 words each, be concise!)
-4. Which element (Metal/Wood/Water/Fire/Earth) the outfit currently represents
+3. A concise reason explaining WHY this rating (max 10 words)
+4. Short actionable suggestions (MAX 8 words each, be concise!)
+5. Which element (Metal/Wood/Water/Fire/Earth) the outfit currently represents
 
 Respond in JSON format:
 {
   "analysis": "Brief friendly analysis (1-2 sentences max)",
   "detectedColors": ["color1", "color2"],
   "colorMatch": "excellent|good|neutral|poor",
+  "reason": "No lucky colors present, wearing unlucky red",
   "suggestions": ["Add gold accessories", "Try a white shirt", "Wear beige scarf"],
   "elementAlignment": "Brief element description"
 }
 
-IMPORTANT: Keep each suggestion under 8 words. Be direct and actionable.`;
+IMPORTANT: Keep reason under 10 words. Keep each suggestion under 8 words. Be direct.`;
 
   try {
     const result = await model.generateContent([
@@ -82,6 +85,7 @@ IMPORTANT: Keep each suggestion under 8 words. Be direct and actionable.`;
       analysis: text,
       detectedColors: [],
       colorMatch: 'neutral',
+      reason: 'Unable to determine alignment',
       suggestions: ['Please try again for detailed suggestions'],
       elementAlignment: 'Analysis complete',
     };

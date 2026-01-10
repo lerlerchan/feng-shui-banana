@@ -8,6 +8,7 @@ interface AnalysisResult {
   analysis: string;
   detectedColors: string[];
   colorMatch: 'excellent' | 'good' | 'neutral' | 'poor';
+  reason?: string;
   suggestions: string[];
 }
 
@@ -629,11 +630,15 @@ export default function OutfitPage() {
                   )}
                 </div>
 
-                <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium mb-2 sm:mb-3 ${getColorMatchStyles(currentResult.colorMatch)}`}>
+                <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${getColorMatchStyles(currentResult.colorMatch)}`}>
                   {getColorMatchIcon(currentResult.colorMatch)} {getColorMatchLabel(currentResult.colorMatch)}
                 </span>
 
-                {!isLiveMode && (
+                {currentResult.reason && (
+                  <p className="text-[var(--sepia-600)] text-xs mt-1.5 mb-2 sm:mb-3">{currentResult.reason}</p>
+                )}
+
+                {!isLiveMode && !currentResult.reason && (
                   <p className="text-[var(--sepia-700)] text-xs sm:text-sm leading-relaxed mb-2 sm:mb-3">{currentResult.analysis}</p>
                 )}
 
