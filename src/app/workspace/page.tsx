@@ -99,10 +99,10 @@ export default function WorkspacePage() {
   const [showPermissionPrompt, setShowPermissionPrompt] = useState(false);
   const [combined360Result, setCombined360Result] = useState<Combined360Result | null>(null);
   const [analyzing360, setAnalyzing360] = useState(false);
-  const stabilityCountRef = useRef(0);
+  const [isInSweetSpot, setIsInSweetSpot] = useState(false);
   const lastCapturedDirectionRef = useRef<CardinalDirection | null>(null);
   const orientationListenerRef = useRef<((event: DeviceOrientationEvent) => void) | null>(null);
-  const STABILITY_THRESHOLD = 15; // frames to wait before auto-capture (increased for stability)
+  const SWEET_SPOT_THRESHOLD = 10; // degrees from exact cardinal for instant capture
 
   // Load BaZi colors and directional analysis from sessionStorage
   useEffect(() => {
@@ -375,7 +375,23 @@ export default function WorkspacePage() {
     // Map heading to cardinal direction
     // Heading: 0 = North, 90 = East, 180 = South, 270 = West
     let direction: CardinalDirection;
-    if (heading >= 315 || heading < 45) {
+    let inSweetSpot = false;
+
+    // Check if in sweet spot (within ±10° of exact cardinal)
+    // N: 350-360 or 0-10, E: 80-100, S: 170-190, W: 260-280
+    if (heading >= 350 || heading < 10) {
+      direction = 'N';
+      inSweetSpot = true;
+    } else if (heading >= 80 && heading < 100) {
+      direction = 'E';
+      inSweetSpot = true;
+    } else if (heading >= 170 && heading < 190) {
+      direction = 'S';
+      inSweetSpot = true;
+    } else if (heading >= 260 && heading < 280) {
+      direction = 'W';
+      inSweetSpot = true;
+    } else if (heading >= 315 || heading < 45) {
       direction = 'N';
     } else if (heading >= 45 && heading < 135) {
       direction = 'E';
@@ -386,6 +402,7 @@ export default function WorkspacePage() {
     }
 
     setCurrentDirection(direction);
+    setIsInSweetSpot(inSweetSpot);
   }, []);
 
   // Request orientation permission (must be called from user gesture on iOS)
@@ -439,62 +456,21 @@ export default function WorkspacePage() {
     }
   }, [requestOrientationPermission]);
 
-  // Auto-capture effect using interval for continuous stability checking
-  const lastDirectionRef = useRef<CardinalDirection | null>(null);
-  const autoCaptureIntervalRef = useRef<NodeJS.Timeout | null>(null);
-
+  // Auto-capture effect - instant capture when in sweet spot (±10° of exact cardinal)
   useEffect(() => {
-    // Clear any existing interval
-    if (autoCaptureIntervalRef.current) {
-      clearInterval(autoCaptureIntervalRef.current);
-      autoCaptureIntervalRef.current = null;
-    }
-
     if (!is360Mode || orientationPermission !== 'granted') {
-      stabilityCountRef.current = 0;
-      lastDirectionRef.current = null;
       return;
     }
 
-    // Check stability every 200ms
-    autoCaptureIntervalRef.current = setInterval(() => {
-      const dir = currentDirection;
-      if (!dir) {
-        stabilityCountRef.current = 0;
-        lastDirectionRef.current = null;
-        return;
+    // Instant capture when in sweet spot
+    if (isInSweetSpot && currentDirection && !captures360.has(currentDirection) && currentDirection !== lastCapturedDirectionRef.current) {
+      const imageData = capturePhoto();
+      if (imageData) {
+        setCaptures360(prev => new Map(prev).set(currentDirection, imageData));
+        lastCapturedDirectionRef.current = currentDirection;
       }
-
-      // Check if direction changed
-      if (dir !== lastDirectionRef.current) {
-        lastDirectionRef.current = dir;
-        stabilityCountRef.current = 0;
-        return;
-      }
-
-      // Same direction - check for auto-capture
-      if (!captures360.has(dir) && dir !== lastCapturedDirectionRef.current) {
-        stabilityCountRef.current++;
-
-        // Auto-capture after ~3 seconds of stability (15 * 200ms = 3000ms)
-        if (stabilityCountRef.current >= STABILITY_THRESHOLD) {
-          const imageData = capturePhoto();
-          if (imageData) {
-            setCaptures360(prev => new Map(prev).set(dir, imageData));
-            lastCapturedDirectionRef.current = dir;
-            stabilityCountRef.current = 0;
-          }
-        }
-      }
-    }, 200);
-
-    return () => {
-      if (autoCaptureIntervalRef.current) {
-        clearInterval(autoCaptureIntervalRef.current);
-        autoCaptureIntervalRef.current = null;
-      }
-    };
-  }, [is360Mode, orientationPermission, currentDirection, captures360, capturePhoto]);
+    }
+  }, [is360Mode, orientationPermission, isInSweetSpot, currentDirection, captures360, capturePhoto]);
 
   // Set up orientation listener when 360 mode is active and permission granted
   useEffect(() => {
@@ -681,9 +657,9 @@ export default function WorkspacePage() {
       setCaptures360(new Map());
       setCombined360Result(null);
       lastCapturedDirectionRef.current = null;
-      stabilityCountRef.current = 0;
       setCurrentDirection(null);
       setDeviceHeading(null);
+      setIsInSweetSpot(false);
     } else {
       // Check if we need to request permission (iOS)
       const deviceOrientationEvent = DeviceOrientationEvent as unknown as {
@@ -715,7 +691,7 @@ export default function WorkspacePage() {
       setCaptures360(new Map());
       setCombined360Result(null);
       lastCapturedDirectionRef.current = null;
-      stabilityCountRef.current = 0;
+      setIsInSweetSpot(false);
     }
   };
 
@@ -723,7 +699,7 @@ export default function WorkspacePage() {
     setCaptures360(new Map());
     setCombined360Result(null);
     lastCapturedDirectionRef.current = null;
-    stabilityCountRef.current = 0;
+    setIsInSweetSpot(false);
   };
 
   const getColorMatchStyles = (match: string) => {
@@ -936,8 +912,11 @@ export default function WorkspacePage() {
                             </div>
                             {/* Status messages */}
                             {orientationPermission === 'granted' && deviceHeading !== null && currentDirection && !captures360.has(currentDirection) && (
-                              <p className="text-center text-white text-xs mt-2">
-                                Facing {getDirectionName(currentDirection)} - Hold steady to capture
+                              <p className={`text-center text-xs mt-2 ${isInSweetSpot ? 'text-green-400 font-medium' : 'text-white'}`}>
+                                {isInSweetSpot
+                                  ? `📸 Capturing ${getDirectionName(currentDirection)}...`
+                                  : `Facing ${getDirectionName(currentDirection)} - aim closer to center`
+                                }
                               </p>
                             )}
                             {orientationPermission === 'granted' && deviceHeading !== null && currentDirection && captures360.has(currentDirection) && (
@@ -1400,7 +1379,7 @@ export default function WorkspacePage() {
                 </div>
                 <div className="flex items-center gap-2 text-xs text-[var(--sepia-700)]">
                   <span className="text-green-500">✓</span>
-                  <span>Auto-capture when holding steady</span>
+                  <span>Instant capture when aimed at N/E/S/W</span>
                 </div>
                 <div className="flex items-center gap-2 text-xs text-[var(--sepia-700)]">
                   <span className="text-green-500">✓</span>
