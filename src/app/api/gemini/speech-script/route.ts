@@ -58,8 +58,11 @@ ${report}
     // Now generate audio using Gemini 2.5 Flash TTS (better quality)
     let audioBase64: string | null = null;
 
+    // Embed speaking style in the text for TTS
+    const ttsText = `Say in an energetic, lively, and expressive voice with natural pauses: ${script}`;
+
     try {
-      // Gemini 2.5 Flash TTS with style prompt for lively Singlish delivery
+      // Gemini 2.5 Flash TTS - simple format per official docs
       const ttsResponse = await fetch(
         `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${process.env.GEMINI_API_KEY}`,
         {
@@ -68,7 +71,7 @@ ${report}
           body: JSON.stringify({
             contents: [
               {
-                parts: [{ text: script }],
+                parts: [{ text: ttsText }],
               },
             ],
             generationConfig: {
@@ -76,31 +79,10 @@ ${report}
               speechConfig: {
                 voiceConfig: {
                   prebuiltVoiceConfig: {
-                    voiceName: 'Kore', // Energetic, expressive voice
+                    voiceName: 'Kore',
                   },
                 },
-                // Style prompt for Singlish delivery
-                multiSpeakerVoiceConfig: {
-                  speakerVoiceConfigs: [
-                    {
-                      speaker: 'default',
-                      voiceConfig: {
-                        prebuiltVoiceConfig: {
-                          voiceName: 'Kore',
-                        },
-                      },
-                    },
-                  ],
-                },
               },
-            },
-            // System instruction for speaking style
-            systemInstruction: {
-              parts: [
-                {
-                  text: 'Speak in a lively, energetic Singaporean accent. Be expressive, warm, and fun - like a friendly kopitiam auntie giving advice! Use natural pauses, vary your pitch for emphasis, and sound genuinely excited when sharing good news. Add slight dramatic pauses before important points.',
-                },
-              ],
             },
           }),
         }
@@ -117,8 +99,12 @@ ${report}
           audioBase64 = audioPart.inlineData.data;
         }
       } else {
+        // Log the error for debugging
+        const errorText = await ttsResponse.text();
+        console.log('Gemini 2.5 TTS error:', ttsResponse.status, errorText);
+
         // Fallback to Gemini 2.0 Flash if 2.5 TTS not available
-        console.log('Gemini 2.5 TTS not available, falling back to 2.0 Flash');
+        console.log('Falling back to Gemini 2.0 Flash for audio');
         const fallbackResponse = await fetch(
           `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
           {
@@ -127,11 +113,7 @@ ${report}
             body: JSON.stringify({
               contents: [
                 {
-                  parts: [
-                    {
-                      text: `Read this script aloud in a lively, energetic Singaporean accent:\n\n${script}`,
-                    },
-                  ],
+                  parts: [{ text: ttsText }],
                 },
               ],
               generationConfig: {
