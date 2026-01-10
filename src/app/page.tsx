@@ -8,17 +8,17 @@ export default function Home() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <div className="relative h-screen w-full overflow-hidden">
+    <div className="relative h-screen w-full overflow-hidden bg-black">
       {/* Background Video */}
       <video
         autoPlay
         loop
         muted
         playsInline
-        className="absolute inset-0 w-full h-full object-cover"
+        className="absolute inset-0 w-full h-full object-cover min-w-full min-h-full"
         poster="/hero-poster.jpg"
+        style={{ objectPosition: 'center center' }}
       >
-        {/* Video source will be added later */}
         <source src="/hero-video.mp4" type="video/mp4" />
       </video>
 
@@ -113,9 +113,9 @@ export default function Home() {
 
         {/* Hero Content */}
         <main className="flex-1 flex flex-col items-center justify-center px-6 text-center">
-          <h1 className="font-serif text-white text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-tight mb-6">
-            a Wisdom not<br />
-            <span className="italic">a Superstitious</span>
+          <h1 className="font-serif text-white text-3xl sm:text-4xl md:text-5xl leading-tight mb-6">
+            a Wisdom,<br />
+            not <span className="italic">a Superstition</span>
           </h1>
 
           <p className="text-white/80 text-base sm:text-lg md:text-xl max-w-2xl leading-relaxed mb-8">
