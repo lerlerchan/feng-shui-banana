@@ -439,32 +439,62 @@ export default function WorkspacePage() {
     }
   }, [requestOrientationPermission]);
 
-  // Auto-capture effect (separate from orientation handling)
+  // Auto-capture effect using interval for continuous stability checking
   const lastDirectionRef = useRef<CardinalDirection | null>(null);
+  const autoCaptureIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    if (!is360Mode || !currentDirection) return;
+    // Clear any existing interval
+    if (autoCaptureIntervalRef.current) {
+      clearInterval(autoCaptureIntervalRef.current);
+      autoCaptureIntervalRef.current = null;
+    }
 
-    // Check if direction changed
-    if (currentDirection !== lastDirectionRef.current) {
-      lastDirectionRef.current = currentDirection;
+    if (!is360Mode || orientationPermission !== 'granted') {
       stabilityCountRef.current = 0;
+      lastDirectionRef.current = null;
       return;
     }
 
-    // Same direction - check for auto-capture
-    if (!captures360.has(currentDirection) && currentDirection !== lastCapturedDirectionRef.current) {
-      stabilityCountRef.current++;
-      if (stabilityCountRef.current >= STABILITY_THRESHOLD) {
-        const imageData = capturePhoto();
-        if (imageData) {
-          setCaptures360(prev => new Map(prev).set(currentDirection, imageData));
-          lastCapturedDirectionRef.current = currentDirection;
-          stabilityCountRef.current = 0;
+    // Check stability every 200ms
+    autoCaptureIntervalRef.current = setInterval(() => {
+      const dir = currentDirection;
+      if (!dir) {
+        stabilityCountRef.current = 0;
+        lastDirectionRef.current = null;
+        return;
+      }
+
+      // Check if direction changed
+      if (dir !== lastDirectionRef.current) {
+        lastDirectionRef.current = dir;
+        stabilityCountRef.current = 0;
+        return;
+      }
+
+      // Same direction - check for auto-capture
+      if (!captures360.has(dir) && dir !== lastCapturedDirectionRef.current) {
+        stabilityCountRef.current++;
+
+        // Auto-capture after ~3 seconds of stability (15 * 200ms = 3000ms)
+        if (stabilityCountRef.current >= STABILITY_THRESHOLD) {
+          const imageData = capturePhoto();
+          if (imageData) {
+            setCaptures360(prev => new Map(prev).set(dir, imageData));
+            lastCapturedDirectionRef.current = dir;
+            stabilityCountRef.current = 0;
+          }
         }
       }
-    }
-  }, [is360Mode, currentDirection, captures360, capturePhoto]);
+    }, 200);
+
+    return () => {
+      if (autoCaptureIntervalRef.current) {
+        clearInterval(autoCaptureIntervalRef.current);
+        autoCaptureIntervalRef.current = null;
+      }
+    };
+  }, [is360Mode, orientationPermission, currentDirection, captures360, capturePhoto]);
 
   // Set up orientation listener when 360 mode is active and permission granted
   useEffect(() => {
