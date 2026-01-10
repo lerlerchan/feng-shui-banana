@@ -1,0 +1,4616 @@
+This file is a merged representation of the entire codebase, combined into a single document by Repomix.
+The content has been processed where security check has been disabled.
+
+<file_summary>
+This section contains a summary of this file.
+
+<purpose>
+This file contains a packed representation of the entire repository's contents.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+</purpose>
+
+<file_format>
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Repository files (if enabled)
+5. Multiple file entries, each consisting of:
+  - File path as an attribute
+  - Full contents of the file
+</file_format>
+
+<usage_guidelines>
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+</usage_guidelines>
+
+<notes>
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+- Security check has been disabled - content may contain sensitive information
+- Files are sorted by Git change count (files with more changes are at the bottom)
+</notes>
+
+</file_summary>
+
+<directory_structure>
+images/
+  fengShuiBananaLogo.png
+  logoJPG.jpeg
+  logoPNG.png
+public/
+  file.svg
+  globe.svg
+  logo.png
+  next.svg
+  vercel.svg
+  window.svg
+repomix/
+  repomix-output-WeiKhjan-feng-shui-banana.xml
+src/
+  app/
+    api/
+      bazi/
+        route.ts
+      gemini/
+        analyze/
+          route.ts
+    bazi/
+      result/
+        page.tsx
+      page.tsx
+    outfit/
+      page.tsx
+    workspace/
+      page.tsx
+    favicon.ico
+    globals.css
+    layout.tsx
+    page.tsx
+  lib/
+    bazi.ts
+    elements.ts
+    gemini.ts
+  types/
+    lunar-javascript.d.ts
+.gitignore
+eslint.config.mjs
+next.config.ts
+package.json
+postcss.config.mjs
+README.md
+tsconfig.json
+</directory_structure>
+
+<files>
+This section contains the contents of the repository's files.
+
+<file path="public/file.svg">
+<svg fill="none" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="M14.5 13.5V5.41a1 1 0 0 0-.3-.7L9.8.29A1 1 0 0 0 9.08 0H1.5v13.5A2.5 2.5 0 0 0 4 16h8a2.5 2.5 0 0 0 2.5-2.5m-1.5 0v-7H8v-5H3v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1M9.5 5V2.12L12.38 5zM5.13 5h-.62v1.25h2.12V5zm-.62 3h7.12v1.25H4.5zm.62 3h-.62v1.25h7.12V11z" clip-rule="evenodd" fill="#666" fill-rule="evenodd"/></svg>
+</file>
+
+<file path="public/globe.svg">
+<svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><g clip-path="url(#a)"><path fill-rule="evenodd" clip-rule="evenodd" d="M10.27 14.1a6.5 6.5 0 0 0 3.67-3.45q-1.24.21-2.7.34-.31 1.83-.97 3.1M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m.48-1.52a7 7 0 0 1-.96 0H7.5a4 4 0 0 1-.84-1.32q-.38-.89-.63-2.08a40 40 0 0 0 3.92 0q-.25 1.2-.63 2.08a4 4 0 0 1-.84 1.31zm2.94-4.76q1.66-.15 2.95-.43a7 7 0 0 0 0-2.58q-1.3-.27-2.95-.43a18 18 0 0 1 0 3.44m-1.27-3.54a17 17 0 0 1 0 3.64 39 39 0 0 1-4.3 0 17 17 0 0 1 0-3.64 39 39 0 0 1 4.3 0m1.1-1.17q1.45.13 2.69.34a6.5 6.5 0 0 0-3.67-3.44q.65 1.26.98 3.1M8.48 1.5l.01.02q.41.37.84 1.31.38.89.63 2.08a40 40 0 0 0-3.92 0q.25-1.2.63-2.08a4 4 0 0 1 .85-1.32 7 7 0 0 1 .96 0m-2.75.4a6.5 6.5 0 0 0-3.67 3.44 29 29 0 0 1 2.7-.34q.31-1.83.97-3.1M4.58 6.28q-1.66.16-2.95.43a7 7 0 0 0 0 2.58q1.3.27 2.95.43a18 18 0 0 1 0-3.44m.17 4.71q-1.45-.12-2.69-.34a6.5 6.5 0 0 0 3.67 3.44q-.65-1.27-.98-3.1" fill="#666"/></g><defs><clipPath id="a"><path fill="#fff" d="M0 0h16v16H0z"/></clipPath></defs></svg>
+</file>
+
+<file path="public/next.svg">
+<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 394 80"><path fill="#000" d="M262 0h68.5v12.7h-27.2v66.6h-13.6V12.7H262V0ZM149 0v12.7H94v20.4h44.3v12.6H94v21h55v12.6H80.5V0h68.7zm34.3 0h-17.8l63.8 79.4h17.9l-32-39.7 32-39.6h-17.9l-23 28.6-23-28.6zm18.3 56.7-9-11-27.1 33.7h17.8l18.3-22.7z"/><path fill="#000" d="M81 79.3 17 0H0v79.3h13.6V17l50.2 62.3H81Zm252.6-.4c-1 0-1.8-.4-2.5-1s-1.1-1.6-1.1-2.6.3-1.8 1-2.5 1.6-1 2.6-1 1.8.3 2.5 1a3.4 3.4 0 0 1 .6 4.3 3.7 3.7 0 0 1-3 1.8zm23.2-33.5h6v23.3c0 2.1-.4 4-1.3 5.5a9.1 9.1 0 0 1-3.8 3.5c-1.6.8-3.5 1.3-5.7 1.3-2 0-3.7-.4-5.3-1s-2.8-1.8-3.7-3.2c-.9-1.3-1.4-3-1.4-5h6c.1.8.3 1.6.7 2.2s1 1.2 1.6 1.5c.7.4 1.5.5 2.4.5 1 0 1.8-.2 2.4-.6a4 4 0 0 0 1.6-1.8c.3-.8.5-1.8.5-3V45.5zm30.9 9.1a4.4 4.4 0 0 0-2-3.3 7.5 7.5 0 0 0-4.3-1.1c-1.3 0-2.4.2-3.3.5-.9.4-1.6 1-2 1.6a3.5 3.5 0 0 0-.3 4c.3.5.7.9 1.3 1.2l1.8 1 2 .5 3.2.8c1.3.3 2.5.7 3.7 1.2a13 13 0 0 1 3.2 1.8 8.1 8.1 0 0 1 3 6.5c0 2-.5 3.7-1.5 5.1a10 10 0 0 1-4.4 3.5c-1.8.8-4.1 1.2-6.8 1.2-2.6 0-4.9-.4-6.8-1.2-2-.8-3.4-2-4.5-3.5a10 10 0 0 1-1.7-5.6h6a5 5 0 0 0 3.5 4.6c1 .4 2.2.6 3.4.6 1.3 0 2.5-.2 3.5-.6 1-.4 1.8-1 2.4-1.7a4 4 0 0 0 .8-2.4c0-.9-.2-1.6-.7-2.2a11 11 0 0 0-2.1-1.4l-3.2-1-3.8-1c-2.8-.7-5-1.7-6.6-3.2a7.2 7.2 0 0 1-2.4-5.7 8 8 0 0 1 1.7-5 10 10 0 0 1 4.3-3.5c2-.8 4-1.2 6.4-1.2 2.3 0 4.4.4 6.2 1.2 1.8.8 3.2 2 4.3 3.4 1 1.4 1.5 3 1.5 5h-5.8z"/></svg>
+</file>
+
+<file path="public/vercel.svg">
+<svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1155 1000"><path d="m577.3 0 577.4 1000H0z" fill="#fff"/></svg>
+</file>
+
+<file path="public/window.svg">
+<svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path fill-rule="evenodd" clip-rule="evenodd" d="M1.5 2.5h13v10a1 1 0 0 1-1 1h-11a1 1 0 0 1-1-1zM0 1h16v11.5a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 0 12.5zm3.75 4.5a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5M7 4.75a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0m1.75.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5" fill="#666"/></svg>
+</file>
+
+<file path="repomix/repomix-output-WeiKhjan-feng-shui-banana.xml">
+This file is a merged representation of the entire codebase, combined into a single document by Repomix.
+The content has been processed where security check has been disabled.
+
+<file_summary>
+This section contains a summary of this file.
+
+<purpose>
+This file contains a packed representation of the entire repository's contents.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+</purpose>
+
+<file_format>
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Repository files (if enabled)
+5. Multiple file entries, each consisting of:
+  - File path as an attribute
+  - Full contents of the file
+</file_format>
+
+<usage_guidelines>
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+</usage_guidelines>
+
+<notes>
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+- Security check has been disabled - content may contain sensitive information
+- Files are sorted by Git change count (files with more changes are at the bottom)
+</notes>
+
+</file_summary>
+
+<directory_structure>
+public/
+  file.svg
+  globe.svg
+  next.svg
+  vercel.svg
+  window.svg
+src/
+  app/
+    api/
+      bazi/
+        route.ts
+      gemini/
+        analyze/
+          route.ts
+    bazi/
+      result/
+        page.tsx
+      page.tsx
+    outfit/
+      page.tsx
+    favicon.ico
+    globals.css
+    layout.tsx
+    page.tsx
+  lib/
+    bazi.ts
+    elements.ts
+    gemini.ts
+  types/
+    lunar-javascript.d.ts
+.gitignore
+eslint.config.mjs
+next.config.ts
+package.json
+postcss.config.mjs
+README.md
+tsconfig.json
+</directory_structure>
+
+<files>
+This section contains the contents of the repository's files.
+
+<file path="public/file.svg">
+<svg fill="none" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="M14.5 13.5V5.41a1 1 0 0 0-.3-.7L9.8.29A1 1 0 0 0 9.08 0H1.5v13.5A2.5 2.5 0 0 0 4 16h8a2.5 2.5 0 0 0 2.5-2.5m-1.5 0v-7H8v-5H3v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1M9.5 5V2.12L12.38 5zM5.13 5h-.62v1.25h2.12V5zm-.62 3h7.12v1.25H4.5zm.62 3h-.62v1.25h7.12V11z" clip-rule="evenodd" fill="#666" fill-rule="evenodd"/></svg>
+</file>
+
+<file path="public/globe.svg">
+<svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><g clip-path="url(#a)"><path fill-rule="evenodd" clip-rule="evenodd" d="M10.27 14.1a6.5 6.5 0 0 0 3.67-3.45q-1.24.21-2.7.34-.31 1.83-.97 3.1M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m.48-1.52a7 7 0 0 1-.96 0H7.5a4 4 0 0 1-.84-1.32q-.38-.89-.63-2.08a40 40 0 0 0 3.92 0q-.25 1.2-.63 2.08a4 4 0 0 1-.84 1.31zm2.94-4.76q1.66-.15 2.95-.43a7 7 0 0 0 0-2.58q-1.3-.27-2.95-.43a18 18 0 0 1 0 3.44m-1.27-3.54a17 17 0 0 1 0 3.64 39 39 0 0 1-4.3 0 17 17 0 0 1 0-3.64 39 39 0 0 1 4.3 0m1.1-1.17q1.45.13 2.69.34a6.5 6.5 0 0 0-3.67-3.44q.65 1.26.98 3.1M8.48 1.5l.01.02q.41.37.84 1.31.38.89.63 2.08a40 40 0 0 0-3.92 0q.25-1.2.63-2.08a4 4 0 0 1 .85-1.32 7 7 0 0 1 .96 0m-2.75.4a6.5 6.5 0 0 0-3.67 3.44 29 29 0 0 1 2.7-.34q.31-1.83.97-3.1M4.58 6.28q-1.66.16-2.95.43a7 7 0 0 0 0 2.58q1.3.27 2.95.43a18 18 0 0 1 0-3.44m.17 4.71q-1.45-.12-2.69-.34a6.5 6.5 0 0 0 3.67 3.44q-.65-1.27-.98-3.1" fill="#666"/></g><defs><clipPath id="a"><path fill="#fff" d="M0 0h16v16H0z"/></clipPath></defs></svg>
+</file>
+
+<file path="public/next.svg">
+<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 394 80"><path fill="#000" d="M262 0h68.5v12.7h-27.2v66.6h-13.6V12.7H262V0ZM149 0v12.7H94v20.4h44.3v12.6H94v21h55v12.6H80.5V0h68.7zm34.3 0h-17.8l63.8 79.4h17.9l-32-39.7 32-39.6h-17.9l-23 28.6-23-28.6zm18.3 56.7-9-11-27.1 33.7h17.8l18.3-22.7z"/><path fill="#000" d="M81 79.3 17 0H0v79.3h13.6V17l50.2 62.3H81Zm252.6-.4c-1 0-1.8-.4-2.5-1s-1.1-1.6-1.1-2.6.3-1.8 1-2.5 1.6-1 2.6-1 1.8.3 2.5 1a3.4 3.4 0 0 1 .6 4.3 3.7 3.7 0 0 1-3 1.8zm23.2-33.5h6v23.3c0 2.1-.4 4-1.3 5.5a9.1 9.1 0 0 1-3.8 3.5c-1.6.8-3.5 1.3-5.7 1.3-2 0-3.7-.4-5.3-1s-2.8-1.8-3.7-3.2c-.9-1.3-1.4-3-1.4-5h6c.1.8.3 1.6.7 2.2s1 1.2 1.6 1.5c.7.4 1.5.5 2.4.5 1 0 1.8-.2 2.4-.6a4 4 0 0 0 1.6-1.8c.3-.8.5-1.8.5-3V45.5zm30.9 9.1a4.4 4.4 0 0 0-2-3.3 7.5 7.5 0 0 0-4.3-1.1c-1.3 0-2.4.2-3.3.5-.9.4-1.6 1-2 1.6a3.5 3.5 0 0 0-.3 4c.3.5.7.9 1.3 1.2l1.8 1 2 .5 3.2.8c1.3.3 2.5.7 3.7 1.2a13 13 0 0 1 3.2 1.8 8.1 8.1 0 0 1 3 6.5c0 2-.5 3.7-1.5 5.1a10 10 0 0 1-4.4 3.5c-1.8.8-4.1 1.2-6.8 1.2-2.6 0-4.9-.4-6.8-1.2-2-.8-3.4-2-4.5-3.5a10 10 0 0 1-1.7-5.6h6a5 5 0 0 0 3.5 4.6c1 .4 2.2.6 3.4.6 1.3 0 2.5-.2 3.5-.6 1-.4 1.8-1 2.4-1.7a4 4 0 0 0 .8-2.4c0-.9-.2-1.6-.7-2.2a11 11 0 0 0-2.1-1.4l-3.2-1-3.8-1c-2.8-.7-5-1.7-6.6-3.2a7.2 7.2 0 0 1-2.4-5.7 8 8 0 0 1 1.7-5 10 10 0 0 1 4.3-3.5c2-.8 4-1.2 6.4-1.2 2.3 0 4.4.4 6.2 1.2 1.8.8 3.2 2 4.3 3.4 1 1.4 1.5 3 1.5 5h-5.8z"/></svg>
+</file>
+
+<file path="public/vercel.svg">
+<svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1155 1000"><path d="m577.3 0 577.4 1000H0z" fill="#fff"/></svg>
+</file>
+
+<file path="public/window.svg">
+<svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path fill-rule="evenodd" clip-rule="evenodd" d="M1.5 2.5h13v10a1 1 0 0 1-1 1h-11a1 1 0 0 1-1-1zM0 1h16v11.5a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 0 12.5zm3.75 4.5a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5M7 4.75a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0m1.75.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5" fill="#666"/></svg>
+</file>
+
+<file path="src/app/api/bazi/route.ts">
+import { NextRequest, NextResponse } from 'next/server';
+import { calculateBazi } from '@/lib/bazi';
+
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const { gender, birthDate, birthTime } = body;
+
+    if (!birthDate) {
+      return NextResponse.json(
+        { error: 'Birth date is required' },
+        { status: 400 }
+      );
+    }
+
+    const result = calculateBazi(birthDate, birthTime || undefined);
+
+    return NextResponse.json(result);
+  } catch (error) {
+    console.error('BaZi calculation error:', error);
+    return NextResponse.json(
+      { error: 'Failed to calculate BaZi' },
+      { status: 500 }
+    );
+  }
+}
+</file>
+
+<file path="src/app/api/gemini/analyze/route.ts">
+import { NextRequest, NextResponse } from 'next/server';
+import { analyzeOutfit } from '@/lib/gemini';
+
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const { image, luckyColors, unluckyColors } = body;
+
+    if (!image) {
+      return NextResponse.json(
+        { error: 'Image is required' },
+        { status: 400 }
+      );
+    }
+
+    const result = await analyzeOutfit(image, luckyColors || [], unluckyColors || []);
+
+    return NextResponse.json(result);
+  } catch (error) {
+    console.error('Gemini analysis error:', error);
+    return NextResponse.json(
+      { error: 'Failed to analyze outfit' },
+      { status: 500 }
+    );
+  }
+}
+</file>
+
+<file path="src/app/bazi/result/page.tsx">
+'use client';
+
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+
+interface BaziResult {
+  chart: {
+    year: { stem: string; branch: string; stemElement: string; branchElement: string };
+    month: { stem: string; branch: string; stemElement: string; branchElement: string };
+    day: { stem: string; branch: string; stemElement: string; branchElement: string };
+    hour: { stem: string; branch: string; stemElement: string; branchElement: string } | null;
+  };
+  elementBalance: { metal: number; wood: number; water: number; fire: number; earth: number };
+  luckyColors: { color: string; code: string; element: string }[];
+  unluckyColors: { color: string; code: string; element: string }[];
+  dayMaster: string;
+  dayMasterElement: string;
+}
+
+export default function BaziResultPage() {
+  const router = useRouter();
+  const [result, setResult] = useState<BaziResult | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchResult = async () => {
+      const stored = sessionStorage.getItem('baziInput');
+      if (!stored) { router.push('/bazi'); return; }
+      try {
+        const input = JSON.parse(stored);
+        const response = await fetch('/api/bazi', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(input),
+        });
+        if (!response.ok) throw new Error('Failed');
+        const data = await response.json();
+        setResult(data);
+        sessionStorage.setItem('baziResult', JSON.stringify(data));
+      } catch { setError('Failed to analyze. Please try again.'); }
+      finally { setLoading(false); }
+    };
+    fetchResult();
+  }, [router]);
+
+  if (loading) return (<div className='min-h-screen bg-[var(--sepia-50)] flex items-center justify-center'><p>Analyzing...</p></div>);
+  if (error || !result) return (<div className='min-h-screen bg-[var(--sepia-50)] flex items-center justify-center'><p>{error}</p><Link href='/bazi'>Go back</Link></div>);
+
+  return (
+    <div className='min-h-screen bg-[var(--sepia-50)]'>
+      <header className='border-b border-[var(--sepia-200)] bg-white/80 backdrop-blur-sm sticky top-0 z-50'>
+        <div className='max-w-6xl mx-auto px-4 py-4'><Link href='/' className='text-2xl font-serif text-[var(--sepia-800)]'><span className='font-bold'>Feng Shui</span> Banana</Link></div>
+      </header>
+      <main className='max-w-4xl mx-auto px-4 py-12'>
+        <h1 className='text-3xl font-serif text-[var(--sepia-900)] mb-8 text-center'>Your BaZi Chart</h1>
+        <div className='bg-white p-6 rounded-xl shadow-sm border border-[var(--sepia-200)] mb-8'>
+          <h2 className='text-xl font-serif text-[var(--sepia-800)] mb-4 text-center'>Four Pillars</h2>
+          <div className='grid grid-cols-4 gap-4'>
+            {(['year', 'month', 'day', 'hour'] as const).map((pillar) => {
+              const p = result.chart[pillar];
+              if (!p) return <div key={pillar} className='text-center p-4 bg-[var(--sepia-50)] rounded-lg opacity-50'><div className='text-sm'>Hour</div><div className='text-2xl'>--</div></div>;
+              return <div key={pillar} className='text-center p-4 bg-[var(--sepia-50)] rounded-lg'><div className='text-sm capitalize'>{pillar}</div><div className='text-3xl font-serif text-[var(--sepia-800)]'>{p.stem}{p.branch}</div></div>;
+            })}
+          </div>
+        </div>
+        <div className='grid md:grid-cols-2 gap-6 mb-8'>
+          <div className='bg-white p-6 rounded-xl shadow-sm border border-[var(--sepia-200)]'>
+            <h2 className='text-xl font-serif text-[var(--sepia-800)] mb-4'>Lucky Colors</h2>
+            <div className='grid grid-cols-2 gap-3'>{result.luckyColors.slice(0, 6).map((c, i) => <div key={i} className='flex items-center gap-2 p-2 rounded-lg bg-[var(--sepia-50)]'><div className='w-8 h-8 rounded-full' style={{ backgroundColor: c.code }} /><span className='text-sm'>{c.color}</span></div>)}</div>
+          </div>
+          <div className='bg-white p-6 rounded-xl shadow-sm border border-[var(--sepia-200)]'>
+            <h2 className='text-xl font-serif text-[var(--sepia-800)] mb-4'>Colors to Avoid</h2>
+            <div className='grid grid-cols-2 gap-3'>{result.unluckyColors.slice(0, 4).map((c, i) => <div key={i} className='flex items-center gap-2 p-2 rounded-lg bg-[var(--sepia-50)]'><div className='w-8 h-8 rounded-full' style={{ backgroundColor: c.code }} /><span className='text-sm'>{c.color}</span></div>)}</div>
+          </div>
+        </div>
+        <div className='flex gap-4 justify-center'>
+          <Link href='/outfit' className='px-8 py-4 bg-[var(--sepia-700)] text-white rounded-lg'>Check My Outfit</Link>
+          <Link href='/bazi' className='px-8 py-4 border-2 border-[var(--sepia-400)] text-[var(--sepia-700)] rounded-lg'>New Analysis</Link>
+        </div>
+      </main>
+    </div>
+  );
+}
+</file>
+
+<file path="src/app/bazi/page.tsx">
+'use client';
+
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+
+export default function BaziPage() {
+  const router = useRouter();
+  const [formData, setFormData] = useState({
+    gender: 'male',
+    birthDate: '',
+    birthTime: '',
+  });
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    
+    // Store form data in sessionStorage and navigate to results
+    sessionStorage.setItem('baziInput', JSON.stringify(formData));
+    router.push('/bazi/result');
+  };
+
+  return (
+    <div className="min-h-screen bg-[var(--sepia-50)]">
+      {/* Header */}
+      <header className="border-b border-[var(--sepia-200)] bg-white/80 backdrop-blur-sm sticky top-0 z-50">
+        <div className="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
+          <Link href="/" className="text-2xl font-serif text-[var(--sepia-800)]">
+            <span className="font-bold">Feng Shui</span> Banana
+          </Link>
+          <nav className="flex gap-6">
+            <Link href="/bazi" className="text-[var(--sepia-800)] font-medium">
+              BaZi Analysis
+            </Link>
+            <Link href="/outfit" className="text-[var(--sepia-600)] hover:text-[var(--sepia-800)] transition-colors">
+              Outfit Check
+            </Link>
+          </nav>
+        </div>
+      </header>
+
+      <main className="max-w-2xl mx-auto px-4 py-16">
+        <div className="text-center mb-12 animate-fade-in">
+          <div className="text-5xl mb-4">🔮</div>
+          <h1 className="text-3xl font-serif text-[var(--sepia-900)] mb-2">
+            BaZi Analysis · 八字分析
+          </h1>
+          <p className="text-[var(--sepia-600)]">
+            Enter your birth details to discover your elemental destiny
+          </p>
+        </div>
+
+        <form onSubmit={handleSubmit} className="bg-white p-8 rounded-xl shadow-sm border border-[var(--sepia-200)] animate-fade-in" style={{animationDelay: '0.1s'}}>
+          {/* Gender */}
+          <div className="mb-6">
+            <label className="block text-[var(--sepia-700)] font-medium mb-3">
+              Gender · 性别
+            </label>
+            <div className="flex gap-4">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="radio"
+                  name="gender"
+                  value="male"
+                  checked={formData.gender === 'male'}
+                  onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
+                  className="w-4 h-4 accent-[var(--sepia-600)]"
+                />
+                <span className="text-[var(--sepia-700)]">Male · 男</span>
+              </label>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="radio"
+                  name="gender"
+                  value="female"
+                  checked={formData.gender === 'female'}
+                  onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
+                  className="w-4 h-4 accent-[var(--sepia-600)]"
+                />
+                <span className="text-[var(--sepia-700)]">Female · 女</span>
+              </label>
+            </div>
+          </div>
+
+          {/* Birth Date */}
+          <div className="mb-6">
+            <label className="block text-[var(--sepia-700)] font-medium mb-2">
+              Birth Date · 出生日期 <span className="text-[var(--sepia-400)]">*</span>
+            </label>
+            <input
+              type="date"
+              required
+              value={formData.birthDate}
+              onChange={(e) => setFormData({ ...formData, birthDate: e.target.value })}
+              className="w-full px-4 py-3 border border-[var(--sepia-300)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--sepia-400)] bg-white text-[var(--sepia-800)]"
+            />
+          </div>
+
+          {/* Birth Time (Optional) */}
+          <div className="mb-8">
+            <label className="block text-[var(--sepia-700)] font-medium mb-2">
+              Birth Time · 出生时间 <span className="text-[var(--sepia-400)] text-sm">(Optional)</span>
+            </label>
+            <input
+              type="time"
+              value={formData.birthTime}
+              onChange={(e) => setFormData({ ...formData, birthTime: e.target.value })}
+              className="w-full px-4 py-3 border border-[var(--sepia-300)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--sepia-400)] bg-white text-[var(--sepia-800)]"
+            />
+            <p className="text-sm text-[var(--sepia-500)] mt-2">
+              Providing birth time allows for a more accurate Hour Pillar calculation
+            </p>
+          </div>
+
+          {/* Submit Button */}
+          <button
+            type="submit"
+            disabled={loading || !formData.birthDate}
+            className="w-full py-4 bg-[var(--sepia-700)] text-white rounded-lg hover:bg-[var(--sepia-800)] transition-colors font-medium text-lg disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {loading ? (
+              <span className="flex items-center justify-center gap-2">
+                <span className="animate-pulse-gentle">Analyzing...</span>
+              </span>
+            ) : (
+              'Analyze My BaZi · 分析我的八字'
+            )}
+          </button>
+        </form>
+
+        {/* Info Box */}
+        <div className="mt-8 p-6 bg-[var(--sepia-100)] rounded-xl animate-fade-in" style={{animationDelay: '0.2s'}}>
+          <h3 className="font-serif text-lg text-[var(--sepia-800)] mb-2">What is BaZi? · 什么是八字?</h3>
+          <p className="text-[var(--sepia-600)] text-sm leading-relaxed">
+            BaZi (八字), also known as Four Pillars of Destiny, is an ancient Chinese astrological system that uses your birth date and time to create a chart of eight characters. These characters represent the balance of Five Elements (五行) in your life, which can guide decisions including what colors to wear for better fortune.
+          </p>
+        </div>
+      </main>
+    </div>
+  );
+}
+</file>
+
+<file path="src/app/outfit/page.tsx">
+'use client';
+
+import { useEffect, useRef, useState, useCallback } from 'react';
+import Link from 'next/link';
+
+interface AnalysisResult {
+  analysis: string;
+  detectedColors: string[];
+  colorMatch: 'excellent' | 'good' | 'neutral' | 'poor';
+  suggestions: string[];
+}
+
+interface BaziColors {
+  luckyColors: { color: string; code: string; element: string }[];
+  unluckyColors: { color: string; code: string; element: string }[];
+}
+
+export default function OutfitPage() {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [mode, setMode] = useState<'camera' | 'upload'>('camera');
+  const [stream, setStream] = useState<MediaStream | null>(null);
+  const [analyzing, setAnalyzing] = useState(false);
+  const [result, setResult] = useState<AnalysisResult | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [baziColors, setBaziColors] = useState<BaziColors | null>(null);
+  const [uploadedImage, setUploadedImage] = useState<string | null>(null);
+  const [cameraReady, setCameraReady] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+
+  // Load BaZi colors from sessionStorage
+  useEffect(() => {
+    const stored = sessionStorage.getItem('baziResult');
+    if (stored) {
+      const data = JSON.parse(stored);
+      setBaziColors({ luckyColors: data.luckyColors || [], unluckyColors: data.unluckyColors || [] });
+    }
+  }, []);
+
+  // Initialize camera when mode is 'camera'
+  const startCamera = useCallback(async () => {
+    try {
+      setError(null);
+      const mediaStream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } }
+      });
+      setStream(mediaStream);
+      if (videoRef.current) {
+        videoRef.current.srcObject = mediaStream;
+        videoRef.current.onloadedmetadata = () => {
+          setCameraReady(true);
+        };
+      }
+    } catch (err) {
+      console.error('Camera error:', err);
+      setError('Unable to access camera. Please check permissions or try uploading an image instead.');
+      setCameraReady(false);
+    }
+  }, []);
+
+  // Stop camera stream
+  const stopCamera = useCallback(() => {
+    if (stream) {
+      stream.getTracks().forEach(track => track.stop());
+      setStream(null);
+      setCameraReady(false);
+    }
+  }, [stream]);
+
+  // Handle mode changes
+  useEffect(() => {
+    if (mode === 'camera') {
+      startCamera();
+    } else {
+      stopCamera();
+    }
+    return () => {
+      if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+      }
+    };
+  }, [mode]);
+
+  // Capture photo from camera
+  const capturePhoto = useCallback(() => {
+    if (!videoRef.current || !canvasRef.current || !cameraReady) return null;
+
+    const video = videoRef.current;
+    const canvas = canvasRef.current;
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return null;
+
+    ctx.drawImage(video, 0, 0);
+    return canvas.toDataURL('image/jpeg', 0.8);
+  }, [cameraReady]);
+
+  // Handle file upload
+  const handleFileUpload = useCallback((file: File) => {
+    if (!file.type.startsWith('image/')) {
+      setError('Please upload an image file.');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const result = e.target?.result as string;
+      setUploadedImage(result);
+      setError(null);
+      setResult(null);
+    };
+    reader.onerror = () => {
+      setError('Failed to read the image file.');
+    };
+    reader.readAsDataURL(file);
+  }, []);
+
+  // Handle file input change
+  const handleFileInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      handleFileUpload(file);
+    }
+  }, [handleFileUpload]);
+
+  // Handle drag and drop
+  const handleDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  }, []);
+
+  const handleDragLeave = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+  }, []);
+
+  const handleDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file) {
+      handleFileUpload(file);
+    }
+  }, [handleFileUpload]);
+
+  // Analyze outfit
+  const analyzeOutfit = useCallback(async () => {
+    setAnalyzing(true);
+    setError(null);
+    setResult(null);
+
+    try {
+      let imageData: string | null = null;
+
+      if (mode === 'camera') {
+        imageData = capturePhoto();
+      } else {
+        imageData = uploadedImage;
+      }
+
+      if (!imageData) {
+        setError('No image available. Please capture or upload an image first.');
+        setAnalyzing(false);
+        return;
+      }
+
+      const response = await fetch('/api/gemini/analyze', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          image: imageData,
+          luckyColors: baziColors?.luckyColors || [],
+          unluckyColors: baziColors?.unluckyColors || [],
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to analyze outfit');
+      }
+
+      const data = await response.json();
+      setResult(data);
+    } catch (err) {
+      console.error('Analysis error:', err);
+      setError('Failed to analyze outfit. Please try again.');
+    } finally {
+      setAnalyzing(false);
+    }
+  }, [mode, capturePhoto, uploadedImage, baziColors]);
+
+  // Get color match badge styles
+  const getColorMatchStyles = (match: string) => {
+    switch (match) {
+      case 'excellent':
+        return 'bg-green-100 text-green-800 border-green-300';
+      case 'good':
+        return 'bg-blue-100 text-blue-800 border-blue-300';
+      case 'neutral':
+        return 'bg-yellow-100 text-yellow-800 border-yellow-300';
+      case 'poor':
+        return 'bg-red-100 text-red-800 border-red-300';
+      default:
+        return 'bg-gray-100 text-gray-800 border-gray-300';
+    }
+  };
+
+  const getColorMatchLabel = (match: string) => {
+    switch (match) {
+      case 'excellent':
+        return 'Excellent Match';
+      case 'good':
+        return 'Good Match';
+      case 'neutral':
+        return 'Neutral';
+      case 'poor':
+        return 'Poor Match';
+      default:
+        return match;
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-[var(--sepia-50)]">
+      {/* Header */}
+      <header className="border-b border-[var(--sepia-200)] bg-white/80 backdrop-blur-sm sticky top-0 z-50">
+        <div className="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
+          <Link href="/" className="text-2xl font-serif text-[var(--sepia-800)]">
+            <span className="font-bold">Feng Shui</span> Banana
+          </Link>
+          <nav className="flex gap-6">
+            <Link href="/bazi" className="text-[var(--sepia-600)] hover:text-[var(--sepia-800)] transition-colors">
+              BaZi Analysis
+            </Link>
+            <Link href="/outfit" className="text-[var(--sepia-800)] font-medium">
+              Outfit Check
+            </Link>
+          </nav>
+        </div>
+      </header>
+
+      <main className="max-w-4xl mx-auto px-4 py-8">
+        {/* Page Title */}
+        <div className="text-center mb-8 animate-fade-in">
+          <div className="text-5xl mb-4">📸</div>
+          <h1 className="text-3xl font-serif text-[var(--sepia-900)] mb-2">
+            Outfit Analysis
+          </h1>
+          <p className="text-[var(--sepia-600)]">
+            Capture or upload your outfit to see how it aligns with your lucky colors
+          </p>
+        </div>
+
+        {/* BaZi Colors Display */}
+        {baziColors && (baziColors.luckyColors.length > 0 || baziColors.unluckyColors.length > 0) && (
+          <div className="bg-white p-6 rounded-xl shadow-sm border border-[var(--sepia-200)] mb-6 animate-fade-in" style={{animationDelay: '0.1s'}}>
+            <h3 className="font-serif text-lg text-[var(--sepia-800)] mb-4">Your BaZi Colors</h3>
+            <div className="grid grid-cols-2 gap-4">
+              {baziColors.luckyColors.length > 0 && (
+                <div>
+                  <p className="text-sm text-[var(--sepia-600)] mb-2">Lucky Colors</p>
+                  <div className="flex flex-wrap gap-2">
+                    {baziColors.luckyColors.map((c, i) => (
+                      <div
+                        key={i}
+                        className="flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--sepia-100)] border border-[var(--sepia-200)]"
+                      >
+                        <span
+                          className="w-4 h-4 rounded-full border border-[var(--sepia-300)]"
+                          style={{ backgroundColor: c.code }}
+                        />
+                        <span className="text-sm text-[var(--sepia-700)]">{c.color}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {baziColors.unluckyColors.length > 0 && (
+                <div>
+                  <p className="text-sm text-[var(--sepia-600)] mb-2">Unlucky Colors</p>
+                  <div className="flex flex-wrap gap-2">
+                    {baziColors.unluckyColors.map((c, i) => (
+                      <div
+                        key={i}
+                        className="flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--sepia-100)] border border-[var(--sepia-200)]"
+                      >
+                        <span
+                          className="w-4 h-4 rounded-full border border-[var(--sepia-300)]"
+                          style={{ backgroundColor: c.code }}
+                        />
+                        <span className="text-sm text-[var(--sepia-700)]">{c.color}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* No BaZi Warning */}
+        {!baziColors && (
+          <div className="bg-[var(--sepia-100)] p-4 rounded-xl border border-[var(--sepia-300)] mb-6 animate-fade-in" style={{animationDelay: '0.1s'}}>
+            <p className="text-[var(--sepia-700)] text-center">
+              No BaZi analysis found.{' '}
+              <Link href="/bazi" className="text-[var(--sepia-800)] font-medium underline hover:text-[var(--sepia-900)]">
+                Get your BaZi analysis first
+              </Link>{' '}
+              for personalized color recommendations.
+            </p>
+          </div>
+        )}
+
+        {/* Mode Toggle */}
+        <div className="flex justify-center mb-6 animate-fade-in" style={{animationDelay: '0.15s'}}>
+          <div className="inline-flex rounded-lg border border-[var(--sepia-300)] bg-white p-1">
+            <button
+              onClick={() => {
+                setMode('camera');
+                setResult(null);
+                setError(null);
+              }}
+              className={`px-6 py-2 rounded-md text-sm font-medium transition-colors ${
+                mode === 'camera'
+                  ? 'bg-[var(--sepia-700)] text-white'
+                  : 'text-[var(--sepia-600)] hover:text-[var(--sepia-800)]'
+              }`}
+            >
+              Camera
+            </button>
+            <button
+              onClick={() => {
+                setMode('upload');
+                setResult(null);
+                setError(null);
+              }}
+              className={`px-6 py-2 rounded-md text-sm font-medium transition-colors ${
+                mode === 'upload'
+                  ? 'bg-[var(--sepia-700)] text-white'
+                  : 'text-[var(--sepia-600)] hover:text-[var(--sepia-800)]'
+              }`}
+            >
+              Upload
+            </button>
+          </div>
+        </div>
+
+        {/* Camera / Upload Area */}
+        <div className="bg-white p-6 rounded-xl shadow-sm border border-[var(--sepia-200)] mb-6 animate-fade-in" style={{animationDelay: '0.2s'}}>
+          {mode === 'camera' ? (
+            <div className="space-y-4">
+              {/* Video Feed */}
+              <div className="relative aspect-video bg-black rounded-lg overflow-hidden">
+                <video
+                  ref={videoRef}
+                  autoPlay
+                  playsInline
+                  muted
+                  className="w-full h-full object-cover"
+                />
+                {!cameraReady && !error && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-[var(--sepia-900)]/80">
+                    <div className="text-center text-white">
+                      <div className="animate-spin w-8 h-8 border-2 border-white border-t-transparent rounded-full mx-auto mb-2" />
+                      <p>Starting camera...</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+              {/* Hidden canvas for capturing */}
+              <canvas ref={canvasRef} className="hidden" />
+              {/* Capture Button */}
+              <button
+                onClick={analyzeOutfit}
+                disabled={!cameraReady || analyzing}
+                className="w-full py-4 bg-[var(--sepia-700)] text-white rounded-lg hover:bg-[var(--sepia-800)] transition-colors font-medium text-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              >
+                {analyzing ? (
+                  <>
+                    <span className="animate-spin w-5 h-5 border-2 border-white border-t-transparent rounded-full" />
+                    Analyzing...
+                  </>
+                ) : (
+                  'Capture & Analyze'
+                )}
+              </button>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {/* Upload Area */}
+              <div
+                onClick={() => fileInputRef.current?.click()}
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+                className={`relative aspect-video rounded-lg border-2 border-dashed transition-colors cursor-pointer flex items-center justify-center ${
+                  isDragging
+                    ? 'border-[var(--sepia-500)] bg-[var(--sepia-100)]'
+                    : 'border-[var(--sepia-300)] bg-[var(--sepia-50)] hover:border-[var(--sepia-400)] hover:bg-[var(--sepia-100)]'
+                }`}
+              >
+                {uploadedImage ? (
+                  <img
+                    src={uploadedImage}
+                    alt="Uploaded outfit"
+                    className="w-full h-full object-contain rounded-lg"
+                  />
+                ) : (
+                  <div className="text-center p-8">
+                    <div className="text-4xl mb-4">📤</div>
+                    <p className="text-[var(--sepia-700)] font-medium mb-2">
+                      Click or drag to upload
+                    </p>
+                    <p className="text-sm text-[var(--sepia-500)]">
+                      Supports JPG, PNG, GIF
+                    </p>
+                  </div>
+                )}
+              </div>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleFileInputChange}
+                className="hidden"
+              />
+              {/* Analyze Button */}
+              <button
+                onClick={analyzeOutfit}
+                disabled={!uploadedImage || analyzing}
+                className="w-full py-4 bg-[var(--sepia-700)] text-white rounded-lg hover:bg-[var(--sepia-800)] transition-colors font-medium text-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              >
+                {analyzing ? (
+                  <>
+                    <span className="animate-spin w-5 h-5 border-2 border-white border-t-transparent rounded-full" />
+                    Analyzing...
+                  </>
+                ) : (
+                  'Analyze Outfit'
+                )}
+              </button>
+              {uploadedImage && (
+                <button
+                  onClick={() => {
+                    setUploadedImage(null);
+                    setResult(null);
+                    setError(null);
+                  }}
+                  className="w-full py-2 text-[var(--sepia-600)] hover:text-[var(--sepia-800)] transition-colors text-sm"
+                >
+                  Clear image
+                </button>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Error Display */}
+        {error && (
+          <div className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-xl mb-6 animate-fade-in">
+            <div className="flex items-start gap-3">
+              <span className="text-xl">⚠️</span>
+              <p>{error}</p>
+            </div>
+          </div>
+        )}
+
+        {/* Results Card */}
+        {result && (
+          <div className="bg-white p-6 rounded-xl shadow-sm border border-[var(--sepia-200)] animate-fade-in">
+            <h2 className="text-xl font-serif text-[var(--sepia-900)] mb-4">Analysis Results</h2>
+
+            {/* Color Match Badge */}
+            <div className="mb-6">
+              <span
+                className={`inline-block px-4 py-2 rounded-full text-sm font-medium border ${getColorMatchStyles(
+                  result.colorMatch
+                )}`}
+              >
+                {getColorMatchLabel(result.colorMatch)}
+              </span>
+            </div>
+
+            {/* Analysis Text */}
+            <div className="mb-6">
+              <h3 className="text-sm font-medium text-[var(--sepia-600)] mb-2">Analysis</h3>
+              <p className="text-[var(--sepia-800)] leading-relaxed">{result.analysis}</p>
+            </div>
+
+            {/* Detected Colors */}
+            {result.detectedColors && result.detectedColors.length > 0 && (
+              <div className="mb-6">
+                <h3 className="text-sm font-medium text-[var(--sepia-600)] mb-2">Detected Colors</h3>
+                <div className="flex flex-wrap gap-2">
+                  {result.detectedColors.map((color, i) => (
+                    <span
+                      key={i}
+                      className="px-3 py-1 rounded-full bg-[var(--sepia-100)] text-[var(--sepia-700)] text-sm border border-[var(--sepia-200)]"
+                    >
+                      {color}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Suggestions */}
+            {result.suggestions && result.suggestions.length > 0 && (
+              <div>
+                <h3 className="text-sm font-medium text-[var(--sepia-600)] mb-2">Suggestions</h3>
+                <ul className="space-y-2">
+                  {result.suggestions.map((suggestion, i) => (
+                    <li key={i} className="flex items-start gap-2 text-[var(--sepia-700)]">
+                      <span className="text-[var(--sepia-400)]">•</span>
+                      <span>{suggestion}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Tips Section */}
+        <div className="mt-8 p-6 bg-[var(--sepia-100)] rounded-xl animate-fade-in" style={{animationDelay: '0.3s'}}>
+          <h3 className="font-serif text-lg text-[var(--sepia-800)] mb-2">Tips for Best Results</h3>
+          <ul className="text-[var(--sepia-600)] text-sm leading-relaxed space-y-1">
+            <li>• Ensure good lighting when capturing your outfit</li>
+            <li>• Include your full outfit in the frame</li>
+            <li>• Stand against a neutral background for better color detection</li>
+            <li>• Remove filters from uploaded images for accurate analysis</li>
+          </ul>
+        </div>
+      </main>
+    </div>
+  );
+}
+</file>
+
+<file path="src/app/globals.css">
+@import "tailwindcss";
+
+:root {
+  /* Primary Sepia Tones */
+  --sepia-50: #fdf8f3;
+  --sepia-100: #f5ebe0;
+  --sepia-200: #e8d5c4;
+  --sepia-300: #d4b896;
+  --sepia-400: #c4a574;
+  --sepia-500: #a67c52;
+  --sepia-600: #8b6342;
+  --sepia-700: #6f4e34;
+  --sepia-800: #5a3e2b;
+  --sepia-900: #3d2b1f;
+
+  /* Five Element Colors */
+  --element-metal: #C0C0C0;
+  --element-metal-light: #E8E8E8;
+  --element-wood: #2D5A27;
+  --element-wood-light: #90EE90;
+  --element-water: #1E3A5F;
+  --element-water-light: #87CEEB;
+  --element-fire: #B22222;
+  --element-fire-light: #FFB6C1;
+  --element-earth: #8B7355;
+  --element-earth-light: #DEB887;
+
+  /* Theme colors */
+  --background: var(--sepia-50);
+  --foreground: var(--sepia-900);
+  --card-background: #ffffff;
+  --card-border: var(--sepia-200);
+  --muted: var(--sepia-500);
+  --accent: var(--sepia-600);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-sepia-50: var(--sepia-50);
+  --color-sepia-100: var(--sepia-100);
+  --color-sepia-200: var(--sepia-200);
+  --color-sepia-300: var(--sepia-300);
+  --color-sepia-400: var(--sepia-400);
+  --color-sepia-500: var(--sepia-500);
+  --color-sepia-600: var(--sepia-600);
+  --color-sepia-700: var(--sepia-700);
+  --color-sepia-800: var(--sepia-800);
+  --color-sepia-900: var(--sepia-900);
+  --font-sans: var(--font-inter);
+  --font-serif: var(--font-noto-serif-sc);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+  min-height: 100vh;
+}
+
+/* Custom scrollbar with sepia theme */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--sepia-100);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--sepia-400);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--sepia-500);
+}
+
+/* Utility classes for elements */
+.element-metal { color: var(--element-metal); }
+.element-wood { color: var(--element-wood); }
+.element-water { color: var(--element-water); }
+.element-fire { color: var(--element-fire); }
+.element-earth { color: var(--element-earth); }
+
+.bg-element-metal { background-color: var(--element-metal-light); }
+.bg-element-wood { background-color: var(--element-wood-light); }
+.bg-element-water { background-color: var(--element-water-light); }
+.bg-element-fire { background-color: var(--element-fire-light); }
+.bg-element-earth { background-color: var(--element-earth-light); }
+
+/* Animation utilities */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+@keyframes pulse-gentle {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+.animate-pulse-gentle {
+  animation: pulse-gentle 2s ease-in-out infinite;
+}
+</file>
+
+<file path="src/app/layout.tsx">
+import type { Metadata } from "next";
+import { Inter, Noto_Serif_SC } from "next/font/google";
+import "./globals.css";
+
+const inter = Inter({
+  variable: "--font-inter",
+  subsets: ["latin"],
+});
+
+const notoSerifSC = Noto_Serif_SC({
+  variable: "--font-noto-serif-sc",
+  subsets: ["latin"],
+  weight: ["400", "600", "700"],
+});
+
+export const metadata: Metadata = {
+  title: "Feng Shui Banana | 八字分析",
+  description: "AI-powered BaZi analysis with personalized clothing color recommendations based on the Five Elements",
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html lang="en">
+      <body
+        className={`${inter.variable} ${notoSerifSC.variable} antialiased bg-[var(--sepia-50)]`}
+      >
+        {children}
+      </body>
+    </html>
+  );
+}
+</file>
+
+<file path="src/app/page.tsx">
+'use client';
+
+import Link from 'next/link';
+
+export default function Home() {
+  return (
+    <div className="min-h-screen bg-[var(--sepia-50)]">
+      {/* Header */}
+      <header className="border-b border-[var(--sepia-200)] bg-white/80 backdrop-blur-sm sticky top-0 z-50">
+        <div className="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
+          <h1 className="text-2xl font-serif text-[var(--sepia-800)]">
+            <span className="font-bold">Feng Shui</span> Banana
+          </h1>
+          <nav className="flex gap-6">
+            <Link href="/bazi" className="text-[var(--sepia-600)] hover:text-[var(--sepia-800)] transition-colors">
+              BaZi Analysis
+            </Link>
+            <Link href="/outfit" className="text-[var(--sepia-600)] hover:text-[var(--sepia-800)] transition-colors">
+              Outfit Check
+            </Link>
+          </nav>
+        </div>
+      </header>
+
+      {/* Hero Section */}
+      <main className="max-w-6xl mx-auto px-4 py-16">
+        <div className="text-center mb-16 animate-fade-in">
+          <div className="text-6xl mb-6">🍌</div>
+          <h2 className="text-4xl md:text-5xl font-serif text-[var(--sepia-900)] mb-4">
+            八字分析 · BaZi Analysis
+          </h2>
+          <p className="text-xl text-[var(--sepia-600)] max-w-2xl mx-auto mb-8">
+            Discover your lucky colors based on the ancient wisdom of Five Elements.
+            Let AI guide your daily outfit choices.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link
+              href="/bazi"
+              className="px-8 py-4 bg-[var(--sepia-700)] text-white rounded-lg hover:bg-[var(--sepia-800)] transition-colors text-lg font-medium"
+            >
+              Start Analysis · 开始分析
+            </Link>
+            <Link
+              href="/outfit"
+              className="px-8 py-4 border-2 border-[var(--sepia-400)] text-[var(--sepia-700)] rounded-lg hover:bg-[var(--sepia-100)] transition-colors text-lg font-medium"
+            >
+              Check Outfit · 检查穿搭
+            </Link>
+          </div>
+        </div>
+
+        {/* Features */}
+        <div className="grid md:grid-cols-3 gap-8 mb-16">
+          <div className="bg-white p-8 rounded-xl shadow-sm border border-[var(--sepia-200)] animate-fade-in" style={{animationDelay: '0.1s'}}>
+            <div className="text-4xl mb-4">🔮</div>
+            <h3 className="text-xl font-serif text-[var(--sepia-800)] mb-2">
+              BaZi Chart · 八字命盘
+            </h3>
+            <p className="text-[var(--sepia-600)]">
+              Input your birth date to generate your personal Four Pillars chart and discover your elemental balance.
+            </p>
+          </div>
+
+          <div className="bg-white p-8 rounded-xl shadow-sm border border-[var(--sepia-200)] animate-fade-in" style={{animationDelay: '0.2s'}}>
+            <div className="text-4xl mb-4">🎨</div>
+            <h3 className="text-xl font-serif text-[var(--sepia-800)] mb-2">
+              Lucky Colors · 幸运色彩
+            </h3>
+            <p className="text-[var(--sepia-600)]">
+              Get personalized color recommendations based on the Five Elements to enhance your daily fortune.
+            </p>
+          </div>
+
+          <div className="bg-white p-8 rounded-xl shadow-sm border border-[var(--sepia-200)] animate-fade-in" style={{animationDelay: '0.3s'}}>
+            <div className="text-4xl mb-4">📸</div>
+            <h3 className="text-xl font-serif text-[var(--sepia-800)] mb-2">
+              AI Analysis · 智能分析
+            </h3>
+            <p className="text-[var(--sepia-600)]">
+              Upload your outfit or use live camera for instant AI feedback on how well your clothes align with your lucky colors.
+            </p>
+          </div>
+        </div>
+
+        {/* Five Elements */}
+        <div className="bg-white p-8 rounded-xl shadow-sm border border-[var(--sepia-200)] mb-16">
+          <h3 className="text-2xl font-serif text-[var(--sepia-800)] mb-6 text-center">
+            The Five Elements · 五行
+          </h3>
+          <div className="grid grid-cols-5 gap-4">
+            <div className="text-center p-4">
+              <div className="w-16 h-16 mx-auto rounded-full bg-element-metal flex items-center justify-center text-2xl mb-2">🪙</div>
+              <div className="font-serif text-lg">金</div>
+              <div className="text-sm text-[var(--sepia-500)]">Metal</div>
+            </div>
+            <div className="text-center p-4">
+              <div className="w-16 h-16 mx-auto rounded-full bg-element-wood flex items-center justify-center text-2xl mb-2">🌳</div>
+              <div className="font-serif text-lg">木</div>
+              <div className="text-sm text-[var(--sepia-500)]">Wood</div>
+            </div>
+            <div className="text-center p-4">
+              <div className="w-16 h-16 mx-auto rounded-full bg-element-water flex items-center justify-center text-2xl mb-2">💧</div>
+              <div className="font-serif text-lg">水</div>
+              <div className="text-sm text-[var(--sepia-500)]">Water</div>
+            </div>
+            <div className="text-center p-4">
+              <div className="w-16 h-16 mx-auto rounded-full bg-element-fire flex items-center justify-center text-2xl mb-2">🔥</div>
+              <div className="font-serif text-lg">火</div>
+              <div className="text-sm text-[var(--sepia-500)]">Fire</div>
+            </div>
+            <div className="text-center p-4">
+              <div className="w-16 h-16 mx-auto rounded-full bg-element-earth flex items-center justify-center text-2xl mb-2">🌍</div>
+              <div className="font-serif text-lg">土</div>
+              <div className="text-sm text-[var(--sepia-500)]">Earth</div>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      {/* Footer */}
+      <footer className="border-t border-[var(--sepia-200)] bg-white/50 py-8">
+        <div className="max-w-6xl mx-auto px-4 text-center text-[var(--sepia-500)]">
+          <p>Feng Shui Banana · Powered by Gemini AI</p>
+          <p className="text-sm mt-2">Ancient wisdom meets modern technology</p>
+        </div>
+      </footer>
+    </div>
+  );
+}
+</file>
+
+<file path="src/lib/bazi.ts">
+// BaZi calculation logic using lunar-javascript
+import { Solar } from 'lunar-javascript';
+import { Element, ELEMENTS, getLuckyColors, getUnluckyColors } from './elements';
+
+const HEAVENLY_STEMS = ['甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', '壬', '癸'];
+const HEAVENLY_STEMS_PINYIN = ['Jia', 'Yi', 'Bing', 'Ding', 'Wu', 'Ji', 'Geng', 'Xin', 'Ren', 'Gui'];
+const EARTHLY_BRANCHES = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'];
+const EARTHLY_BRANCHES_PINYIN = ['Zi', 'Chou', 'Yin', 'Mao', 'Chen', 'Si', 'Wu', 'Wei', 'Shen', 'You', 'Xu', 'Hai'];
+
+const STEM_ELEMENTS: Record<string, Element> = {
+  '甲': 'wood', '乙': 'wood', '丙': 'fire', '丁': 'fire',
+  '戊': 'earth', '己': 'earth', '庚': 'metal', '辛': 'metal',
+  '壬': 'water', '癸': 'water',
+};
+
+const BRANCH_ELEMENTS: Record<string, Element> = {
+  '子': 'water', '丑': 'earth', '寅': 'wood', '卯': 'wood',
+  '辰': 'earth', '巳': 'fire', '午': 'fire', '未': 'earth',
+  '申': 'metal', '酉': 'metal', '戌': 'earth', '亥': 'water',
+};
+
+export interface Pillar {
+  stem: string;
+  stemPinyin: string;
+  branch: string;
+  branchPinyin: string;
+  stemElement: Element;
+  branchElement: Element;
+}
+
+export interface BaziChart {
+  year: Pillar;
+  month: Pillar;
+  day: Pillar;
+  hour: Pillar | null;
+}
+
+export interface ElementBalance {
+  metal: number;
+  wood: number;
+  water: number;
+  fire: number;
+  earth: number;
+}
+
+export interface BaziAnalysis {
+  chart: BaziChart;
+  elementBalance: ElementBalance;
+  strongestElement: Element;
+  weakestElement: Element;
+  luckyElements: Element[];
+  unluckyElements: Element[];
+  luckyColors: { color: string; code: string; element: Element }[];
+  unluckyColors: { color: string; code: string; element: Element }[];
+  dayMaster: string;
+  dayMasterElement: Element;
+}
+
+function createPillar(stem: string, branch: string): Pillar {
+  const stemIndex = HEAVENLY_STEMS.indexOf(stem);
+  const branchIndex = EARTHLY_BRANCHES.indexOf(branch);
+  return {
+    stem,
+    stemPinyin: HEAVENLY_STEMS_PINYIN[stemIndex] || stem,
+    branch,
+    branchPinyin: EARTHLY_BRANCHES_PINYIN[branchIndex] || branch,
+    stemElement: STEM_ELEMENTS[stem] || 'earth',
+    branchElement: BRANCH_ELEMENTS[branch] || 'earth',
+  };
+}
+
+export function calculateBazi(birthDate: string, birthTime?: string): BaziAnalysis {
+  const [year, month, day] = birthDate.split('-').map(Number);
+  const solar = Solar.fromYmd(year, month, day);
+  const lunar = solar.getLunar();
+  const eightChar = lunar.getEightChar();
+  
+  const yearPillar = createPillar(eightChar.getYearGan(), eightChar.getYearZhi());
+  const monthPillar = createPillar(eightChar.getMonthGan(), eightChar.getMonthZhi());
+  const dayPillar = createPillar(eightChar.getDayGan(), eightChar.getDayZhi());
+  
+  let hourPillar: Pillar | null = null;
+  if (birthTime) {
+    const [hours] = birthTime.split(':').map(Number);
+    const solarTime = Solar.fromYmdHms(year, month, day, hours, 0, 0);
+    const lunarTime = solarTime.getLunar();
+    const eightCharTime = lunarTime.getEightChar();
+    hourPillar = createPillar(eightCharTime.getTimeGan(), eightCharTime.getTimeZhi());
+  }
+  
+  const chart: BaziChart = { year: yearPillar, month: monthPillar, day: dayPillar, hour: hourPillar };
+  const elementBalance: ElementBalance = { metal: 0, wood: 0, water: 0, fire: 0, earth: 0 };
+  
+  const pillars = [yearPillar, monthPillar, dayPillar];
+  if (hourPillar) pillars.push(hourPillar);
+  
+  pillars.forEach(pillar => {
+    elementBalance[pillar.stemElement] += 1;
+    elementBalance[pillar.branchElement] += 1;
+  });
+  
+  const sortedElements = Object.entries(elementBalance).sort((a, b) => b[1] - a[1]) as [Element, number][];
+  const strongestElement = sortedElements[0][0];
+  const weakestElement = sortedElements[sortedElements.length - 1][0];
+  
+  const dayMaster = dayPillar.stem;
+  const dayMasterElement = dayPillar.stemElement;
+  
+  const luckyElements: Element[] = [];
+  const unluckyElements: Element[] = [];
+  
+  const generating: Record<Element, Element> = {
+    wood: 'water', fire: 'wood', earth: 'fire', metal: 'earth', water: 'metal',
+  };
+  const controlling: Record<Element, Element> = {
+    wood: 'metal', fire: 'water', earth: 'wood', metal: 'fire', water: 'earth',
+  };
+  
+  luckyElements.push(generating[dayMasterElement]);
+  luckyElements.push(dayMasterElement);
+  unluckyElements.push(controlling[dayMasterElement]);
+  
+  const luckyColors = getLuckyColors(luckyElements);
+  const unluckyColors = getUnluckyColors(strongestElement);
+  
+  return {
+    chart, elementBalance, strongestElement, weakestElement,
+    luckyElements, unluckyElements, luckyColors, unluckyColors,
+    dayMaster, dayMasterElement,
+  };
+}
+
+export function getDailyRecommendation(userBazi: BaziAnalysis, targetDate?: string) {
+  const date = targetDate || new Date().toISOString().split('T')[0];
+  const [year, month, day] = date.split('-').map(Number);
+  const solar = Solar.fromYmd(year, month, day);
+  const lunar = solar.getLunar();
+  const eightChar = lunar.getEightChar();
+  
+  const dayElement = STEM_ELEMENTS[eightChar.getDayGan()];
+  const isExtraLucky = userBazi.luckyElements.includes(dayElement);
+  
+  let recommendation = '';
+  if (isExtraLucky) {
+    recommendation = 'Today aligns with your chart! Great day for ' + ELEMENTS[dayElement].colors[0] + '.';
+  } else if (userBazi.unluckyElements.includes(dayElement)) {
+    recommendation = 'Balance today with ' + ELEMENTS[userBazi.luckyElements[0]].colors[0] + ' colors.';
+  } else {
+    recommendation = 'Balanced day. Enhance with ' + ELEMENTS[userBazi.luckyElements[0]].colors[0] + '.';
+  }
+  
+  return {
+    date, dayElement, recommendation,
+    luckyColors: userBazi.luckyColors,
+    unluckyColors: userBazi.unluckyColors,
+  };
+}
+</file>
+
+<file path="src/lib/elements.ts">
+// Five Elements (五行) definitions and color mappings
+
+export type Element = 'metal' | 'wood' | 'water' | 'fire' | 'earth';
+
+export interface ElementInfo {
+  name: Element;
+  chinese: string;
+  symbol: string;
+  colors: string[];
+  colorCodes: string[];
+  description: {
+    en: string;
+    zh: string;
+  };
+}
+
+export const ELEMENTS: Record<Element, ElementInfo> = {
+  metal: {
+    name: 'metal',
+    chinese: '金',
+    symbol: '🪙',
+    colors: ['White', 'Gold', 'Silver', 'Gray'],
+    colorCodes: ['#FFFFFF', '#FFD700', '#C0C0C0', '#808080'],
+    description: {
+      en: 'Metal represents strength, determination, and clarity',
+      zh: '金代表坚强、决断和清明',
+    },
+  },
+  wood: {
+    name: 'wood',
+    chinese: '木',
+    symbol: '🌳',
+    colors: ['Green', 'Teal', 'Emerald', 'Forest Green'],
+    colorCodes: ['#228B22', '#008080', '#50C878', '#228B22'],
+    description: {
+      en: 'Wood represents growth, vitality, and creativity',
+      zh: '木代表成长、活力和创造力',
+    },
+  },
+  water: {
+    name: 'water',
+    chinese: '水',
+    symbol: '💧',
+    colors: ['Blue', 'Black', 'Navy', 'Dark Blue'],
+    colorCodes: ['#0000FF', '#000000', '#000080', '#00008B'],
+    description: {
+      en: 'Water represents wisdom, flexibility, and intuition',
+      zh: '水代表智慧、灵活和直觉',
+    },
+  },
+  fire: {
+    name: 'fire',
+    chinese: '火',
+    symbol: '🔥',
+    colors: ['Red', 'Orange', 'Pink', 'Purple'],
+    colorCodes: ['#FF0000', '#FFA500', '#FFC0CB', '#800080'],
+    description: {
+      en: 'Fire represents passion, energy, and transformation',
+      zh: '火代表热情、能量和变化',
+    },
+  },
+  earth: {
+    name: 'earth',
+    chinese: '土',
+    symbol: '🌍',
+    colors: ['Yellow', 'Brown', 'Beige', 'Tan'],
+    colorCodes: ['#FFFF00', '#8B4513', '#F5F5DC', '#D2B48C'],
+    description: {
+      en: 'Earth represents stability, nourishment, and balance',
+      zh: '土代表稳定、滋养和平衡',
+    },
+  },
+};
+
+// Element relationships
+export const ELEMENT_GENERATES: Record<Element, Element> = {
+  wood: 'fire',    // Wood feeds Fire
+  fire: 'earth',   // Fire creates Earth (ash)
+  earth: 'metal',  // Earth bears Metal
+  metal: 'water',  // Metal collects Water
+  water: 'wood',   // Water nourishes Wood
+};
+
+export const ELEMENT_CONTROLS: Record<Element, Element> = {
+  wood: 'earth',   // Wood controls Earth (roots)
+  earth: 'water',  // Earth controls Water (dam)
+  water: 'fire',   // Water controls Fire
+  fire: 'metal',   // Fire controls Metal (melting)
+  metal: 'wood',   // Metal controls Wood (cutting)
+};
+
+// Get lucky element based on weak element
+export function getLuckyElement(weakElement: Element): Element {
+  // The element that generates the weak element is lucky
+  const generators: Record<Element, Element> = {
+    wood: 'water',
+    fire: 'wood',
+    earth: 'fire',
+    metal: 'earth',
+    water: 'metal',
+  };
+  return generators[weakElement];
+}
+
+// Get colors to wear based on lucky elements
+export function getLuckyColors(luckyElements: Element[]): { color: string; code: string; element: Element }[] {
+  const colors: { color: string; code: string; element: Element }[] = [];
+  
+  luckyElements.forEach(element => {
+    const info = ELEMENTS[element];
+    info.colors.forEach((color, index) => {
+      colors.push({
+        color,
+        code: info.colorCodes[index],
+        element,
+      });
+    });
+  });
+  
+  return colors;
+}
+
+// Get colors to avoid based on controlling element
+export function getUnluckyColors(strongElement: Element): { color: string; code: string; element: Element }[] {
+  const controlledBy = Object.entries(ELEMENT_CONTROLS).find(
+    ([, controlled]) => controlled === strongElement
+  )?.[0] as Element | undefined;
+  
+  if (!controlledBy) return [];
+  
+  const info = ELEMENTS[controlledBy];
+  return info.colors.map((color, index) => ({
+    color,
+    code: info.colorCodes[index],
+    element: controlledBy,
+  }));
+}
+</file>
+
+<file path="src/lib/gemini.ts">
+// Gemini API client for outfit analysis
+import { GoogleGenerativeAI } from '@google/generative-ai';
+
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
+
+export interface OutfitAnalysisResult {
+  analysis: string;
+  detectedColors: string[];
+  colorMatch: 'excellent' | 'good' | 'neutral' | 'poor';
+  suggestions: string[];
+  elementAlignment: string;
+}
+
+export async function analyzeOutfit(
+  imageBase64: string,
+  luckyColors: { color: string; code: string }[],
+  unluckyColors: { color: string; code: string }[]
+): Promise<OutfitAnalysisResult> {
+  const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+  
+  const luckyColorNames = luckyColors.map(c => c.color).join(', ');
+  const unluckyColorNames = unluckyColors.map(c => c.color).join(', ');
+  
+  const prompt = `You are a Feng Shui fashion advisor analyzing an outfit photo.
+
+The user's lucky colors based on their BaZi (八字) analysis are: ${luckyColorNames}
+The colors they should avoid are: ${unluckyColorNames}
+
+Please analyze the outfit in the image and provide:
+1. A brief description of the colors visible in the outfit
+2. How well the outfit aligns with their lucky colors (excellent/good/neutral/poor)
+3. Specific suggestions for improvement based on Five Elements (五行) principles
+4. Which element (Metal/Wood/Water/Fire/Earth) the outfit currently represents
+
+Respond in JSON format:
+{
+  "analysis": "Brief friendly analysis of the outfit",
+  "detectedColors": ["color1", "color2"],
+  "colorMatch": "excellent|good|neutral|poor",
+  "suggestions": ["suggestion1", "suggestion2"],
+  "elementAlignment": "Description of element alignment"
+}`;
+
+  try {
+    const result = await model.generateContent([
+      prompt,
+      {
+        inlineData: {
+          mimeType: 'image/jpeg',
+          data: imageBase64,
+        },
+      },
+    ]);
+    
+    const response = await result.response;
+    const text = response.text();
+    
+    // Parse JSON from response
+    const jsonMatch = text.match(/{[sS]*}/);
+    if (jsonMatch) {
+      return JSON.parse(jsonMatch[0]);
+    }
+    
+    // Fallback if JSON parsing fails
+    return {
+      analysis: text,
+      detectedColors: [],
+      colorMatch: 'neutral',
+      suggestions: ['Unable to parse detailed suggestions'],
+      elementAlignment: 'Analysis in progress',
+    };
+  } catch (error) {
+    console.error('Gemini API error:', error);
+    throw new Error('Failed to analyze outfit');
+  }
+}
+
+export async function analyzeOutfitStream(
+  imageBase64: string,
+  luckyColors: { color: string; code: string }[],
+  unluckyColors: { color: string; code: string }[],
+  onChunk: (text: string) => void
+): Promise<void> {
+  const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+  
+  const luckyColorNames = luckyColors.map(c => c.color).join(', ');
+  const unluckyColorNames = unluckyColors.map(c => c.color).join(', ');
+  
+  const prompt = `You are a friendly Feng Shui fashion advisor. Analyze this outfit photo.
+
+Lucky colors for today: ${luckyColorNames}
+Colors to avoid: ${unluckyColorNames}
+
+Give real-time, conversational feedback about:
+1. What colors you see
+2. How well they match the lucky colors
+3. Quick suggestions
+
+Keep it brief and encouraging!`;
+
+  const result = await model.generateContentStream([
+    prompt,
+    {
+      inlineData: {
+        mimeType: 'image/jpeg',
+        data: imageBase64,
+      },
+    },
+  ]);
+  
+  for await (const chunk of result.stream) {
+    const text = chunk.text();
+    if (text) {
+      onChunk(text);
+    }
+  }
+}
+</file>
+
+<file path="src/types/lunar-javascript.d.ts">
+declare module 'lunar-javascript' {
+  export class Solar {
+    static fromYmd(year: number, month: number, day: number): Solar;
+    static fromYmdHms(year: number, month: number, day: number, hour: number, minute: number, second: number): Solar;
+    getLunar(): Lunar;
+  }
+
+  export class Lunar {
+    getEightChar(): EightChar;
+    getYearInChinese(): string;
+    getMonthInChinese(): string;
+    getDayInChinese(): string;
+  }
+
+  export class EightChar {
+    getYear(): string;
+    getYearGan(): string;
+    getYearZhi(): string;
+    getMonth(): string;
+    getMonthGan(): string;
+    getMonthZhi(): string;
+    getDay(): string;
+    getDayGan(): string;
+    getDayZhi(): string;
+    getTime(): string;
+    getTimeGan(): string;
+    getTimeZhi(): string;
+  }
+}
+</file>
+
+<file path=".gitignore">
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# env files (can opt-in for committing if needed)
+.env*
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+</file>
+
+<file path="eslint.config.mjs">
+import { defineConfig, globalIgnores } from "eslint/config";
+import nextVitals from "eslint-config-next/core-web-vitals";
+import nextTs from "eslint-config-next/typescript";
+
+const eslintConfig = defineConfig([
+  ...nextVitals,
+  ...nextTs,
+  // Override default ignores of eslint-config-next.
+  globalIgnores([
+    // Default ignores of eslint-config-next:
+    ".next/**",
+    "out/**",
+    "build/**",
+    "next-env.d.ts",
+  ]),
+]);
+
+export default eslintConfig;
+</file>
+
+<file path="next.config.ts">
+import type { NextConfig } from "next";
+
+const nextConfig: NextConfig = {
+  /* config options here */
+};
+
+export default nextConfig;
+</file>
+
+<file path="package.json">
+{
+  "name": "feng-shui-banana",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "lunar-javascript": "^1.7.7",
+    "next": "16.1.1",
+    "react": "19.2.3",
+    "react-dom": "19.2.3"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.1.1",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  }
+}
+</file>
+
+<file path="postcss.config.mjs">
+const config = {
+  plugins: {
+    "@tailwindcss/postcss": {},
+  },
+};
+
+export default config;
+</file>
+
+<file path="README.md">
+# Feng Shui Banana
+
+A Next.js application for BaZi (八字) analysis that provides personalized clothing color recommendations based on the Five Elements, with AI-powered outfit analysis via Google Gemini API.
+
+## Features
+
+### BaZi Analysis (八字分析)
+- Input your gender and birth date (birth time optional)
+- Calculate your Four Pillars (四柱): Year, Month, Day, and Hour pillars
+- Analyze your Five Elements (五行) balance: Metal, Wood, Water, Fire, Earth
+- Get personalized lucky and unlucky color recommendations
+
+### Outfit Analysis
+- **Photo Upload**: Upload an outfit photo for AI analysis
+- **Live Camera**: Real-time camera feed with instant AI feedback
+- Gemini AI compares your outfit colors against your lucky colors
+- Get personalized suggestions to improve your outfit alignment
+
+## Tech Stack
+
+- **Framework**: Next.js 14 (App Router)
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS (custom sepia theme)
+- **BaZi Logic**: lunar-javascript library
+- **AI**: Google Gemini API
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js 18+
+- Google Gemini API key
+
+### Installation
+
+1. Clone the repository:
+```bash
+git clone <your-repo-url>
+cd feng-shui-banana
+```
+
+2. Install dependencies:
+```bash
+npm install
+```
+
+3. Create a `.env.local` file with your Gemini API key:
+```
+GEMINI_API_KEY=your_api_key_here
+```
+
+4. Run the development server:
+```bash
+npm run dev
+```
+
+5. Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+## Project Structure
+
+```
+src/
+├── app/
+│   ├── page.tsx              # Landing page
+│   ├── bazi/
+│   │   ├── page.tsx          # BaZi input form
+│   │   └── result/page.tsx   # BaZi results display
+│   ├── outfit/page.tsx       # Outfit analysis (camera/upload)
+│   └── api/
+│       ├── bazi/route.ts     # BaZi calculation endpoint
+│       └── gemini/analyze/route.ts  # Gemini analysis endpoint
+├── lib/
+│   ├── bazi.ts               # BaZi calculation logic
+│   └── elements.ts           # Five Elements definitions
+└── types/
+    └── lunar-javascript.d.ts # Type declarations
+```
+
+## Five Elements Color Mapping
+
+| Element | Chinese | Colors |
+|---------|---------|--------|
+| Metal | 金 | White, Gold, Silver, Gray |
+| Wood | 木 | Green, Teal, Emerald |
+| Water | 水 | Blue, Black, Navy |
+| Fire | 火 | Red, Orange, Pink, Purple |
+| Earth | 土 | Yellow, Brown, Beige, Tan |
+
+## Deployment
+
+Deploy on Vercel:
+
+1. Push your code to GitHub
+2. Connect your repository to Vercel
+3. Add `GEMINI_API_KEY` to environment variables
+4. Deploy
+
+## License
+
+MIT
+</file>
+
+<file path="tsconfig.json">
+{
+  "compilerOptions": {
+    "target": "ES2017",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "react-jsx",
+    "incremental": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    ".next/dev/types/**/*.ts",
+    "**/*.mts"
+  ],
+  "exclude": ["node_modules"]
+}
+</file>
+
+</files>
+</file>
+
+<file path="src/app/api/bazi/route.ts">
+import { NextRequest, NextResponse } from 'next/server';
+import { calculateBazi } from '@/lib/bazi';
+
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const { gender, birthDate, birthTime } = body;
+
+    if (!birthDate) {
+      return NextResponse.json(
+        { error: 'Birth date is required' },
+        { status: 400 }
+      );
+    }
+
+    const result = calculateBazi(birthDate, birthTime || undefined);
+
+    return NextResponse.json(result);
+  } catch (error) {
+    console.error('BaZi calculation error:', error);
+    return NextResponse.json(
+      { error: 'Failed to calculate BaZi' },
+      { status: 500 }
+    );
+  }
+}
+</file>
+
+<file path="src/app/api/gemini/analyze/route.ts">
+import { NextRequest, NextResponse } from 'next/server';
+import { analyzeOutfit } from '@/lib/gemini';
+
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const { image, luckyColors, unluckyColors } = body;
+
+    if (!image) {
+      return NextResponse.json(
+        { error: 'Image is required' },
+        { status: 400 }
+      );
+    }
+
+    const result = await analyzeOutfit(image, luckyColors || [], unluckyColors || []);
+
+    return NextResponse.json(result);
+  } catch (error) {
+    console.error('Gemini analysis error:', error);
+    return NextResponse.json(
+      { error: 'Failed to analyze outfit' },
+      { status: 500 }
+    );
+  }
+}
+</file>
+
+<file path="src/app/bazi/result/page.tsx">
+'use client';
+
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import Image from 'next/image';
+
+interface BaziResult {
+  chart: {
+    year: { stem: string; branch: string; stemElement: string; branchElement: string };
+    month: { stem: string; branch: string; stemElement: string; branchElement: string };
+    day: { stem: string; branch: string; stemElement: string; branchElement: string };
+    hour: { stem: string; branch: string; stemElement: string; branchElement: string } | null;
+  };
+  elementBalance: { metal: number; wood: number; water: number; fire: number; earth: number };
+  luckyColors: { color: string; code: string; element: string }[];
+  unluckyColors: { color: string; code: string; element: string }[];
+  dayMaster: string;
+  dayMasterElement: string;
+}
+
+export default function BaziResultPage() {
+  const router = useRouter();
+  const [result, setResult] = useState<BaziResult | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchResult = async () => {
+      const stored = sessionStorage.getItem('baziInput');
+      if (!stored) { router.push('/bazi'); return; }
+      try {
+        const input = JSON.parse(stored);
+        const response = await fetch('/api/bazi', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(input),
+        });
+        if (!response.ok) throw new Error('Failed');
+        const data = await response.json();
+        setResult(data);
+        sessionStorage.setItem('baziResult', JSON.stringify(data));
+      } catch { setError('Failed to analyze. Please try again.'); }
+      finally { setLoading(false); }
+    };
+    fetchResult();
+  }, [router]);
+
+  if (loading) return (<div className='min-h-screen bg-[var(--sepia-50)] flex items-center justify-center'><p>Analyzing...</p></div>);
+  if (error || !result) return (<div className='min-h-screen bg-[var(--sepia-50)] flex items-center justify-center'><p>{error}</p><Link href='/bazi'>Go back</Link></div>);
+
+  return (
+    <div className='min-h-screen bg-[var(--sepia-50)]'>
+      <header className='border-b border-[var(--sepia-200)] bg-white/80 backdrop-blur-sm sticky top-0 z-50'>
+        <div className='max-w-6xl mx-auto px-4 py-4'><Link href='/' className='flex items-center gap-2'><Image src="/logo.png" alt="Feng Shui Banana" width={40} height={40} className="rounded-full" /><span className='text-2xl font-serif text-[var(--sepia-800)]'><span className='font-bold'>Feng Shui</span> Banana</span></Link></div>
+      </header>
+      <main className='max-w-4xl mx-auto px-4 py-12'>
+        <h1 className='text-3xl font-serif text-[var(--sepia-900)] mb-8 text-center'>Your BaZi Chart</h1>
+        <div className='bg-white p-6 rounded-xl shadow-sm border border-[var(--sepia-200)] mb-8'>
+          <h2 className='text-xl font-serif text-[var(--sepia-800)] mb-4 text-center'>Four Pillars</h2>
+          <div className='grid grid-cols-4 gap-4'>
+            {(['year', 'month', 'day', 'hour'] as const).map((pillar) => {
+              const p = result.chart[pillar];
+              if (!p) return <div key={pillar} className='text-center p-4 bg-[var(--sepia-50)] rounded-lg opacity-50'><div className='text-sm'>Hour</div><div className='text-2xl'>--</div></div>;
+              return <div key={pillar} className='text-center p-4 bg-[var(--sepia-50)] rounded-lg'><div className='text-sm capitalize'>{pillar}</div><div className='text-3xl font-serif text-[var(--sepia-800)]'>{p.stem}{p.branch}</div></div>;
+            })}
+          </div>
+        </div>
+        <div className='grid md:grid-cols-2 gap-6 mb-8'>
+          <div className='bg-white p-6 rounded-xl shadow-sm border border-[var(--sepia-200)]'>
+            <h2 className='text-xl font-serif text-[var(--sepia-800)] mb-4'>Lucky Colors</h2>
+            <div className='grid grid-cols-2 gap-3'>{result.luckyColors.slice(0, 6).map((c, i) => <div key={i} className='flex items-center gap-2 p-2 rounded-lg bg-[var(--sepia-50)]'><div className='w-8 h-8 rounded-full' style={{ backgroundColor: c.code }} /><span className='text-sm'>{c.color}</span></div>)}</div>
+          </div>
+          <div className='bg-white p-6 rounded-xl shadow-sm border border-[var(--sepia-200)]'>
+            <h2 className='text-xl font-serif text-[var(--sepia-800)] mb-4'>Colors to Avoid</h2>
+            <div className='grid grid-cols-2 gap-3'>{result.unluckyColors.slice(0, 4).map((c, i) => <div key={i} className='flex items-center gap-2 p-2 rounded-lg bg-[var(--sepia-50)]'><div className='w-8 h-8 rounded-full' style={{ backgroundColor: c.code }} /><span className='text-sm'>{c.color}</span></div>)}</div>
+          </div>
+        </div>
+        <div className='flex gap-4 justify-center'>
+          <Link href='/outfit' className='px-8 py-4 bg-[var(--sepia-700)] text-white rounded-lg'>Check My Outfit</Link>
+          <Link href='/bazi' className='px-8 py-4 border-2 border-[var(--sepia-400)] text-[var(--sepia-700)] rounded-lg'>New Analysis</Link>
+        </div>
+      </main>
+    </div>
+  );
+}
+</file>
+
+<file path="src/app/bazi/page.tsx">
+'use client';
+
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import Image from 'next/image';
+
+export default function BaziPage() {
+  const router = useRouter();
+  const [formData, setFormData] = useState({
+    gender: 'male',
+    birthDate: '',
+    birthTime: '',
+  });
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    
+    // Store form data in sessionStorage and navigate to results
+    sessionStorage.setItem('baziInput', JSON.stringify(formData));
+    router.push('/bazi/result');
+  };
+
+  return (
+    <div className="min-h-screen bg-[var(--sepia-50)]">
+      {/* Header */}
+      <header className="border-b border-[var(--sepia-200)] bg-white/80 backdrop-blur-sm sticky top-0 z-50">
+        <div className="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
+          <Link href="/" className="flex items-center gap-2">
+            <Image src="/logo.png" alt="Feng Shui Banana" width={40} height={40} className="rounded-full" />
+            <span className="text-2xl font-serif text-[var(--sepia-800)]"><span className="font-bold">Feng Shui</span> Banana</span>
+          </Link>
+          <nav className="flex gap-6">
+            <Link href="/bazi" className="text-[var(--sepia-800)] font-medium">
+              BaZi Analysis
+            </Link>
+            <Link href="/outfit" className="text-[var(--sepia-600)] hover:text-[var(--sepia-800)] transition-colors">
+              Outfit Check
+            </Link>
+          </nav>
+        </div>
+      </header>
+
+      <main className="max-w-2xl mx-auto px-4 py-16">
+        <div className="text-center mb-12 animate-fade-in">
+          <div className="text-5xl mb-4">🔮</div>
+          <h1 className="text-3xl font-serif text-[var(--sepia-900)] mb-2">
+            BaZi Analysis · 八字分析
+          </h1>
+          <p className="text-[var(--sepia-600)]">
+            Enter your birth details to discover your elemental destiny
+          </p>
+        </div>
+
+        <form onSubmit={handleSubmit} className="bg-white p-8 rounded-xl shadow-sm border border-[var(--sepia-200)] animate-fade-in" style={{animationDelay: '0.1s'}}>
+          {/* Gender */}
+          <div className="mb-6">
+            <label className="block text-[var(--sepia-700)] font-medium mb-3">
+              Gender · 性别
+            </label>
+            <div className="flex gap-4">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="radio"
+                  name="gender"
+                  value="male"
+                  checked={formData.gender === 'male'}
+                  onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
+                  className="w-4 h-4 accent-[var(--sepia-600)]"
+                />
+                <span className="text-[var(--sepia-700)]">Male · 男</span>
+              </label>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="radio"
+                  name="gender"
+                  value="female"
+                  checked={formData.gender === 'female'}
+                  onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
+                  className="w-4 h-4 accent-[var(--sepia-600)]"
+                />
+                <span className="text-[var(--sepia-700)]">Female · 女</span>
+              </label>
+            </div>
+          </div>
+
+          {/* Birth Date */}
+          <div className="mb-6">
+            <label className="block text-[var(--sepia-700)] font-medium mb-2">
+              Birth Date · 出生日期 <span className="text-[var(--sepia-400)]">*</span>
+            </label>
+            <input
+              type="date"
+              required
+              value={formData.birthDate}
+              onChange={(e) => setFormData({ ...formData, birthDate: e.target.value })}
+              className="w-full px-4 py-3 border border-[var(--sepia-300)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--sepia-400)] bg-white text-[var(--sepia-800)]"
+            />
+          </div>
+
+          {/* Birth Time (Optional) */}
+          <div className="mb-8">
+            <label className="block text-[var(--sepia-700)] font-medium mb-2">
+              Birth Time · 出生时间 <span className="text-[var(--sepia-400)] text-sm">(Optional)</span>
+            </label>
+            <input
+              type="time"
+              value={formData.birthTime}
+              onChange={(e) => setFormData({ ...formData, birthTime: e.target.value })}
+              className="w-full px-4 py-3 border border-[var(--sepia-300)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--sepia-400)] bg-white text-[var(--sepia-800)]"
+            />
+            <p className="text-sm text-[var(--sepia-500)] mt-2">
+              Providing birth time allows for a more accurate Hour Pillar calculation
+            </p>
+          </div>
+
+          {/* Submit Button */}
+          <button
+            type="submit"
+            disabled={loading || !formData.birthDate}
+            className="w-full py-4 bg-[var(--sepia-700)] text-white rounded-lg hover:bg-[var(--sepia-800)] transition-colors font-medium text-lg disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {loading ? (
+              <span className="flex items-center justify-center gap-2">
+                <span className="animate-pulse-gentle">Analyzing...</span>
+              </span>
+            ) : (
+              'Analyze My BaZi · 分析我的八字'
+            )}
+          </button>
+        </form>
+
+        {/* Info Box */}
+        <div className="mt-8 p-6 bg-[var(--sepia-100)] rounded-xl animate-fade-in" style={{animationDelay: '0.2s'}}>
+          <h3 className="font-serif text-lg text-[var(--sepia-800)] mb-2">What is BaZi? · 什么是八字?</h3>
+          <p className="text-[var(--sepia-600)] text-sm leading-relaxed">
+            BaZi (八字), also known as Four Pillars of Destiny, is an ancient Chinese astrological system that uses your birth date and time to create a chart of eight characters. These characters represent the balance of Five Elements (五行) in your life, which can guide decisions including what colors to wear for better fortune.
+          </p>
+        </div>
+      </main>
+    </div>
+  );
+}
+</file>
+
+<file path="src/app/outfit/page.tsx">
+'use client';
+
+import { useEffect, useRef, useState, useCallback } from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
+
+interface AnalysisResult {
+  analysis: string;
+  detectedColors: string[];
+  colorMatch: 'excellent' | 'good' | 'neutral' | 'poor';
+  suggestions: string[];
+}
+
+interface BaziColors {
+  luckyColors: { color: string; code: string; element: string }[];
+  unluckyColors: { color: string; code: string; element: string }[];
+}
+
+export default function OutfitPage() {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [mode, setMode] = useState<'camera' | 'upload'>('camera');
+  const [stream, setStream] = useState<MediaStream | null>(null);
+  const [analyzing, setAnalyzing] = useState(false);
+  const [result, setResult] = useState<AnalysisResult | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [baziColors, setBaziColors] = useState<BaziColors | null>(null);
+  const [uploadedImage, setUploadedImage] = useState<string | null>(null);
+  const [cameraReady, setCameraReady] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+
+  // Live analysis states
+  const [isLiveMode, setIsLiveMode] = useState(false);
+  const [liveResult, setLiveResult] = useState<AnalysisResult | null>(null);
+  const [liveAnalyzing, setLiveAnalyzing] = useState(false);
+  const liveIntervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Load BaZi colors from sessionStorage
+  useEffect(() => {
+    const stored = sessionStorage.getItem('baziResult');
+    if (stored) {
+      const data = JSON.parse(stored);
+      setBaziColors({ luckyColors: data.luckyColors || [], unluckyColors: data.unluckyColors || [] });
+    }
+  }, []);
+
+  // Initialize camera when mode is 'camera'
+  const startCamera = useCallback(async () => {
+    try {
+      setError(null);
+      const mediaStream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } }
+      });
+      setStream(mediaStream);
+      if (videoRef.current) {
+        videoRef.current.srcObject = mediaStream;
+        videoRef.current.onloadedmetadata = () => {
+          setCameraReady(true);
+        };
+      }
+    } catch (err) {
+      console.error('Camera error:', err);
+      setError('Unable to access camera. Please check permissions or try uploading an image instead.');
+      setCameraReady(false);
+    }
+  }, []);
+
+  // Stop camera stream
+  const stopCamera = useCallback(() => {
+    if (stream) {
+      stream.getTracks().forEach(track => track.stop());
+      setStream(null);
+      setCameraReady(false);
+    }
+  }, [stream]);
+
+  // Handle mode changes
+  useEffect(() => {
+    if (mode === 'camera') {
+      startCamera();
+    } else {
+      stopCamera();
+      setIsLiveMode(false);
+    }
+    return () => {
+      if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+      }
+    };
+  }, [mode]);
+
+  // Capture photo from camera
+  const capturePhoto = useCallback(() => {
+    if (!videoRef.current || !canvasRef.current || !cameraReady) return null;
+
+    const video = videoRef.current;
+    const canvas = canvasRef.current;
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return null;
+
+    ctx.drawImage(video, 0, 0);
+    return canvas.toDataURL('image/jpeg', 0.8);
+  }, [cameraReady]);
+
+  // Live analysis function
+  const performLiveAnalysis = useCallback(async () => {
+    if (!cameraReady || liveAnalyzing) return;
+
+    const imageData = capturePhoto();
+    if (!imageData) return;
+
+    setLiveAnalyzing(true);
+    try {
+      const response = await fetch('/api/gemini/analyze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          image: imageData,
+          luckyColors: baziColors?.luckyColors || [],
+          unluckyColors: baziColors?.unluckyColors || [],
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setLiveResult(data);
+      }
+    } catch (err) {
+      console.error('Live analysis error:', err);
+    } finally {
+      setLiveAnalyzing(false);
+    }
+  }, [cameraReady, liveAnalyzing, capturePhoto, baziColors]);
+
+  // Live mode interval effect
+  useEffect(() => {
+    if (isLiveMode && cameraReady && mode === 'camera') {
+      performLiveAnalysis();
+      liveIntervalRef.current = setInterval(() => {
+        performLiveAnalysis();
+      }, 3000);
+    } else {
+      if (liveIntervalRef.current) {
+        clearInterval(liveIntervalRef.current);
+        liveIntervalRef.current = null;
+      }
+    }
+
+    return () => {
+      if (liveIntervalRef.current) {
+        clearInterval(liveIntervalRef.current);
+        liveIntervalRef.current = null;
+      }
+    };
+  }, [isLiveMode, cameraReady, mode, performLiveAnalysis]);
+
+  // Handle file upload
+  const handleFileUpload = useCallback((file: File) => {
+    if (!file.type.startsWith('image/')) {
+      setError('Please upload an image file.');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const result = e.target?.result as string;
+      setUploadedImage(result);
+      setError(null);
+      setResult(null);
+    };
+    reader.onerror = () => {
+      setError('Failed to read the image file.');
+    };
+    reader.readAsDataURL(file);
+  }, []);
+
+  const handleFileInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) handleFileUpload(file);
+  }, [handleFileUpload]);
+
+  const handleDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  }, []);
+
+  const handleDragLeave = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+  }, []);
+
+  const handleDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file) handleFileUpload(file);
+  }, [handleFileUpload]);
+
+  // Analyze outfit (manual)
+  const analyzeOutfit = useCallback(async () => {
+    setAnalyzing(true);
+    setError(null);
+    setResult(null);
+
+    try {
+      let imageData: string | null = null;
+      if (mode === 'camera') {
+        imageData = capturePhoto();
+      } else {
+        imageData = uploadedImage;
+      }
+
+      if (!imageData) {
+        setError('No image available.');
+        setAnalyzing(false);
+        return;
+      }
+
+      const response = await fetch('/api/gemini/analyze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          image: imageData,
+          luckyColors: baziColors?.luckyColors || [],
+          unluckyColors: baziColors?.unluckyColors || [],
+        }),
+      });
+
+      if (!response.ok) throw new Error('Failed to analyze outfit');
+      const data = await response.json();
+      setResult(data);
+    } catch (err) {
+      console.error('Analysis error:', err);
+      setError('Failed to analyze outfit. Please try again.');
+    } finally {
+      setAnalyzing(false);
+    }
+  }, [mode, capturePhoto, uploadedImage, baziColors]);
+
+  const getColorMatchStyles = (match: string) => {
+    switch (match) {
+      case 'excellent': return 'bg-green-500 text-white';
+      case 'good': return 'bg-blue-500 text-white';
+      case 'neutral': return 'bg-yellow-500 text-white';
+      case 'poor': return 'bg-red-500 text-white';
+      default: return 'bg-gray-500 text-white';
+    }
+  };
+
+  const getColorMatchLabel = (match: string) => {
+    switch (match) {
+      case 'excellent': return 'Excellent';
+      case 'good': return 'Good';
+      case 'neutral': return 'Neutral';
+      case 'poor': return 'Poor';
+      default: return match;
+    }
+  };
+
+  const getColorMatchIcon = (match: string) => {
+    switch (match) {
+      case 'excellent': return '✨';
+      case 'good': return '👍';
+      case 'neutral': return '😐';
+      case 'poor': return '⚠️';
+      default: return '❓';
+    }
+  };
+
+  const toggleLiveMode = () => {
+    if (isLiveMode) {
+      setIsLiveMode(false);
+      setLiveResult(null);
+    } else {
+      setIsLiveMode(true);
+      setResult(null);
+    }
+  };
+
+  const currentResult = isLiveMode ? liveResult : result;
+
+  return (
+    <div className="h-screen flex flex-col overflow-hidden bg-[var(--sepia-50)]">
+      {/* Compact Header */}
+      <header className="flex-shrink-0 border-b border-[var(--sepia-200)] bg-white/80 backdrop-blur-sm">
+        <div className="max-w-7xl mx-auto px-4 py-2 flex justify-between items-center">
+          <Link href="/" className="flex items-center gap-2">
+            <Image src="/logo.png" alt="Feng Shui Banana" width={32} height={32} className="rounded-full" />
+            <span className="text-xl font-serif text-[var(--sepia-800)]"><span className="font-bold">Feng Shui</span> Banana</span>
+          </Link>
+          <div className="flex items-center gap-4">
+            {/* Mode Toggle in Header */}
+            <div className="inline-flex rounded-lg border border-[var(--sepia-300)] bg-white p-0.5">
+              <button
+                onClick={() => { setMode('camera'); setResult(null); setError(null); }}
+                className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                  mode === 'camera' ? 'bg-[var(--sepia-700)] text-white' : 'text-[var(--sepia-600)]'
+                }`}
+              >
+                Camera
+              </button>
+              <button
+                onClick={() => { setMode('upload'); setResult(null); setError(null); }}
+                className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                  mode === 'upload' ? 'bg-[var(--sepia-700)] text-white' : 'text-[var(--sepia-600)]'
+                }`}
+              >
+                Upload
+              </button>
+            </div>
+            <nav className="flex gap-4">
+              <Link href="/bazi" className="text-sm text-[var(--sepia-600)] hover:text-[var(--sepia-800)]">BaZi</Link>
+              <Link href="/outfit" className="text-sm text-[var(--sepia-800)] font-medium">Outfit</Link>
+              <Link href="/workspace" className="text-sm text-[var(--sepia-600)] hover:text-[var(--sepia-800)]">Workspace</Link>
+            </nav>
+          </div>
+        </div>
+      </header>
+
+      {/* Main Content - Two Column Layout */}
+      <main className="flex-1 overflow-hidden">
+        <div className="h-full max-w-7xl mx-auto px-4 py-3 flex gap-4">
+          {/* Left Column - Video/Upload */}
+          <div className="flex-1 flex flex-col min-w-0">
+            <div className="flex-1 bg-white rounded-xl shadow-sm border border-[var(--sepia-200)] overflow-hidden flex flex-col">
+              {mode === 'camera' ? (
+                <>
+                  {/* Video Container */}
+                  <div className="flex-1 relative bg-black">
+                    <video ref={videoRef} autoPlay playsInline muted className="absolute inset-0 w-full h-full object-cover" />
+
+                    {!cameraReady && !error && (
+                      <div className="absolute inset-0 flex items-center justify-center bg-[var(--sepia-900)]/80">
+                        <div className="text-center text-white">
+                          <div className="animate-spin w-8 h-8 border-2 border-white border-t-transparent rounded-full mx-auto mb-2" />
+                          <p className="text-sm">Starting camera...</p>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Live Analysis Overlay */}
+                    {isLiveMode && liveResult && (
+                      <div className="absolute inset-0 pointer-events-none">
+                        <div className="absolute top-3 left-3 right-3 flex justify-between items-start">
+                          <div className="flex items-center gap-2 bg-black/60 backdrop-blur-sm px-2 py-1 rounded-full">
+                            <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+                            <span className="text-white text-xs font-medium">LIVE</span>
+                          </div>
+                          <div className={`px-3 py-1 rounded-full font-bold text-sm ${getColorMatchStyles(liveResult.colorMatch)}`}>
+                            {getColorMatchIcon(liveResult.colorMatch)} {getColorMatchLabel(liveResult.colorMatch)}
+                          </div>
+                        </div>
+
+                        <div className="absolute bottom-3 left-3 right-3">
+                          <div className="bg-black/70 backdrop-blur-sm rounded-lg p-3 text-white">
+                            <p className="text-xs leading-relaxed line-clamp-2">{liveResult.analysis}</p>
+                            {liveResult.detectedColors?.length > 0 && (
+                              <div className="flex flex-wrap gap-1 mt-2">
+                                {liveResult.detectedColors.slice(0, 4).map((color, i) => (
+                                  <span key={i} className="px-2 py-0.5 bg-white/20 rounded text-xs">{color}</span>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        {liveAnalyzing && (
+                          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                            <div className="bg-black/60 backdrop-blur-sm px-3 py-1.5 rounded-full flex items-center gap-2">
+                              <span className="animate-spin w-3 h-3 border-2 border-white border-t-transparent rounded-full" />
+                              <span className="text-white text-xs">Analyzing...</span>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+
+                  <canvas ref={canvasRef} className="hidden" />
+
+                  {/* Control Bar */}
+                  <div className="flex-shrink-0 p-3 border-t border-[var(--sepia-200)] bg-[var(--sepia-50)]">
+                    <div className="flex gap-2">
+                      <button
+                        onClick={toggleLiveMode}
+                        disabled={!cameraReady || !baziColors}
+                        className={`flex-1 py-2.5 rounded-lg font-medium text-sm transition-all flex items-center justify-center gap-2 ${
+                          isLiveMode ? 'bg-red-500 hover:bg-red-600 text-white' : 'bg-green-600 hover:bg-green-700 text-white'
+                        } disabled:opacity-50 disabled:cursor-not-allowed`}
+                      >
+                        {isLiveMode ? (
+                          <><span className="w-2 h-2 bg-white rounded-full animate-pulse" /> Stop Live</>
+                        ) : (
+                          <><span>▶</span> Start Live Analysis</>
+                        )}
+                      </button>
+                      {!isLiveMode && (
+                        <button
+                          onClick={analyzeOutfit}
+                          disabled={!cameraReady || analyzing}
+                          className="flex-1 py-2.5 bg-[var(--sepia-700)] text-white rounded-lg hover:bg-[var(--sepia-800)] font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                        >
+                          {analyzing ? (
+                            <><span className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full" /> Analyzing...</>
+                          ) : 'Capture'}
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <>
+                  {/* Upload Area */}
+                  <div
+                    onClick={() => fileInputRef.current?.click()}
+                    onDragOver={handleDragOver}
+                    onDragLeave={handleDragLeave}
+                    onDrop={handleDrop}
+                    className={`flex-1 relative cursor-pointer flex items-center justify-center ${
+                      isDragging ? 'bg-[var(--sepia-100)]' : 'bg-[var(--sepia-50)]'
+                    }`}
+                  >
+                    {uploadedImage ? (
+                      <img src={uploadedImage} alt="Uploaded outfit" className="absolute inset-0 w-full h-full object-contain p-4" />
+                    ) : (
+                      <div className="text-center p-8">
+                        <div className="text-4xl mb-3">📤</div>
+                        <p className="text-[var(--sepia-700)] font-medium mb-1">Click or drag to upload</p>
+                        <p className="text-sm text-[var(--sepia-500)]">JPG, PNG, GIF</p>
+                      </div>
+                    )}
+                  </div>
+                  <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileInputChange} className="hidden" />
+
+                  {/* Upload Control Bar */}
+                  <div className="flex-shrink-0 p-3 border-t border-[var(--sepia-200)] bg-[var(--sepia-50)]">
+                    <div className="flex gap-2">
+                      <button
+                        onClick={analyzeOutfit}
+                        disabled={!uploadedImage || analyzing}
+                        className="flex-1 py-2.5 bg-[var(--sepia-700)] text-white rounded-lg hover:bg-[var(--sepia-800)] font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                      >
+                        {analyzing ? (
+                          <><span className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full" /> Analyzing...</>
+                        ) : 'Analyze Outfit'}
+                      </button>
+                      {uploadedImage && (
+                        <button
+                          onClick={() => { setUploadedImage(null); setResult(null); setError(null); }}
+                          className="px-4 py-2.5 text-[var(--sepia-600)] hover:text-[var(--sepia-800)] border border-[var(--sepia-300)] rounded-lg text-sm"
+                        >
+                          Clear
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+
+          {/* Right Column - BaZi Colors + Analysis */}
+          <div className="w-80 flex-shrink-0 flex flex-col gap-3 overflow-y-auto">
+            {/* BaZi Colors */}
+            {baziColors && (baziColors.luckyColors.length > 0 || baziColors.unluckyColors.length > 0) ? (
+              <div className="bg-white p-4 rounded-xl shadow-sm border border-[var(--sepia-200)]">
+                <h3 className="font-serif text-sm text-[var(--sepia-800)] mb-3">Your BaZi Colors</h3>
+                {baziColors.luckyColors.length > 0 && (
+                  <div className="mb-3">
+                    <p className="text-xs text-[var(--sepia-600)] mb-1.5">Lucky</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {baziColors.luckyColors.map((c, i) => (
+                        <div key={i} className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-green-50 border border-green-200">
+                          <span className="w-3 h-3 rounded-full border" style={{ backgroundColor: c.code }} />
+                          <span className="text-xs text-[var(--sepia-700)]">{c.color}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {baziColors.unluckyColors.length > 0 && (
+                  <div>
+                    <p className="text-xs text-[var(--sepia-600)] mb-1.5">Avoid</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {baziColors.unluckyColors.map((c, i) => (
+                        <div key={i} className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-red-50 border border-red-200">
+                          <span className="w-3 h-3 rounded-full border" style={{ backgroundColor: c.code }} />
+                          <span className="text-xs text-[var(--sepia-700)]">{c.color}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="bg-[var(--sepia-100)] p-4 rounded-xl border border-[var(--sepia-300)]">
+                <p className="text-[var(--sepia-700)] text-sm text-center">
+                  No BaZi analysis found.{' '}
+                  <Link href="/bazi" className="text-[var(--sepia-800)] font-medium underline">Get yours</Link>
+                </p>
+              </div>
+            )}
+
+            {/* Error Display */}
+            {error && (
+              <div className="bg-red-50 border border-red-200 text-red-700 p-3 rounded-xl text-sm">
+                <div className="flex items-start gap-2">
+                  <span>⚠️</span>
+                  <p>{error}</p>
+                </div>
+              </div>
+            )}
+
+            {/* Analysis Results */}
+            {currentResult && (
+              <div className="bg-white p-4 rounded-xl shadow-sm border border-[var(--sepia-200)] flex-1">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="font-serif text-sm text-[var(--sepia-800)]">Analysis</h3>
+                  {isLiveMode && (
+                    <div className="flex items-center gap-1 text-xs text-[var(--sepia-500)]">
+                      <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
+                      Live
+                    </div>
+                  )}
+                </div>
+
+                <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium mb-3 ${getColorMatchStyles(currentResult.colorMatch)}`}>
+                  {getColorMatchIcon(currentResult.colorMatch)} {getColorMatchLabel(currentResult.colorMatch)}
+                </span>
+
+                {!isLiveMode && (
+                  <p className="text-[var(--sepia-700)] text-sm leading-relaxed mb-3">{currentResult.analysis}</p>
+                )}
+
+                {currentResult.detectedColors?.length > 0 && !isLiveMode && (
+                  <div className="mb-3">
+                    <p className="text-xs text-[var(--sepia-600)] mb-1.5">Detected</p>
+                    <div className="flex flex-wrap gap-1">
+                      {currentResult.detectedColors.map((color, i) => (
+                        <span key={i} className="px-2 py-0.5 rounded-full bg-[var(--sepia-100)] text-[var(--sepia-700)] text-xs">{color}</span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {currentResult.suggestions?.length > 0 && (
+                  <div>
+                    <p className="text-xs text-[var(--sepia-600)] mb-1.5">Suggestions</p>
+                    <ul className="space-y-1.5">
+                      {currentResult.suggestions.slice(0, 3).map((suggestion, i) => (
+                        <li key={i} className="flex items-start gap-1.5 text-[var(--sepia-700)] text-xs">
+                          <span className="text-[var(--sepia-400)]">•</span>
+                          <span className="line-clamp-2">{suggestion}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Placeholder when no results */}
+            {!currentResult && !error && (
+              <div className="bg-white p-4 rounded-xl shadow-sm border border-[var(--sepia-200)] flex-1 flex items-center justify-center">
+                <div className="text-center text-[var(--sepia-500)]">
+                  <div className="text-3xl mb-2">📸</div>
+                  <p className="text-sm">Start live analysis or capture to see results</p>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </main>
+    </div>
+  );
+}
+</file>
+
+<file path="src/app/workspace/page.tsx">
+'use client';
+
+import { useEffect, useRef, useState, useCallback } from 'react';
+import Link from 'next/link';
+
+interface AnalysisResult {
+  analysis: string;
+  detectedColors: string[];
+  colorMatch: 'excellent' | 'good' | 'neutral' | 'poor';
+  suggestions: string[];
+}
+
+interface BaziColors {
+  luckyColors: { color: string; code: string; element: string }[];
+  unluckyColors: { color: string; code: string; element: string }[];
+}
+
+export default function WorkspacePage() {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [mode, setMode] = useState<'camera' | 'upload'>('camera');
+  const [stream, setStream] = useState<MediaStream | null>(null);
+  const [analyzing, setAnalyzing] = useState(false);
+  const [result, setResult] = useState<AnalysisResult | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [baziColors, setBaziColors] = useState<BaziColors | null>(null);
+  const [uploadedImage, setUploadedImage] = useState<string | null>(null);
+  const [cameraReady, setCameraReady] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+
+  // Load BaZi colors from sessionStorage
+  useEffect(() => {
+    const stored = sessionStorage.getItem('baziResult');
+    if (stored) {
+      const data = JSON.parse(stored);
+      setBaziColors({ luckyColors: data.luckyColors || [], unluckyColors: data.unluckyColors || [] });
+    }
+  }, []);
+
+  // Initialize camera when mode is 'camera'
+  const startCamera = useCallback(async () => {
+    try {
+      setError(null);
+      const mediaStream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } }
+      });
+      setStream(mediaStream);
+      if (videoRef.current) {
+        videoRef.current.srcObject = mediaStream;
+        videoRef.current.onloadedmetadata = () => {
+          setCameraReady(true);
+        };
+      }
+    } catch (err) {
+      console.error('Camera error:', err);
+      setError('Unable to access camera. Please check permissions or try uploading an image instead.');
+      setCameraReady(false);
+    }
+  }, []);
+
+  // Stop camera stream
+  const stopCamera = useCallback(() => {
+    if (stream) {
+      stream.getTracks().forEach(track => track.stop());
+      setStream(null);
+      setCameraReady(false);
+    }
+  }, [stream]);
+
+  // Handle mode changes
+  useEffect(() => {
+    if (mode === 'camera') {
+      startCamera();
+    } else {
+      stopCamera();
+    }
+    return () => {
+      if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+      }
+    };
+  }, [mode]);
+
+  // Capture photo from camera
+  const capturePhoto = useCallback(() => {
+    if (!videoRef.current || !canvasRef.current || !cameraReady) return null;
+
+    const video = videoRef.current;
+    const canvas = canvasRef.current;
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return null;
+
+    ctx.drawImage(video, 0, 0);
+    return canvas.toDataURL('image/jpeg', 0.8);
+  }, [cameraReady]);
+
+  // Handle file upload
+  const handleFileUpload = useCallback((file: File) => {
+    if (!file.type.startsWith('image/')) {
+      setError('Please upload an image file.');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const result = e.target?.result as string;
+      setUploadedImage(result);
+      setError(null);
+      setResult(null);
+    };
+    reader.onerror = () => {
+      setError('Failed to read the image file.');
+    };
+    reader.readAsDataURL(file);
+  }, []);
+
+  // Handle file input change
+  const handleFileInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      handleFileUpload(file);
+    }
+  }, [handleFileUpload]);
+
+  // Handle drag and drop
+  const handleDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  }, []);
+
+  const handleDragLeave = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+  }, []);
+
+  const handleDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file) {
+      handleFileUpload(file);
+    }
+  }, [handleFileUpload]);
+
+  // Analyze workspace
+  const analyzeWorkspace = useCallback(async () => {
+    setAnalyzing(true);
+    setError(null);
+    setResult(null);
+
+    try {
+      let imageData: string | null = null;
+
+      if (mode === 'camera') {
+        imageData = capturePhoto();
+      } else {
+        imageData = uploadedImage;
+      }
+
+      if (!imageData) {
+        setError('No image available. Please capture or upload an image first.');
+        setAnalyzing(false);
+        return;
+      }
+
+      const response = await fetch('/api/gemini/analyze', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          image: imageData,
+          luckyColors: baziColors?.luckyColors || [],
+          unluckyColors: baziColors?.unluckyColors || [],
+          context: 'workspace', // Add context to differentiate from outfit analysis
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to analyze workspace');
+      }
+
+      const data = await response.json();
+      setResult(data);
+    } catch (err) {
+      console.error('Analysis error:', err);
+      setError('Failed to analyze workspace. Please try again.');
+    } finally {
+      setAnalyzing(false);
+    }
+  }, [mode, capturePhoto, uploadedImage, baziColors]);
+
+  // Get color match badge styles
+  const getColorMatchStyles = (match: string) => {
+    switch (match) {
+      case 'excellent':
+        return 'bg-green-100 text-green-800 border-green-300';
+      case 'good':
+        return 'bg-blue-100 text-blue-800 border-blue-300';
+      case 'neutral':
+        return 'bg-yellow-100 text-yellow-800 border-yellow-300';
+      case 'poor':
+        return 'bg-red-100 text-red-800 border-red-300';
+      default:
+        return 'bg-gray-100 text-gray-800 border-gray-300';
+    }
+  };
+
+  const getColorMatchLabel = (match: string) => {
+    switch (match) {
+      case 'excellent':
+        return 'Excellent Match';
+      case 'good':
+        return 'Good Match';
+      case 'neutral':
+        return 'Neutral';
+      case 'poor':
+        return 'Poor Match';
+      default:
+        return match;
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-[var(--sepia-50)]">
+      {/* Header */}
+      <header className="border-b border-[var(--sepia-200)] bg-white/80 backdrop-blur-sm sticky top-0 z-50">
+        <div className="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
+          <Link href="/" className="text-2xl font-serif text-[var(--sepia-800)]">
+            <span className="font-bold">Feng Shui</span> Banana
+          </Link>
+          <nav className="flex gap-6">
+            <Link href="/bazi" className="text-[var(--sepia-600)] hover:text-[var(--sepia-800)] transition-colors">
+              BaZi Analysis
+            </Link>
+            <Link href="/outfit" className="text-[var(--sepia-600)] hover:text-[var(--sepia-800)] transition-colors">
+              Outfit Check
+            </Link>
+            <Link href="/workspace" className="text-[var(--sepia-800)] font-medium">
+              Workspace Check
+            </Link>
+          </nav>
+        </div>
+      </header>
+
+      <main className="max-w-4xl mx-auto px-4 py-8">
+        {/* Page Title */}
+        <div className="text-center mb-8 animate-fade-in">
+          <div className="text-5xl mb-4">🖥️</div>
+          <h1 className="text-3xl font-serif text-[var(--sepia-900)] mb-2">
+            Workspace Analysis
+          </h1>
+          <p className="text-[var(--sepia-600)]">
+            Capture or upload your workspace to see how it aligns with your lucky colors
+          </p>
+        </div>
+
+        {/* BaZi Colors Display */}
+        {baziColors && (baziColors.luckyColors.length > 0 || baziColors.unluckyColors.length > 0) && (
+          <div className="bg-white p-6 rounded-xl shadow-sm border border-[var(--sepia-200)] mb-6 animate-fade-in" style={{animationDelay: '0.1s'}}>
+            <h3 className="font-serif text-lg text-[var(--sepia-800)] mb-4">Your BaZi Colors</h3>
+            <div className="grid grid-cols-2 gap-4">
+              {baziColors.luckyColors.length > 0 && (
+                <div>
+                  <p className="text-sm text-[var(--sepia-600)] mb-2">Lucky Colors</p>
+                  <div className="flex flex-wrap gap-2">
+                    {baziColors.luckyColors.map((c, i) => (
+                      <div
+                        key={i}
+                        className="flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--sepia-100)] border border-[var(--sepia-200)]"
+                      >
+                        <span
+                          className="w-4 h-4 rounded-full border border-[var(--sepia-300)]"
+                          style={{ backgroundColor: c.code }}
+                        />
+                        <span className="text-sm text-[var(--sepia-700)]">{c.color}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {baziColors.unluckyColors.length > 0 && (
+                <div>
+                  <p className="text-sm text-[var(--sepia-600)] mb-2">Unlucky Colors</p>
+                  <div className="flex flex-wrap gap-2">
+                    {baziColors.unluckyColors.map((c, i) => (
+                      <div
+                        key={i}
+                        className="flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--sepia-100)] border border-[var(--sepia-200)]"
+                      >
+                        <span
+                          className="w-4 h-4 rounded-full border border-[var(--sepia-300)]"
+                          style={{ backgroundColor: c.code }}
+                        />
+                        <span className="text-sm text-[var(--sepia-700)]">{c.color}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* No BaZi Warning */}
+        {!baziColors && (
+          <div className="bg-[var(--sepia-100)] p-4 rounded-xl border border-[var(--sepia-300)] mb-6 animate-fade-in" style={{animationDelay: '0.1s'}}>
+            <p className="text-[var(--sepia-700)] text-center">
+              No BaZi analysis found.{' '}
+              <Link href="/bazi" className="text-[var(--sepia-800)] font-medium underline hover:text-[var(--sepia-900)]">
+                Get your BaZi analysis first
+              </Link>{' '}
+              for personalized color recommendations.
+            </p>
+          </div>
+        )}
+
+        {/* Mode Toggle */}
+        <div className="flex justify-center mb-6 animate-fade-in" style={{animationDelay: '0.15s'}}>
+          <div className="inline-flex rounded-lg border border-[var(--sepia-300)] bg-white p-1">
+            <button
+              onClick={() => {
+                setMode('camera');
+                setResult(null);
+                setError(null);
+              }}
+              className={`px-6 py-2 rounded-md text-sm font-medium transition-colors ${
+                mode === 'camera'
+                  ? 'bg-[var(--sepia-700)] text-white'
+                  : 'text-[var(--sepia-600)] hover:text-[var(--sepia-800)]'
+              }`}
+            >
+              Camera
+            </button>
+            <button
+              onClick={() => {
+                setMode('upload');
+                setResult(null);
+                setError(null);
+              }}
+              className={`px-6 py-2 rounded-md text-sm font-medium transition-colors ${
+                mode === 'upload'
+                  ? 'bg-[var(--sepia-700)] text-white'
+                  : 'text-[var(--sepia-600)] hover:text-[var(--sepia-800)]'
+              }`}
+            >
+              Upload
+            </button>
+          </div>
+        </div>
+
+        {/* Camera / Upload Area */}
+        <div className="bg-white p-6 rounded-xl shadow-sm border border-[var(--sepia-200)] mb-6 animate-fade-in" style={{animationDelay: '0.2s'}}>
+          {mode === 'camera' ? (
+            <div className="space-y-4">
+              {/* Video Feed */}
+              <div className="relative aspect-video bg-black rounded-lg overflow-hidden">
+                <video
+                  ref={videoRef}
+                  autoPlay
+                  playsInline
+                  muted
+                  className="w-full h-full object-cover"
+                />
+                {!cameraReady && !error && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-[var(--sepia-900)]/80">
+                    <div className="text-center text-white">
+                      <div className="animate-spin w-8 h-8 border-2 border-white border-t-transparent rounded-full mx-auto mb-2" />
+                      <p>Starting camera...</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+              {/* Hidden canvas for capturing */}
+              <canvas ref={canvasRef} className="hidden" />
+              {/* Capture Button */}
+              <button
+                onClick={analyzeWorkspace}
+                disabled={!cameraReady || analyzing}
+                className="w-full py-4 bg-[var(--sepia-700)] text-white rounded-lg hover:bg-[var(--sepia-800)] transition-colors font-medium text-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              >
+                {analyzing ? (
+                  <>
+                    <span className="animate-spin w-5 h-5 border-2 border-white border-t-transparent rounded-full" />
+                    Analyzing...
+                  </>
+                ) : (
+                  'Capture & Analyze'
+                )}
+              </button>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {/* Upload Area */}
+              <div
+                onClick={() => fileInputRef.current?.click()}
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+                className={`relative aspect-video rounded-lg border-2 border-dashed transition-colors cursor-pointer flex items-center justify-center ${
+                  isDragging
+                    ? 'border-[var(--sepia-500)] bg-[var(--sepia-100)]'
+                    : 'border-[var(--sepia-300)] bg-[var(--sepia-50)] hover:border-[var(--sepia-400)] hover:bg-[var(--sepia-100)]'
+                }`}
+              >
+                {uploadedImage ? (
+                  <img
+                    src={uploadedImage}
+                    alt="Uploaded workspace"
+                    className="w-full h-full object-contain rounded-lg"
+                  />
+                ) : (
+                  <div className="text-center p-8">
+                    <div className="text-4xl mb-4">📤</div>
+                    <p className="text-[var(--sepia-700)] font-medium mb-2">
+                      Click or drag to upload
+                    </p>
+                    <p className="text-sm text-[var(--sepia-500)]">
+                      Supports JPG, PNG, GIF
+                    </p>
+                  </div>
+                )}
+              </div>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleFileInputChange}
+                className="hidden"
+              />
+              {/* Analyze Button */}
+              <button
+                onClick={analyzeWorkspace}
+                disabled={!uploadedImage || analyzing}
+                className="w-full py-4 bg-[var(--sepia-700)] text-white rounded-lg hover:bg-[var(--sepia-800)] transition-colors font-medium text-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              >
+                {analyzing ? (
+                  <>
+                    <span className="animate-spin w-5 h-5 border-2 border-white border-t-transparent rounded-full" />
+                    Analyzing...
+                  </>
+                ) : (
+                  'Analyze Workspace'
+                )}
+              </button>
+              {uploadedImage && (
+                <button
+                  onClick={() => {
+                    setUploadedImage(null);
+                    setResult(null);
+                    setError(null);
+                  }}
+                  className="w-full py-2 text-[var(--sepia-600)] hover:text-[var(--sepia-800)] transition-colors text-sm"
+                >
+                  Clear image
+                </button>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Error Display */}
+        {error && (
+          <div className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-xl mb-6 animate-fade-in">
+            <div className="flex items-start gap-3">
+              <span className="text-xl">⚠️</span>
+              <p>{error}</p>
+            </div>
+          </div>
+        )}
+
+        {/* Results Card */}
+        {result && (
+          <div className="bg-white p-6 rounded-xl shadow-sm border border-[var(--sepia-200)] animate-fade-in">
+            <h2 className="text-xl font-serif text-[var(--sepia-900)] mb-4">Analysis Results</h2>
+
+            {/* Color Match Badge */}
+            <div className="mb-6">
+              <span
+                className={`inline-block px-4 py-2 rounded-full text-sm font-medium border ${getColorMatchStyles(
+                  result.colorMatch
+                )}`}
+              >
+                {getColorMatchLabel(result.colorMatch)}
+              </span>
+            </div>
+
+            {/* Analysis Text */}
+            <div className="mb-6">
+              <h3 className="text-sm font-medium text-[var(--sepia-600)] mb-2">Analysis</h3>
+              <p className="text-[var(--sepia-800)] leading-relaxed">{result.analysis}</p>
+            </div>
+
+            {/* Detected Colors */}
+            {result.detectedColors && result.detectedColors.length > 0 && (
+              <div className="mb-6">
+                <h3 className="text-sm font-medium text-[var(--sepia-600)] mb-2">Detected Colors</h3>
+                <div className="flex flex-wrap gap-2">
+                  {result.detectedColors.map((color, i) => (
+                    <span
+                      key={i}
+                      className="px-3 py-1 rounded-full bg-[var(--sepia-100)] text-[var(--sepia-700)] text-sm border border-[var(--sepia-200)]"
+                    >
+                      {color}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Suggestions */}
+            {result.suggestions && result.suggestions.length > 0 && (
+              <div>
+                <h3 className="text-sm font-medium text-[var(--sepia-600)] mb-2">Suggestions</h3>
+                <ul className="space-y-2">
+                  {result.suggestions.map((suggestion, i) => (
+                    <li key={i} className="flex items-start gap-2 text-[var(--sepia-700)]">
+                      <span className="text-[var(--sepia-400)]">•</span>
+                      <span>{suggestion}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Tips Section */}
+        <div className="mt-8 p-6 bg-[var(--sepia-100)] rounded-xl animate-fade-in" style={{animationDelay: '0.3s'}}>
+          <h3 className="font-serif text-lg text-[var(--sepia-800)] mb-2">Tips for Best Results</h3>
+          <ul className="text-[var(--sepia-600)] text-sm leading-relaxed space-y-1">
+            <li>• Ensure good lighting when capturing your workspace</li>
+            <li>• Include your desk, chair, and surrounding area in the frame</li>
+            <li>• Capture from a wide angle to show the overall workspace colors</li>
+            <li>• Remove filters from uploaded images for accurate color analysis</li>
+          </ul>
+        </div>
+      </main>
+    </div>
+  );
+}
+</file>
+
+<file path="src/app/globals.css">
+@import "tailwindcss";
+
+:root {
+  /* Primary Sepia Tones */
+  --sepia-50: #fdf8f3;
+  --sepia-100: #f5ebe0;
+  --sepia-200: #e8d5c4;
+  --sepia-300: #d4b896;
+  --sepia-400: #c4a574;
+  --sepia-500: #a67c52;
+  --sepia-600: #8b6342;
+  --sepia-700: #6f4e34;
+  --sepia-800: #5a3e2b;
+  --sepia-900: #3d2b1f;
+
+  /* Five Element Colors */
+  --element-metal: #C0C0C0;
+  --element-metal-light: #E8E8E8;
+  --element-wood: #2D5A27;
+  --element-wood-light: #90EE90;
+  --element-water: #1E3A5F;
+  --element-water-light: #87CEEB;
+  --element-fire: #B22222;
+  --element-fire-light: #FFB6C1;
+  --element-earth: #8B7355;
+  --element-earth-light: #DEB887;
+
+  /* Theme colors */
+  --background: var(--sepia-50);
+  --foreground: var(--sepia-900);
+  --card-background: #ffffff;
+  --card-border: var(--sepia-200);
+  --muted: var(--sepia-500);
+  --accent: var(--sepia-600);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-sepia-50: var(--sepia-50);
+  --color-sepia-100: var(--sepia-100);
+  --color-sepia-200: var(--sepia-200);
+  --color-sepia-300: var(--sepia-300);
+  --color-sepia-400: var(--sepia-400);
+  --color-sepia-500: var(--sepia-500);
+  --color-sepia-600: var(--sepia-600);
+  --color-sepia-700: var(--sepia-700);
+  --color-sepia-800: var(--sepia-800);
+  --color-sepia-900: var(--sepia-900);
+  --font-sans: var(--font-inter);
+  --font-serif: var(--font-noto-serif-sc);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+  min-height: 100vh;
+}
+
+/* Custom scrollbar with sepia theme */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--sepia-100);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--sepia-400);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--sepia-500);
+}
+
+/* Utility classes for elements */
+.element-metal { color: var(--element-metal); }
+.element-wood { color: var(--element-wood); }
+.element-water { color: var(--element-water); }
+.element-fire { color: var(--element-fire); }
+.element-earth { color: var(--element-earth); }
+
+.bg-element-metal { background-color: var(--element-metal-light); }
+.bg-element-wood { background-color: var(--element-wood-light); }
+.bg-element-water { background-color: var(--element-water-light); }
+.bg-element-fire { background-color: var(--element-fire-light); }
+.bg-element-earth { background-color: var(--element-earth-light); }
+
+/* Animation utilities */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+@keyframes pulse-gentle {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+.animate-pulse-gentle {
+  animation: pulse-gentle 2s ease-in-out infinite;
+}
+</file>
+
+<file path="src/app/layout.tsx">
+import type { Metadata } from "next";
+import { Inter, Noto_Serif_SC } from "next/font/google";
+import "./globals.css";
+
+const inter = Inter({
+  variable: "--font-inter",
+  subsets: ["latin"],
+});
+
+const notoSerifSC = Noto_Serif_SC({
+  variable: "--font-noto-serif-sc",
+  subsets: ["latin"],
+  weight: ["400", "600", "700"],
+});
+
+export const metadata: Metadata = {
+  title: "Feng Shui Banana | 八字分析",
+  description: "AI-powered BaZi analysis with personalized clothing color recommendations based on the Five Elements",
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html lang="en">
+      <body
+        className={`${inter.variable} ${notoSerifSC.variable} antialiased bg-[var(--sepia-50)]`}
+      >
+        {children}
+      </body>
+    </html>
+  );
+}
+</file>
+
+<file path="src/app/page.tsx">
+'use client';
+
+import Link from 'next/link';
+import Image from 'next/image';
+
+export default function Home() {
+  return (
+    <div className="min-h-screen bg-[var(--sepia-50)]">
+      {/* Header */}
+      <header className="border-b border-[var(--sepia-200)] bg-white/80 backdrop-blur-sm sticky top-0 z-50">
+        <div className="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
+          <Link href="/" className="flex items-center gap-2">
+            <Image src="/logo.png" alt="Feng Shui Banana" width={40} height={40} className="rounded-full" />
+            <span className="text-2xl font-serif text-[var(--sepia-800)]"><span className="font-bold">Feng Shui</span> Banana</span>
+          </Link>
+          <nav className="flex gap-6">
+            <Link href="/bazi" className="text-[var(--sepia-600)] hover:text-[var(--sepia-800)] transition-colors">
+              BaZi Analysis
+            </Link>
+            <Link href="/outfit" className="text-[var(--sepia-600)] hover:text-[var(--sepia-800)] transition-colors">
+              Outfit Check
+            </Link>
+            <Link href="/workspace" className="text-[var(--sepia-600)] hover:text-[var(--sepia-800)] transition-colors">
+              Workspace Check
+            </Link>
+          </nav>
+        </div>
+      </header>
+
+      {/* Hero Section */}
+      <main className="max-w-6xl mx-auto px-4 py-16">
+        <div className="text-center mb-16 animate-fade-in">
+          <div className="text-6xl mb-6">🍌</div>
+          <h2 className="text-4xl md:text-5xl font-serif text-[var(--sepia-900)] mb-4">
+            八字分析 · BaZi Analysis
+          </h2>
+          <p className="text-xl text-[var(--sepia-600)] max-w-2xl mx-auto mb-8">
+            Discover your lucky colors based on the ancient wisdom of Five Elements.
+            Let AI guide your daily outfit choices.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link
+              href="/bazi"
+              className="px-8 py-4 bg-[var(--sepia-700)] text-white rounded-lg hover:bg-[var(--sepia-800)] transition-colors text-lg font-medium"
+            >
+              Start Analysis · 开始分析
+            </Link>
+            <Link
+              href="/outfit"
+              className="px-8 py-4 border-2 border-[var(--sepia-400)] text-[var(--sepia-700)] rounded-lg hover:bg-[var(--sepia-100)] transition-colors text-lg font-medium"
+            >
+              Check Outfit · 检查穿搭
+            </Link>
+            <Link
+              href="/workspace"
+              className="px-8 py-4 border-2 border-[var(--sepia-400)] text-[var(--sepia-700)] rounded-lg hover:bg-[var(--sepia-100)] transition-colors text-lg font-medium"
+            >
+              Check Workspace · 检查工作间
+            </Link>
+          </div>
+        </div>
+
+        {/* Features */}
+        <div className="grid md:grid-cols-3 gap-8 mb-16">
+          <div className="bg-white p-8 rounded-xl shadow-sm border border-[var(--sepia-200)] animate-fade-in" style={{animationDelay: '0.1s'}}>
+            <div className="text-4xl mb-4">🔮</div>
+            <h3 className="text-xl font-serif text-[var(--sepia-800)] mb-2">
+              BaZi Chart · 八字命盘
+            </h3>
+            <p className="text-[var(--sepia-600)]">
+              Input your birth date to generate your personal Four Pillars chart and discover your elemental balance.
+            </p>
+          </div>
+
+          <div className="bg-white p-8 rounded-xl shadow-sm border border-[var(--sepia-200)] animate-fade-in" style={{animationDelay: '0.2s'}}>
+            <div className="text-4xl mb-4">🎨</div>
+            <h3 className="text-xl font-serif text-[var(--sepia-800)] mb-2">
+              Lucky Colors · 幸运色彩
+            </h3>
+            <p className="text-[var(--sepia-600)]">
+              Get personalized color recommendations based on the Five Elements to enhance your daily fortune.
+            </p>
+          </div>
+
+          <div className="bg-white p-8 rounded-xl shadow-sm border border-[var(--sepia-200)] animate-fade-in" style={{animationDelay: '0.3s'}}>
+            <div className="text-4xl mb-4">📸</div>
+            <h3 className="text-xl font-serif text-[var(--sepia-800)] mb-2">
+              AI Analysis · 智能分析
+            </h3>
+            <p className="text-[var(--sepia-600)]">
+              Upload your outfit or use live camera for instant AI feedback on how well your clothes align with your lucky colors.
+            </p>
+          </div>
+        </div>
+
+        {/* Five Elements */}
+        <div className="bg-white p-8 rounded-xl shadow-sm border border-[var(--sepia-200)] mb-16">
+          <h3 className="text-2xl font-serif text-[var(--sepia-800)] mb-6 text-center">
+            The Five Elements · 五行
+          </h3>
+          <div className="grid grid-cols-5 gap-4">
+            <div className="text-center p-4">
+              <div className="w-16 h-16 mx-auto rounded-full bg-element-metal flex items-center justify-center text-2xl mb-2">🪙</div>
+              <div className="font-serif text-lg">金</div>
+              <div className="text-sm text-[var(--sepia-500)]">Metal</div>
+            </div>
+            <div className="text-center p-4">
+              <div className="w-16 h-16 mx-auto rounded-full bg-element-wood flex items-center justify-center text-2xl mb-2">🌳</div>
+              <div className="font-serif text-lg">木</div>
+              <div className="text-sm text-[var(--sepia-500)]">Wood</div>
+            </div>
+            <div className="text-center p-4">
+              <div className="w-16 h-16 mx-auto rounded-full bg-element-water flex items-center justify-center text-2xl mb-2">💧</div>
+              <div className="font-serif text-lg">水</div>
+              <div className="text-sm text-[var(--sepia-500)]">Water</div>
+            </div>
+            <div className="text-center p-4">
+              <div className="w-16 h-16 mx-auto rounded-full bg-element-fire flex items-center justify-center text-2xl mb-2">🔥</div>
+              <div className="font-serif text-lg">火</div>
+              <div className="text-sm text-[var(--sepia-500)]">Fire</div>
+            </div>
+            <div className="text-center p-4">
+              <div className="w-16 h-16 mx-auto rounded-full bg-element-earth flex items-center justify-center text-2xl mb-2">🌍</div>
+              <div className="font-serif text-lg">土</div>
+              <div className="text-sm text-[var(--sepia-500)]">Earth</div>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      {/* Footer */}
+      <footer className="border-t border-[var(--sepia-200)] bg-white/50 py-8">
+        <div className="max-w-6xl mx-auto px-4 text-center text-[var(--sepia-500)]">
+          <p>Feng Shui Banana · Powered by Gemini AI</p>
+          <p className="text-sm mt-2">Ancient wisdom meets modern technology</p>
+        </div>
+      </footer>
+    </div>
+  );
+}
+</file>
+
+<file path="src/lib/bazi.ts">
+// BaZi calculation logic using lunar-javascript
+// Reference: https://github.com/china-testing/bazi/blob/master/bazi.py
+import { Solar } from 'lunar-javascript';
+import { Element, ELEMENTS, getLuckyColors } from './elements';
+
+const HEAVENLY_STEMS = ['甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', '壬', '癸'];
+const HEAVENLY_STEMS_PINYIN = ['Jia', 'Yi', 'Bing', 'Ding', 'Wu', 'Ji', 'Geng', 'Xin', 'Ren', 'Gui'];
+const EARTHLY_BRANCHES = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'];
+const EARTHLY_BRANCHES_PINYIN = ['Zi', 'Chou', 'Yin', 'Mao', 'Chen', 'Si', 'Wu', 'Wei', 'Shen', 'You', 'Xu', 'Hai'];
+
+const STEM_ELEMENTS: Record<string, Element> = {
+  '甲': 'wood', '乙': 'wood', '丙': 'fire', '丁': 'fire',
+  '戊': 'earth', '己': 'earth', '庚': 'metal', '辛': 'metal',
+  '壬': 'water', '癸': 'water',
+};
+
+const BRANCH_ELEMENTS: Record<string, Element> = {
+  '子': 'water', '丑': 'earth', '寅': 'wood', '卯': 'wood',
+  '辰': 'earth', '巳': 'fire', '午': 'fire', '未': 'earth',
+  '申': 'metal', '酉': 'metal', '戌': 'earth', '亥': 'water',
+};
+
+// Hidden stems in each Earthly Branch (藏干) with weights
+const BRANCH_HIDDEN_STEMS: Record<string, Record<string, number>> = {
+  '子': { '癸': 10 },
+  '丑': { '己': 6, '癸': 3, '辛': 1 },
+  '寅': { '甲': 6, '丙': 3, '戊': 1 },
+  '卯': { '乙': 10 },
+  '辰': { '戊': 6, '乙': 3, '癸': 1 },
+  '巳': { '丙': 6, '庚': 3, '戊': 1 },
+  '午': { '丁': 6, '己': 4 },
+  '未': { '己': 6, '丁': 3, '乙': 1 },
+  '申': { '庚': 6, '壬': 3, '戊': 1 },
+  '酉': { '辛': 10 },
+  '戌': { '戊': 6, '辛': 3, '丁': 1 },
+  '亥': { '壬': 6, '甲': 4 },
+};
+
+// Season strength for each element (month branch)
+const SEASON_STRENGTH: Record<string, Element> = {
+  '寅': 'wood', '卯': 'wood', '辰': 'wood',  // Spring - Wood strong
+  '巳': 'fire', '午': 'fire', '未': 'fire',  // Summer - Fire strong
+  '申': 'metal', '酉': 'metal', '戌': 'metal', // Autumn - Metal strong
+  '亥': 'water', '子': 'water', '丑': 'water', // Winter - Water strong
+};
+
+// Five Element cycles
+const GENERATES: Record<Element, Element> = {
+  wood: 'fire', fire: 'earth', earth: 'metal', metal: 'water', water: 'wood',
+};
+const GENERATED_BY: Record<Element, Element> = {
+  wood: 'water', fire: 'wood', earth: 'fire', metal: 'earth', water: 'metal',
+};
+const CONTROLS: Record<Element, Element> = {
+  wood: 'earth', fire: 'metal', earth: 'water', metal: 'wood', water: 'fire',
+};
+const CONTROLLED_BY: Record<Element, Element> = {
+  wood: 'metal', fire: 'water', earth: 'wood', metal: 'fire', water: 'earth',
+};
+
+export interface Pillar {
+  stem: string;
+  stemPinyin: string;
+  branch: string;
+  branchPinyin: string;
+  stemElement: Element;
+  branchElement: Element;
+}
+
+export interface BaziChart {
+  year: Pillar;
+  month: Pillar;
+  day: Pillar;
+  hour: Pillar | null;
+}
+
+export interface ElementBalance {
+  metal: number;
+  wood: number;
+  water: number;
+  fire: number;
+  earth: number;
+}
+
+export interface BaziAnalysis {
+  chart: BaziChart;
+  elementBalance: ElementBalance;
+  strongestElement: Element;
+  weakestElement: Element;
+  dayMasterStrength: 'strong' | 'weak';
+  luckyElements: Element[];
+  unluckyElements: Element[];
+  luckyColors: { color: string; code: string; element: Element }[];
+  unluckyColors: { color: string; code: string; element: Element }[];
+  dayMaster: string;
+  dayMasterElement: Element;
+}
+
+function createPillar(stem: string, branch: string): Pillar {
+  const stemIndex = HEAVENLY_STEMS.indexOf(stem);
+  const branchIndex = EARTHLY_BRANCHES.indexOf(branch);
+  return {
+    stem,
+    stemPinyin: HEAVENLY_STEMS_PINYIN[stemIndex] || stem,
+    branch,
+    branchPinyin: EARTHLY_BRANCHES_PINYIN[branchIndex] || branch,
+    stemElement: STEM_ELEMENTS[stem] || 'earth',
+    branchElement: BRANCH_ELEMENTS[branch] || 'earth',
+  };
+}
+
+// Calculate element scores using hidden stems (藏干)
+function calculateElementScores(chart: BaziChart): ElementBalance {
+  const scores: ElementBalance = { metal: 0, wood: 0, water: 0, fire: 0, earth: 0 };
+
+  // Heavenly stems contribute 5 points each
+  const stems = [chart.year.stem, chart.month.stem, chart.day.stem];
+  if (chart.hour) stems.push(chart.hour.stem);
+
+  stems.forEach(stem => {
+    const element = STEM_ELEMENTS[stem];
+    if (element) scores[element] += 5;
+  });
+
+  // Earthly branches contribute through hidden stems
+  const branches = [chart.year.branch, chart.month.branch, chart.day.branch];
+  if (chart.hour) branches.push(chart.hour.branch);
+
+  branches.forEach(branch => {
+    const hiddenStems = BRANCH_HIDDEN_STEMS[branch];
+    if (hiddenStems) {
+      Object.entries(hiddenStems).forEach(([stem, weight]) => {
+        const element = STEM_ELEMENTS[stem];
+        if (element) scores[element] += weight;
+      });
+    }
+  });
+
+  return scores;
+}
+
+// Determine Day Master strength (强弱判断)
+function isDayMasterStrong(
+  dayMasterElement: Element,
+  monthBranch: string,
+  elementScores: ElementBalance
+): boolean {
+  let supportScore = 0;
+  let drainScore = 0;
+
+  // 1. Check seasonal strength (月令)
+  const seasonElement = SEASON_STRENGTH[monthBranch];
+  if (seasonElement === dayMasterElement) {
+    supportScore += 30; // Day Master is in season (得令)
+  } else if (seasonElement === GENERATED_BY[dayMasterElement]) {
+    supportScore += 20; // Resource element is in season
+  } else if (seasonElement === CONTROLLED_BY[dayMasterElement]) {
+    drainScore += 20; // Controller is in season
+  }
+
+  // 2. Calculate support from same element (比劫) and resource element (印)
+  const sameElement = dayMasterElement;
+  const resourceElement = GENERATED_BY[dayMasterElement];
+  supportScore += elementScores[sameElement] * 2;
+  supportScore += elementScores[resourceElement] * 1.5;
+
+  // 3. Calculate drain from wealth (財), officer (官), and output (食伤)
+  const wealthElement = CONTROLS[dayMasterElement]; // Element Day Master controls
+  const officerElement = CONTROLLED_BY[dayMasterElement]; // Element that controls Day Master
+  const outputElement = GENERATES[dayMasterElement]; // Element Day Master generates
+
+  drainScore += elementScores[wealthElement] * 1.5;
+  drainScore += elementScores[officerElement] * 2;
+  drainScore += elementScores[outputElement] * 1;
+
+  return supportScore >= drainScore;
+}
+
+export function calculateBazi(birthDate: string, birthTime?: string): BaziAnalysis {
+  const [year, month, day] = birthDate.split('-').map(Number);
+  const solar = Solar.fromYmd(year, month, day);
+  const lunar = solar.getLunar();
+  const eightChar = lunar.getEightChar();
+
+  const yearPillar = createPillar(eightChar.getYearGan(), eightChar.getYearZhi());
+  const monthPillar = createPillar(eightChar.getMonthGan(), eightChar.getMonthZhi());
+  const dayPillar = createPillar(eightChar.getDayGan(), eightChar.getDayZhi());
+
+  let hourPillar: Pillar | null = null;
+  if (birthTime) {
+    const [hours] = birthTime.split(':').map(Number);
+    const solarTime = Solar.fromYmdHms(year, month, day, hours, 0, 0);
+    const lunarTime = solarTime.getLunar();
+    const eightCharTime = lunarTime.getEightChar();
+    hourPillar = createPillar(eightCharTime.getTimeGan(), eightCharTime.getTimeZhi());
+  }
+
+  const chart: BaziChart = { year: yearPillar, month: monthPillar, day: dayPillar, hour: hourPillar };
+
+  // Calculate element scores using hidden stems
+  const elementBalance = calculateElementScores(chart);
+
+  const sortedElements = Object.entries(elementBalance).sort((a, b) => b[1] - a[1]) as [Element, number][];
+  const strongestElement = sortedElements[0][0];
+  const weakestElement = sortedElements[sortedElements.length - 1][0];
+
+  const dayMaster = dayPillar.stem;
+  const dayMasterElement = dayPillar.stemElement;
+
+  // Determine Day Master strength
+  const isStrong = isDayMasterStrong(dayMasterElement, monthPillar.branch, elementBalance);
+  const dayMasterStrength: 'strong' | 'weak' = isStrong ? 'strong' : 'weak';
+
+  const luckyElements: Element[] = [];
+  const unluckyElements: Element[] = [];
+
+  if (isStrong) {
+    // Strong Day Master needs to be drained/controlled
+    // Lucky: Wealth (財), Officer (官), Output (食伤)
+    luckyElements.push(CONTROLS[dayMasterElement]);      // Wealth - element Day Master controls
+    luckyElements.push(CONTROLLED_BY[dayMasterElement]); // Officer - element that controls Day Master
+    luckyElements.push(GENERATES[dayMasterElement]);     // Output - element Day Master generates
+    // Unlucky: Resource (印), Siblings (比劫)
+    unluckyElements.push(GENERATED_BY[dayMasterElement]); // Resource
+    unluckyElements.push(dayMasterElement);               // Same element
+  } else {
+    // Weak Day Master needs support
+    // Lucky: Resource (印), Siblings (比劫)
+    luckyElements.push(GENERATED_BY[dayMasterElement]); // Resource - element that generates Day Master
+    luckyElements.push(dayMasterElement);               // Same element - siblings
+    // Unlucky: Wealth (財), Officer (官)
+    unluckyElements.push(CONTROLS[dayMasterElement]);      // Wealth
+    unluckyElements.push(CONTROLLED_BY[dayMasterElement]); // Officer
+  }
+
+  // Get colors for lucky and unlucky elements
+  const luckyColors = getLuckyColors(luckyElements);
+  const unluckyColors = getLuckyColors(unluckyElements);
+
+  return {
+    chart, elementBalance, strongestElement, weakestElement,
+    dayMasterStrength, luckyElements, unluckyElements,
+    luckyColors, unluckyColors, dayMaster, dayMasterElement,
+  };
+}
+
+export function getDailyRecommendation(userBazi: BaziAnalysis, targetDate?: string) {
+  const date = targetDate || new Date().toISOString().split('T')[0];
+  const [year, month, day] = date.split('-').map(Number);
+  const solar = Solar.fromYmd(year, month, day);
+  const lunar = solar.getLunar();
+  const eightChar = lunar.getEightChar();
+  
+  const dayElement = STEM_ELEMENTS[eightChar.getDayGan()];
+  const isExtraLucky = userBazi.luckyElements.includes(dayElement);
+  
+  let recommendation = '';
+  if (isExtraLucky) {
+    recommendation = 'Today aligns with your chart! Great day for ' + ELEMENTS[dayElement].colors[0] + '.';
+  } else if (userBazi.unluckyElements.includes(dayElement)) {
+    recommendation = 'Balance today with ' + ELEMENTS[userBazi.luckyElements[0]].colors[0] + ' colors.';
+  } else {
+    recommendation = 'Balanced day. Enhance with ' + ELEMENTS[userBazi.luckyElements[0]].colors[0] + '.';
+  }
+  
+  return {
+    date, dayElement, recommendation,
+    luckyColors: userBazi.luckyColors,
+    unluckyColors: userBazi.unluckyColors,
+  };
+}
+</file>
+
+<file path="src/lib/elements.ts">
+// Five Elements (五行) definitions and color mappings
+
+export type Element = 'metal' | 'wood' | 'water' | 'fire' | 'earth';
+
+export interface ElementInfo {
+  name: Element;
+  chinese: string;
+  symbol: string;
+  colors: string[];
+  colorCodes: string[];
+  description: {
+    en: string;
+    zh: string;
+  };
+}
+
+export const ELEMENTS: Record<Element, ElementInfo> = {
+  metal: {
+    name: 'metal',
+    chinese: '金',
+    symbol: '🪙',
+    colors: ['White', 'Gold', 'Silver', 'Gray'],
+    colorCodes: ['#FFFFFF', '#FFD700', '#C0C0C0', '#808080'],
+    description: {
+      en: 'Metal represents strength, determination, and clarity',
+      zh: '金代表坚强、决断和清明',
+    },
+  },
+  wood: {
+    name: 'wood',
+    chinese: '木',
+    symbol: '🌳',
+    colors: ['Green', 'Teal', 'Emerald', 'Forest Green'],
+    colorCodes: ['#228B22', '#008080', '#50C878', '#228B22'],
+    description: {
+      en: 'Wood represents growth, vitality, and creativity',
+      zh: '木代表成长、活力和创造力',
+    },
+  },
+  water: {
+    name: 'water',
+    chinese: '水',
+    symbol: '💧',
+    colors: ['Blue', 'Black', 'Navy', 'Dark Blue'],
+    colorCodes: ['#0000FF', '#000000', '#000080', '#00008B'],
+    description: {
+      en: 'Water represents wisdom, flexibility, and intuition',
+      zh: '水代表智慧、灵活和直觉',
+    },
+  },
+  fire: {
+    name: 'fire',
+    chinese: '火',
+    symbol: '🔥',
+    colors: ['Red', 'Orange', 'Pink', 'Purple'],
+    colorCodes: ['#FF0000', '#FFA500', '#FFC0CB', '#800080'],
+    description: {
+      en: 'Fire represents passion, energy, and transformation',
+      zh: '火代表热情、能量和变化',
+    },
+  },
+  earth: {
+    name: 'earth',
+    chinese: '土',
+    symbol: '🌍',
+    colors: ['Yellow', 'Brown', 'Beige', 'Tan'],
+    colorCodes: ['#FFFF00', '#8B4513', '#F5F5DC', '#D2B48C'],
+    description: {
+      en: 'Earth represents stability, nourishment, and balance',
+      zh: '土代表稳定、滋养和平衡',
+    },
+  },
+};
+
+// Element relationships
+export const ELEMENT_GENERATES: Record<Element, Element> = {
+  wood: 'fire',    // Wood feeds Fire
+  fire: 'earth',   // Fire creates Earth (ash)
+  earth: 'metal',  // Earth bears Metal
+  metal: 'water',  // Metal collects Water
+  water: 'wood',   // Water nourishes Wood
+};
+
+export const ELEMENT_CONTROLS: Record<Element, Element> = {
+  wood: 'earth',   // Wood controls Earth (roots)
+  earth: 'water',  // Earth controls Water (dam)
+  water: 'fire',   // Water controls Fire
+  fire: 'metal',   // Fire controls Metal (melting)
+  metal: 'wood',   // Metal controls Wood (cutting)
+};
+
+// Get lucky element based on weak element
+export function getLuckyElement(weakElement: Element): Element {
+  // The element that generates the weak element is lucky
+  const generators: Record<Element, Element> = {
+    wood: 'water',
+    fire: 'wood',
+    earth: 'fire',
+    metal: 'earth',
+    water: 'metal',
+  };
+  return generators[weakElement];
+}
+
+// Get colors to wear based on lucky elements
+export function getLuckyColors(luckyElements: Element[]): { color: string; code: string; element: Element }[] {
+  const colors: { color: string; code: string; element: Element }[] = [];
+  
+  luckyElements.forEach(element => {
+    const info = ELEMENTS[element];
+    info.colors.forEach((color, index) => {
+      colors.push({
+        color,
+        code: info.colorCodes[index],
+        element,
+      });
+    });
+  });
+  
+  return colors;
+}
+
+// Get colors to avoid based on controlling element
+export function getUnluckyColors(strongElement: Element): { color: string; code: string; element: Element }[] {
+  const controlledBy = Object.entries(ELEMENT_CONTROLS).find(
+    ([, controlled]) => controlled === strongElement
+  )?.[0] as Element | undefined;
+  
+  if (!controlledBy) return [];
+  
+  const info = ELEMENTS[controlledBy];
+  return info.colors.map((color, index) => ({
+    color,
+    code: info.colorCodes[index],
+    element: controlledBy,
+  }));
+}
+</file>
+
+<file path="src/lib/gemini.ts">
+// Gemini API client for outfit analysis
+import { GoogleGenerativeAI } from '@google/generative-ai';
+
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
+
+export interface OutfitAnalysisResult {
+  analysis: string;
+  detectedColors: string[];
+  colorMatch: 'excellent' | 'good' | 'neutral' | 'poor';
+  suggestions: string[];
+  elementAlignment: string;
+}
+
+// Helper to strip data URL prefix from base64 string
+function stripDataUrlPrefix(base64: string): string {
+  const match = base64.match(/^data:image\/\w+;base64,(.+)$/);
+  return match ? match[1] : base64;
+}
+
+export async function analyzeOutfit(
+  imageBase64: string,
+  luckyColors: { color: string; code: string }[],
+  unluckyColors: { color: string; code: string }[]
+): Promise<OutfitAnalysisResult> {
+  const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+  const cleanBase64 = stripDataUrlPrefix(imageBase64);
+  
+  const luckyColorNames = luckyColors.map(c => c.color).join(', ');
+  const unluckyColorNames = unluckyColors.map(c => c.color).join(', ');
+  
+  const prompt = `You are a Feng Shui fashion advisor analyzing an outfit photo.
+
+The user's lucky colors based on their BaZi (八字) analysis are: ${luckyColorNames}
+The colors they should avoid are: ${unluckyColorNames}
+
+Please analyze the outfit in the image and provide:
+1. A brief description of the colors visible in the outfit
+2. How well the outfit aligns with their lucky colors (excellent/good/neutral/poor)
+3. Specific suggestions for improvement based on Five Elements (五行) principles
+4. Which element (Metal/Wood/Water/Fire/Earth) the outfit currently represents
+
+Respond in JSON format:
+{
+  "analysis": "Brief friendly analysis of the outfit",
+  "detectedColors": ["color1", "color2"],
+  "colorMatch": "excellent|good|neutral|poor",
+  "suggestions": ["suggestion1", "suggestion2"],
+  "elementAlignment": "Description of element alignment"
+}`;
+
+  try {
+    const result = await model.generateContent([
+      prompt,
+      {
+        inlineData: {
+          mimeType: 'image/jpeg',
+          data: cleanBase64,
+        },
+      },
+    ]);
+    
+    const response = await result.response;
+    let text = response.text();
+
+    // Strip markdown code blocks if present
+    text = text.replace(/```json\s*/gi, '').replace(/```\s*/g, '').trim();
+
+    // Parse JSON from response
+    const jsonMatch = text.match(/\{[\s\S]*\}/);
+    if (jsonMatch) {
+      try {
+        return JSON.parse(jsonMatch[0]);
+      } catch (parseError) {
+        console.error('JSON parse error:', parseError);
+      }
+    }
+
+    // Fallback if JSON parsing fails
+    return {
+      analysis: text,
+      detectedColors: [],
+      colorMatch: 'neutral',
+      suggestions: ['Please try again for detailed suggestions'],
+      elementAlignment: 'Analysis complete',
+    };
+  } catch (error) {
+    console.error('Gemini API error:', error);
+    throw new Error('Failed to analyze outfit');
+  }
+}
+
+export async function analyzeOutfitStream(
+  imageBase64: string,
+  luckyColors: { color: string; code: string }[],
+  unluckyColors: { color: string; code: string }[],
+  onChunk: (text: string) => void
+): Promise<void> {
+  const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+  const cleanBase64 = stripDataUrlPrefix(imageBase64);
+  
+  const luckyColorNames = luckyColors.map(c => c.color).join(', ');
+  const unluckyColorNames = unluckyColors.map(c => c.color).join(', ');
+  
+  const prompt = `You are a friendly Feng Shui fashion advisor. Analyze this outfit photo.
+
+Lucky colors for today: ${luckyColorNames}
+Colors to avoid: ${unluckyColorNames}
+
+Give real-time, conversational feedback about:
+1. What colors you see
+2. How well they match the lucky colors
+3. Quick suggestions
+
+Keep it brief and encouraging!`;
+
+  const result = await model.generateContentStream([
+    prompt,
+    {
+      inlineData: {
+        mimeType: 'image/jpeg',
+        data: cleanBase64,
+      },
+    },
+  ]);
+  
+  for await (const chunk of result.stream) {
+    const text = chunk.text();
+    if (text) {
+      onChunk(text);
+    }
+  }
+}
+</file>
+
+<file path="src/types/lunar-javascript.d.ts">
+declare module 'lunar-javascript' {
+  export class Solar {
+    static fromYmd(year: number, month: number, day: number): Solar;
+    static fromYmdHms(year: number, month: number, day: number, hour: number, minute: number, second: number): Solar;
+    getLunar(): Lunar;
+  }
+
+  export class Lunar {
+    getEightChar(): EightChar;
+    getYearInChinese(): string;
+    getMonthInChinese(): string;
+    getDayInChinese(): string;
+  }
+
+  export class EightChar {
+    getYear(): string;
+    getYearGan(): string;
+    getYearZhi(): string;
+    getMonth(): string;
+    getMonthGan(): string;
+    getMonthZhi(): string;
+    getDay(): string;
+    getDayGan(): string;
+    getDayZhi(): string;
+    getTime(): string;
+    getTimeGan(): string;
+    getTimeZhi(): string;
+  }
+}
+</file>
+
+<file path=".gitignore">
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# env files (can opt-in for committing if needed)
+.env*
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+</file>
+
+<file path="eslint.config.mjs">
+import { defineConfig, globalIgnores } from "eslint/config";
+import nextVitals from "eslint-config-next/core-web-vitals";
+import nextTs from "eslint-config-next/typescript";
+
+const eslintConfig = defineConfig([
+  ...nextVitals,
+  ...nextTs,
+  // Override default ignores of eslint-config-next.
+  globalIgnores([
+    // Default ignores of eslint-config-next:
+    ".next/**",
+    "out/**",
+    "build/**",
+    "next-env.d.ts",
+  ]),
+]);
+
+export default eslintConfig;
+</file>
+
+<file path="next.config.ts">
+import type { NextConfig } from "next";
+
+const nextConfig: NextConfig = {
+  /* config options here */
+};
+
+export default nextConfig;
+</file>
+
+<file path="package.json">
+{
+  "name": "feng-shui-banana",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "lunar-javascript": "^1.7.7",
+    "next": "16.1.1",
+    "react": "19.2.3",
+    "react-dom": "19.2.3"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.1.1",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  }
+}
+</file>
+
+<file path="postcss.config.mjs">
+const config = {
+  plugins: {
+    "@tailwindcss/postcss": {},
+  },
+};
+
+export default config;
+</file>
+
+<file path="README.md">
+# Feng Shui Banana
+
+A Next.js application for BaZi (八字) analysis that provides personalized clothing color recommendations based on the Five Elements, with AI-powered outfit analysis via Google Gemini API.
+
+## Features
+
+### BaZi Analysis (八字分析)
+- Input your gender and birth date (birth time optional)
+- Calculate your Four Pillars (四柱): Year, Month, Day, and Hour pillars
+- Analyze your Five Elements (五行) balance: Metal, Wood, Water, Fire, Earth
+- Get personalized lucky and unlucky color recommendations
+
+### Outfit Analysis
+- **Photo Upload**: Upload an outfit photo for AI analysis
+- **Live Camera**: Real-time camera feed with instant AI feedback
+- Gemini AI compares your outfit colors against your lucky colors
+- Get personalized suggestions to improve your outfit alignment
+
+## Tech Stack
+
+- **Framework**: Next.js 14 (App Router)
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS (custom sepia theme)
+- **BaZi Logic**: lunar-javascript library
+- **AI**: Google Gemini API
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js 18+
+- Google Gemini API key
+
+### Installation
+
+1. Clone the repository:
+```bash
+git clone <your-repo-url>
+cd feng-shui-banana
+```
+
+2. Install dependencies:
+```bash
+npm install
+```
+
+3. Create a `.env.local` file with your Gemini API key:
+```
+GEMINI_API_KEY=your_api_key_here
+```
+
+4. Run the development server:
+```bash
+npm run dev
+```
+
+5. Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+## Project Structure
+
+```
+src/
+├── app/
+│   ├── page.tsx              # Landing page
+│   ├── bazi/
+│   │   ├── page.tsx          # BaZi input form
+│   │   └── result/page.tsx   # BaZi results display
+│   ├── outfit/page.tsx       # Outfit analysis (camera/upload)
+│   └── api/
+│       ├── bazi/route.ts     # BaZi calculation endpoint
+│       └── gemini/analyze/route.ts  # Gemini analysis endpoint
+├── lib/
+│   ├── bazi.ts               # BaZi calculation logic
+│   └── elements.ts           # Five Elements definitions
+└── types/
+    └── lunar-javascript.d.ts # Type declarations
+```
+
+## Five Elements Color Mapping
+
+| Element | Chinese | Colors |
+|---------|---------|--------|
+| Metal | 金 | White, Gold, Silver, Gray |
+| Wood | 木 | Green, Teal, Emerald |
+| Water | 水 | Blue, Black, Navy |
+| Fire | 火 | Red, Orange, Pink, Purple |
+| Earth | 土 | Yellow, Brown, Beige, Tan |
+
+## Deployment
+
+Deploy on Vercel:
+
+1. Push your code to GitHub
+2. Connect your repository to Vercel
+3. Add `GEMINI_API_KEY` to environment variables
+4. Deploy
+
+## License
+
+MIT
+</file>
+
+<file path="tsconfig.json">
+{
+  "compilerOptions": {
+    "target": "ES2017",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "react-jsx",
+    "incremental": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    ".next/dev/types/**/*.ts",
+    "**/*.mts"
+  ],
+  "exclude": ["node_modules"]
+}
+</file>
+
+</files>
