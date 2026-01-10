@@ -651,11 +651,11 @@ export default function OutfitPage() {
                 {currentResult.suggestions?.length > 0 && (
                   <div>
                     <p className="text-xs text-[var(--sepia-600)] mb-1.5">Suggestions</p>
-                    <ul className="space-y-1.5">
-                      {currentResult.suggestions.slice(0, 3).map((suggestion, i) => (
+                    <ul className="space-y-1">
+                      {currentResult.suggestions.slice(0, 4).map((suggestion, i) => (
                         <li key={i} className="flex items-start gap-1.5 text-[var(--sepia-700)] text-xs">
                           <span className="text-[var(--sepia-400)]">•</span>
-                          <span className="line-clamp-2">{suggestion}</span>
+                          <span>{suggestion}</span>
                         </li>
                       ))}
                     </ul>

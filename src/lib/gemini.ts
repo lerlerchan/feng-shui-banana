@@ -36,17 +36,19 @@ The colors they should avoid are: ${unluckyColorNames}
 Please analyze the outfit in the image and provide:
 1. A brief description of the colors visible in the outfit
 2. How well the outfit aligns with their lucky colors (excellent/good/neutral/poor)
-3. Specific suggestions for improvement based on Five Elements (五行) principles
+3. Short actionable suggestions (MAX 8 words each, be concise!)
 4. Which element (Metal/Wood/Water/Fire/Earth) the outfit currently represents
 
 Respond in JSON format:
 {
-  "analysis": "Brief friendly analysis of the outfit",
+  "analysis": "Brief friendly analysis (1-2 sentences max)",
   "detectedColors": ["color1", "color2"],
   "colorMatch": "excellent|good|neutral|poor",
-  "suggestions": ["suggestion1", "suggestion2"],
-  "elementAlignment": "Description of element alignment"
-}`;
+  "suggestions": ["Add gold accessories", "Try a white shirt", "Wear beige scarf"],
+  "elementAlignment": "Brief element description"
+}
+
+IMPORTANT: Keep each suggestion under 8 words. Be direct and actionable.`;
 
   try {
     const result = await model.generateContent([
