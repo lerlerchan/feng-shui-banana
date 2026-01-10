@@ -45,10 +45,11 @@ type CardinalDirection = 'N' | 'E' | 'S' | 'W';
 
 interface Combined360Result {
   overallScore: 'excellent' | 'good' | 'neutral' | 'poor';
-  overallAnalysis: string;
+  overallAnalysis: string | string[];
   directionBreakdown: {
     direction: CardinalDirection;
-    analysis: string;
+    analysis?: string;
+    observations?: string[];
     score: string;
     flyingStarNote: string;
     recommendations: string[];
@@ -59,7 +60,7 @@ interface Combined360Result {
     location: string;
   }[];
   prioritizedRecommendations: string[];
-  flyingStarInsights: string;
+  flyingStarInsights: string | string[];
 }
 
 export default function WorkspacePage() {
@@ -1229,13 +1230,37 @@ export default function WorkspacePage() {
                   </span>
                 </div>
 
-                <p className="text-[var(--sepia-700)] text-xs sm:text-sm leading-relaxed mb-3">{combined360Result.overallAnalysis}</p>
+                {/* Overall Analysis as bullets */}
+                <div className="mb-3">
+                  {Array.isArray(combined360Result.overallAnalysis) ? (
+                    <ul className="space-y-1">
+                      {combined360Result.overallAnalysis.map((point, i) => (
+                        <li key={i} className="flex items-start gap-2 text-[var(--sepia-700)] text-xs sm:text-sm">
+                          <span className="text-amber-500 mt-0.5">•</span>
+                          <span>{point}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="text-[var(--sepia-700)] text-xs sm:text-sm leading-relaxed">{combined360Result.overallAnalysis}</p>
+                  )}
+                </div>
 
                 {combined360Result.flyingStarInsights && (
                   <div className="mb-3 p-2 bg-amber-50 rounded-lg border border-amber-200">
-                    <p className="text-xs text-amber-800">
-                      <span className="font-medium">2026 Flying Stars:</span> {combined360Result.flyingStarInsights}
-                    </p>
+                    <p className="text-xs text-amber-800 font-medium mb-1">2026 Flying Stars</p>
+                    {Array.isArray(combined360Result.flyingStarInsights) ? (
+                      <ul className="space-y-0.5">
+                        {combined360Result.flyingStarInsights.map((insight, i) => (
+                          <li key={i} className="flex items-start gap-1.5 text-xs text-amber-800">
+                            <span>•</span>
+                            <span>{insight}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className="text-xs text-amber-800">{combined360Result.flyingStarInsights}</p>
+                    )}
                   </div>
                 )}
 
@@ -1250,7 +1275,31 @@ export default function WorkspacePage() {
                             <span className="text-xs font-medium text-[var(--sepia-800)]">{getDirectionName(db.direction)}</span>
                             <span className={`px-2 py-0.5 rounded text-xs ${getColorMatchStyles(db.score)}`}>{db.score}</span>
                           </div>
-                          <p className="text-xs text-[var(--sepia-600)] line-clamp-2">{db.analysis}</p>
+                          {/* Observations as bullets */}
+                          {db.observations ? (
+                            <ul className="space-y-0.5 mb-1">
+                              {db.observations.map((obs, j) => (
+                                <li key={j} className="flex items-start gap-1.5 text-xs text-[var(--sepia-600)]">
+                                  <span className="text-[var(--sepia-400)]">•</span>
+                                  <span>{obs}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          ) : db.analysis ? (
+                            <p className="text-xs text-[var(--sepia-600)] mb-1">{db.analysis}</p>
+                          ) : null}
+                          {/* Flying Star Note */}
+                          {db.flyingStarNote && (
+                            <p className="text-xs text-amber-700 italic mb-1">⭐ {db.flyingStarNote}</p>
+                          )}
+                          {/* Recommendations */}
+                          {db.recommendations?.length > 0 && (
+                            <div className="mt-1 pt-1 border-t border-[var(--sepia-200)]">
+                              {db.recommendations.map((rec, j) => (
+                                <p key={j} className="text-xs text-green-700">→ {rec}</p>
+                              ))}
+                            </div>
+                          )}
                         </div>
                       ))}
                     </div>

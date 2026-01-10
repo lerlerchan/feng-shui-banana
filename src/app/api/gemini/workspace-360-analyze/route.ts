@@ -111,35 +111,35 @@ CRITICAL 2026 CONSIDERATIONS:
 - Northwest has the 2 Black (二黑) illness star - should have metal remedies
 - North has the 6 White (六白) nobleman star - keep this area clean
 
-Respond in JSON format:
+Respond in JSON format with BULLET POINTS for easy reading:
 {
   "overallScore": "excellent|good|neutral|poor",
-  "overallAnalysis": "2-3 sentence comprehensive summary of the workspace Feng Shui",
+  "overallAnalysis": ["Key point 1 about the workspace", "Key point 2", "Key point 3"],
   "directionBreakdown": [
     {
       "direction": "N",
-      "analysis": "What you see facing North and its significance",
+      "observations": ["What you see item 1", "Item 2", "Item 3"],
       "score": "excellent|good|neutral|poor",
-      "flyingStarNote": "2026 Flying Star relevance for this direction",
-      "recommendations": ["Specific recommendation 1", "Recommendation 2"]
+      "flyingStarNote": "Brief 2026 Flying Star note (1 line)",
+      "recommendations": ["Action 1", "Action 2"]
     },
     {
       "direction": "E",
-      "analysis": "...",
+      "observations": ["..."],
       "score": "...",
       "flyingStarNote": "...",
       "recommendations": ["..."]
     },
     {
       "direction": "S",
-      "analysis": "...",
+      "observations": ["..."],
       "score": "...",
       "flyingStarNote": "...",
       "recommendations": ["..."]
     },
     {
       "direction": "W",
-      "analysis": "...",
+      "observations": ["..."],
       "score": "...",
       "flyingStarNote": "...",
       "recommendations": ["..."]
@@ -153,16 +153,20 @@ Respond in JSON format:
     {"element": "Water", "percentage": 20, "location": "..."}
   ],
   "prioritizedRecommendations": [
-    "1. Most impactful change with specific location",
-    "2. Second priority action",
-    "3. Third priority action",
-    "4. Fourth action",
-    "5. Fifth action"
+    "Most impactful change with specific location",
+    "Second priority action",
+    "Third priority action",
+    "Fourth action",
+    "Fifth action"
   ],
-  "flyingStarInsights": "Key 2026-specific observations based on the full workspace view"
+  "flyingStarInsights": ["Key 2026 insight 1", "Key insight 2", "Key insight 3"]
 }
 
-IMPORTANT: Be specific about locations and actionable in recommendations. Reference actual items you see in the images.`;
+IMPORTANT:
+- Use SHORT bullet points (max 15 words each) for easy mobile reading
+- Be specific about locations
+- Reference actual items you see in the images
+- NO paragraph text - everything should be scannable bullet points`;
 
     // Sort images by direction order: N, E, S, W
     const directionOrder = ['N', 'E', 'S', 'W'];
