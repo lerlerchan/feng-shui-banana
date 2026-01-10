@@ -29,6 +29,7 @@ export default function OutfitPage() {
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const [cameraReady, setCameraReady] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Live analysis states
   const [isLiveMode, setIsLiveMode] = useState(false);
@@ -284,20 +285,23 @@ export default function OutfitPage() {
   const currentResult = isLiveMode ? liveResult : result;
 
   return (
-    <div className="h-screen flex flex-col overflow-hidden bg-[var(--sepia-50)]">
-      {/* Compact Header */}
+    <div className="min-h-screen lg:h-screen flex flex-col lg:overflow-hidden bg-[var(--sepia-50)]">
+      {/* Header - Responsive */}
       <header className="flex-shrink-0 border-b border-[var(--sepia-200)] bg-white/80 backdrop-blur-sm">
-        <div className="max-w-7xl mx-auto px-4 py-2 flex justify-between items-center">
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 py-2 flex justify-between items-center">
           <Link href="/" className="flex items-center gap-2">
-            <Image src="/logo.png" alt="Feng Shui Banana" width={32} height={32} className="rounded-full" />
-            <span className="text-xl font-serif text-[var(--sepia-800)]"><span className="font-bold">Feng Shui</span> Banana</span>
+            <Image src="/logo.png" alt="Feng Shui Banana" width={28} height={28} className="rounded-full sm:w-8 sm:h-8" />
+            <span className="text-lg sm:text-xl font-serif text-[var(--sepia-800)]">
+              <span className="font-bold">Feng Shui</span> <span className="hidden xs:inline">Banana</span>
+            </span>
           </Link>
-          <div className="flex items-center gap-4">
-            {/* Mode Toggle in Header */}
+
+          <div className="flex items-center gap-2 sm:gap-4">
+            {/* Mode Toggle */}
             <div className="inline-flex rounded-lg border border-[var(--sepia-300)] bg-white p-0.5">
               <button
                 onClick={() => { setMode('camera'); setResult(null); setError(null); }}
-                className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                className={`px-2 sm:px-4 py-1 sm:py-1.5 rounded-md text-xs sm:text-sm font-medium transition-colors ${
                   mode === 'camera' ? 'bg-[var(--sepia-700)] text-white' : 'text-[var(--sepia-600)]'
                 }`}
               >
@@ -305,32 +309,59 @@ export default function OutfitPage() {
               </button>
               <button
                 onClick={() => { setMode('upload'); setResult(null); setError(null); }}
-                className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                className={`px-2 sm:px-4 py-1 sm:py-1.5 rounded-md text-xs sm:text-sm font-medium transition-colors ${
                   mode === 'upload' ? 'bg-[var(--sepia-700)] text-white' : 'text-[var(--sepia-600)]'
                 }`}
               >
                 Upload
               </button>
             </div>
-            <nav className="flex gap-4">
+
+            {/* Desktop Nav */}
+            <nav className="hidden md:flex gap-4">
               <Link href="/bazi" className="text-sm text-[var(--sepia-600)] hover:text-[var(--sepia-800)]">BaZi</Link>
               <Link href="/outfit" className="text-sm text-[var(--sepia-800)] font-medium">Outfit</Link>
               <Link href="/workspace" className="text-sm text-[var(--sepia-600)] hover:text-[var(--sepia-800)]">Workspace</Link>
             </nav>
+
+            {/* Mobile Menu Button */}
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="md:hidden p-1.5 text-[var(--sepia-600)]"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                {mobileMenuOpen ? (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                ) : (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                )}
+              </svg>
+            </button>
           </div>
         </div>
+
+        {/* Mobile Menu Dropdown */}
+        {mobileMenuOpen && (
+          <div className="md:hidden border-t border-[var(--sepia-200)] bg-white px-4 py-2">
+            <nav className="flex flex-col gap-2">
+              <Link href="/bazi" className="text-sm text-[var(--sepia-600)] py-1">BaZi Analysis</Link>
+              <Link href="/outfit" className="text-sm text-[var(--sepia-800)] font-medium py-1">Outfit Check</Link>
+              <Link href="/workspace" className="text-sm text-[var(--sepia-600)] py-1">Workspace</Link>
+            </nav>
+          </div>
+        )}
       </header>
 
-      {/* Main Content - Two Column Layout */}
-      <main className="flex-1 overflow-hidden">
-        <div className="h-full max-w-7xl mx-auto px-4 py-3 flex gap-4">
+      {/* Main Content - Responsive Layout */}
+      <main className="flex-1 overflow-auto lg:overflow-hidden">
+        <div className="h-full max-w-7xl mx-auto px-3 sm:px-4 py-3 flex flex-col lg:flex-row gap-3 lg:gap-4">
           {/* Left Column - Video/Upload */}
-          <div className="flex-1 flex flex-col min-w-0">
+          <div className="flex-1 flex flex-col min-w-0 min-h-[50vh] lg:min-h-0">
             <div className="flex-1 bg-white rounded-xl shadow-sm border border-[var(--sepia-200)] overflow-hidden flex flex-col">
               {mode === 'camera' ? (
                 <>
                   {/* Video Container */}
-                  <div className="flex-1 relative bg-black">
+                  <div className="flex-1 relative bg-black min-h-[40vh] lg:min-h-0">
                     <video ref={videoRef} autoPlay playsInline muted className="absolute inset-0 w-full h-full object-cover" />
 
                     {!cameraReady && !error && (
@@ -345,23 +376,23 @@ export default function OutfitPage() {
                     {/* Live Analysis Overlay */}
                     {isLiveMode && liveResult && (
                       <div className="absolute inset-0 pointer-events-none">
-                        <div className="absolute top-3 left-3 right-3 flex justify-between items-start">
-                          <div className="flex items-center gap-2 bg-black/60 backdrop-blur-sm px-2 py-1 rounded-full">
+                        <div className="absolute top-2 sm:top-3 left-2 sm:left-3 right-2 sm:right-3 flex justify-between items-start">
+                          <div className="flex items-center gap-1.5 sm:gap-2 bg-black/60 backdrop-blur-sm px-2 py-1 rounded-full">
                             <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
                             <span className="text-white text-xs font-medium">LIVE</span>
                           </div>
-                          <div className={`px-3 py-1 rounded-full font-bold text-sm ${getColorMatchStyles(liveResult.colorMatch)}`}>
+                          <div className={`px-2 sm:px-3 py-1 rounded-full font-bold text-xs sm:text-sm ${getColorMatchStyles(liveResult.colorMatch)}`}>
                             {getColorMatchIcon(liveResult.colorMatch)} {getColorMatchLabel(liveResult.colorMatch)}
                           </div>
                         </div>
 
-                        <div className="absolute bottom-3 left-3 right-3">
-                          <div className="bg-black/70 backdrop-blur-sm rounded-lg p-3 text-white">
+                        <div className="absolute bottom-2 sm:bottom-3 left-2 sm:left-3 right-2 sm:right-3">
+                          <div className="bg-black/70 backdrop-blur-sm rounded-lg p-2 sm:p-3 text-white">
                             <p className="text-xs leading-relaxed line-clamp-2">{liveResult.analysis}</p>
                             {liveResult.detectedColors?.length > 0 && (
-                              <div className="flex flex-wrap gap-1 mt-2">
+                              <div className="flex flex-wrap gap-1 mt-1.5 sm:mt-2">
                                 {liveResult.detectedColors.slice(0, 4).map((color, i) => (
-                                  <span key={i} className="px-2 py-0.5 bg-white/20 rounded text-xs">{color}</span>
+                                  <span key={i} className="px-1.5 sm:px-2 py-0.5 bg-white/20 rounded text-xs">{color}</span>
                                 ))}
                               </div>
                             )}
@@ -383,29 +414,29 @@ export default function OutfitPage() {
                   <canvas ref={canvasRef} className="hidden" />
 
                   {/* Control Bar */}
-                  <div className="flex-shrink-0 p-3 border-t border-[var(--sepia-200)] bg-[var(--sepia-50)]">
+                  <div className="flex-shrink-0 p-2 sm:p-3 border-t border-[var(--sepia-200)] bg-[var(--sepia-50)]">
                     <div className="flex gap-2">
                       <button
                         onClick={toggleLiveMode}
                         disabled={!cameraReady || !baziColors}
-                        className={`flex-1 py-2.5 rounded-lg font-medium text-sm transition-all flex items-center justify-center gap-2 ${
+                        className={`flex-1 py-2 sm:py-2.5 rounded-lg font-medium text-xs sm:text-sm transition-all flex items-center justify-center gap-1.5 sm:gap-2 ${
                           isLiveMode ? 'bg-red-500 hover:bg-red-600 text-white' : 'bg-green-600 hover:bg-green-700 text-white'
                         } disabled:opacity-50 disabled:cursor-not-allowed`}
                       >
                         {isLiveMode ? (
                           <><span className="w-2 h-2 bg-white rounded-full animate-pulse" /> Stop Live</>
                         ) : (
-                          <><span>▶</span> Start Live Analysis</>
+                          <><span>▶</span> <span className="hidden sm:inline">Start </span>Live</>
                         )}
                       </button>
                       {!isLiveMode && (
                         <button
                           onClick={analyzeOutfit}
                           disabled={!cameraReady || analyzing}
-                          className="flex-1 py-2.5 bg-[var(--sepia-700)] text-white rounded-lg hover:bg-[var(--sepia-800)] font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                          className="flex-1 py-2 sm:py-2.5 bg-[var(--sepia-700)] text-white rounded-lg hover:bg-[var(--sepia-800)] font-medium text-xs sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1.5 sm:gap-2"
                         >
                           {analyzing ? (
-                            <><span className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full" /> Analyzing...</>
+                            <><span className="animate-spin w-3 sm:w-4 h-3 sm:h-4 border-2 border-white border-t-transparent rounded-full" /> <span className="hidden sm:inline">Analyzing...</span></>
                           ) : 'Capture'}
                         </button>
                       )}
@@ -420,38 +451,38 @@ export default function OutfitPage() {
                     onDragOver={handleDragOver}
                     onDragLeave={handleDragLeave}
                     onDrop={handleDrop}
-                    className={`flex-1 relative cursor-pointer flex items-center justify-center ${
+                    className={`flex-1 relative cursor-pointer flex items-center justify-center min-h-[40vh] lg:min-h-0 ${
                       isDragging ? 'bg-[var(--sepia-100)]' : 'bg-[var(--sepia-50)]'
                     }`}
                   >
                     {uploadedImage ? (
                       <img src={uploadedImage} alt="Uploaded outfit" className="absolute inset-0 w-full h-full object-contain p-4" />
                     ) : (
-                      <div className="text-center p-8">
-                        <div className="text-4xl mb-3">📤</div>
-                        <p className="text-[var(--sepia-700)] font-medium mb-1">Click or drag to upload</p>
-                        <p className="text-sm text-[var(--sepia-500)]">JPG, PNG, GIF</p>
+                      <div className="text-center p-6 sm:p-8">
+                        <div className="text-3xl sm:text-4xl mb-2 sm:mb-3">📤</div>
+                        <p className="text-[var(--sepia-700)] font-medium mb-1 text-sm sm:text-base">Click or drag to upload</p>
+                        <p className="text-xs sm:text-sm text-[var(--sepia-500)]">JPG, PNG, GIF</p>
                       </div>
                     )}
                   </div>
                   <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileInputChange} className="hidden" />
 
                   {/* Upload Control Bar */}
-                  <div className="flex-shrink-0 p-3 border-t border-[var(--sepia-200)] bg-[var(--sepia-50)]">
+                  <div className="flex-shrink-0 p-2 sm:p-3 border-t border-[var(--sepia-200)] bg-[var(--sepia-50)]">
                     <div className="flex gap-2">
                       <button
                         onClick={analyzeOutfit}
                         disabled={!uploadedImage || analyzing}
-                        className="flex-1 py-2.5 bg-[var(--sepia-700)] text-white rounded-lg hover:bg-[var(--sepia-800)] font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                        className="flex-1 py-2 sm:py-2.5 bg-[var(--sepia-700)] text-white rounded-lg hover:bg-[var(--sepia-800)] font-medium text-xs sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                       >
                         {analyzing ? (
-                          <><span className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full" /> Analyzing...</>
+                          <><span className="animate-spin w-3 sm:w-4 h-3 sm:h-4 border-2 border-white border-t-transparent rounded-full" /> Analyzing...</>
                         ) : 'Analyze Outfit'}
                       </button>
                       {uploadedImage && (
                         <button
                           onClick={() => { setUploadedImage(null); setResult(null); setError(null); }}
-                          className="px-4 py-2.5 text-[var(--sepia-600)] hover:text-[var(--sepia-800)] border border-[var(--sepia-300)] rounded-lg text-sm"
+                          className="px-3 sm:px-4 py-2 sm:py-2.5 text-[var(--sepia-600)] hover:text-[var(--sepia-800)] border border-[var(--sepia-300)] rounded-lg text-xs sm:text-sm"
                         >
                           Clear
                         </button>
@@ -464,40 +495,42 @@ export default function OutfitPage() {
           </div>
 
           {/* Right Column - BaZi Colors + Analysis */}
-          <div className="w-80 flex-shrink-0 flex flex-col gap-3 overflow-y-auto">
+          <div className="lg:w-80 flex-shrink-0 flex flex-col gap-3 overflow-y-auto">
             {/* BaZi Colors */}
             {baziColors && (baziColors.luckyColors.length > 0 || baziColors.unluckyColors.length > 0) ? (
-              <div className="bg-white p-4 rounded-xl shadow-sm border border-[var(--sepia-200)]">
-                <h3 className="font-serif text-sm text-[var(--sepia-800)] mb-3">Your BaZi Colors</h3>
-                {baziColors.luckyColors.length > 0 && (
-                  <div className="mb-3">
-                    <p className="text-xs text-[var(--sepia-600)] mb-1.5">Lucky</p>
-                    <div className="flex flex-wrap gap-1.5">
-                      {baziColors.luckyColors.map((c, i) => (
-                        <div key={i} className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-green-50 border border-green-200">
-                          <span className="w-3 h-3 rounded-full border" style={{ backgroundColor: c.code }} />
-                          <span className="text-xs text-[var(--sepia-700)]">{c.color}</span>
-                        </div>
-                      ))}
+              <div className="bg-white p-3 sm:p-4 rounded-xl shadow-sm border border-[var(--sepia-200)]">
+                <h3 className="font-serif text-sm text-[var(--sepia-800)] mb-2 sm:mb-3">Your BaZi Colors</h3>
+                <div className="flex flex-col sm:flex-row lg:flex-col gap-3">
+                  {baziColors.luckyColors.length > 0 && (
+                    <div className="flex-1">
+                      <p className="text-xs text-[var(--sepia-600)] mb-1.5">Lucky</p>
+                      <div className="flex flex-wrap gap-1.5">
+                        {baziColors.luckyColors.map((c, i) => (
+                          <div key={i} className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-green-50 border border-green-200">
+                            <span className="w-3 h-3 rounded-full border" style={{ backgroundColor: c.code }} />
+                            <span className="text-xs text-[var(--sepia-700)]">{c.color}</span>
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                )}
-                {baziColors.unluckyColors.length > 0 && (
-                  <div>
-                    <p className="text-xs text-[var(--sepia-600)] mb-1.5">Avoid</p>
-                    <div className="flex flex-wrap gap-1.5">
-                      {baziColors.unluckyColors.map((c, i) => (
-                        <div key={i} className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-red-50 border border-red-200">
-                          <span className="w-3 h-3 rounded-full border" style={{ backgroundColor: c.code }} />
-                          <span className="text-xs text-[var(--sepia-700)]">{c.color}</span>
-                        </div>
-                      ))}
+                  )}
+                  {baziColors.unluckyColors.length > 0 && (
+                    <div className="flex-1">
+                      <p className="text-xs text-[var(--sepia-600)] mb-1.5">Avoid</p>
+                      <div className="flex flex-wrap gap-1.5">
+                        {baziColors.unluckyColors.map((c, i) => (
+                          <div key={i} className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-red-50 border border-red-200">
+                            <span className="w-3 h-3 rounded-full border" style={{ backgroundColor: c.code }} />
+                            <span className="text-xs text-[var(--sepia-700)]">{c.color}</span>
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
+                </div>
               </div>
             ) : (
-              <div className="bg-[var(--sepia-100)] p-4 rounded-xl border border-[var(--sepia-300)]">
+              <div className="bg-[var(--sepia-100)] p-3 sm:p-4 rounded-xl border border-[var(--sepia-300)]">
                 <p className="text-[var(--sepia-700)] text-sm text-center">
                   No BaZi analysis found.{' '}
                   <Link href="/bazi" className="text-[var(--sepia-800)] font-medium underline">Get yours</Link>
@@ -517,8 +550,8 @@ export default function OutfitPage() {
 
             {/* Analysis Results */}
             {currentResult && (
-              <div className="bg-white p-4 rounded-xl shadow-sm border border-[var(--sepia-200)] flex-1">
-                <div className="flex items-center justify-between mb-3">
+              <div className="bg-white p-3 sm:p-4 rounded-xl shadow-sm border border-[var(--sepia-200)] lg:flex-1">
+                <div className="flex items-center justify-between mb-2 sm:mb-3">
                   <h3 className="font-serif text-sm text-[var(--sepia-800)]">Analysis</h3>
                   {isLiveMode && (
                     <div className="flex items-center gap-1 text-xs text-[var(--sepia-500)]">
@@ -528,16 +561,16 @@ export default function OutfitPage() {
                   )}
                 </div>
 
-                <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium mb-3 ${getColorMatchStyles(currentResult.colorMatch)}`}>
+                <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium mb-2 sm:mb-3 ${getColorMatchStyles(currentResult.colorMatch)}`}>
                   {getColorMatchIcon(currentResult.colorMatch)} {getColorMatchLabel(currentResult.colorMatch)}
                 </span>
 
                 {!isLiveMode && (
-                  <p className="text-[var(--sepia-700)] text-sm leading-relaxed mb-3">{currentResult.analysis}</p>
+                  <p className="text-[var(--sepia-700)] text-xs sm:text-sm leading-relaxed mb-2 sm:mb-3">{currentResult.analysis}</p>
                 )}
 
                 {currentResult.detectedColors?.length > 0 && !isLiveMode && (
-                  <div className="mb-3">
+                  <div className="mb-2 sm:mb-3">
                     <p className="text-xs text-[var(--sepia-600)] mb-1.5">Detected</p>
                     <div className="flex flex-wrap gap-1">
                       {currentResult.detectedColors.map((color, i) => (
@@ -565,10 +598,10 @@ export default function OutfitPage() {
 
             {/* Placeholder when no results */}
             {!currentResult && !error && (
-              <div className="bg-white p-4 rounded-xl shadow-sm border border-[var(--sepia-200)] flex-1 flex items-center justify-center">
+              <div className="bg-white p-4 rounded-xl shadow-sm border border-[var(--sepia-200)] lg:flex-1 flex items-center justify-center min-h-[120px]">
                 <div className="text-center text-[var(--sepia-500)]">
-                  <div className="text-3xl mb-2">📸</div>
-                  <p className="text-sm">Start live analysis or capture to see results</p>
+                  <div className="text-2xl sm:text-3xl mb-2">📸</div>
+                  <p className="text-xs sm:text-sm">Start live analysis or capture to see results</p>
                 </div>
               </div>
             )}
