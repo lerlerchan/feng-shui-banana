@@ -114,13 +114,14 @@ export default function Home() {
         {/* Hero Content */}
         <main className="flex-1 flex flex-col items-center justify-center px-6 text-center">
           <h1 className="font-serif text-white text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-tight mb-6">
-            Dress and Work with<br />
+            Dress with<br />
             <span className="italic">Destiny</span>
           </h1>
 
           <p className="text-white/80 text-base sm:text-lg md:text-xl max-w-2xl leading-relaxed mb-8">
-            Ancient FengShui Wisdom meets modern AI.<br />
-            Discover your lucky colors and align your style with the Five Elements.
+            a Wisdom not<br />
+            a Superstitious<br /><br />
+            Discover your lucky colors and space with the Five Elements.
           </p>
 
           <Link
