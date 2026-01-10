@@ -20,6 +20,9 @@ export default function Home() {
             <Link href="/outfit" className="text-[var(--sepia-600)] hover:text-[var(--sepia-800)] transition-colors">
               Outfit Check
             </Link>
+            <Link href="/workspace" className="text-[var(--sepia-600)] hover:text-[var(--sepia-800)] transition-colors">
+              Workspace Check
+            </Link>
           </nav>
         </div>
       </header>
@@ -47,6 +50,12 @@ export default function Home() {
               className="px-8 py-4 border-2 border-[var(--sepia-400)] text-[var(--sepia-700)] rounded-lg hover:bg-[var(--sepia-100)] transition-colors text-lg font-medium"
             >
               Check Outfit · 检查穿搭
+            </Link>
+            <Link
+              href="/workspace"
+              className="px-8 py-4 border-2 border-[var(--sepia-400)] text-[var(--sepia-700)] rounded-lg hover:bg-[var(--sepia-100)] transition-colors text-lg font-medium"
+            >
+              Check Workspace · 检查工作间
             </Link>
           </div>
         </div>
