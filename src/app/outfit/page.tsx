@@ -36,6 +36,33 @@ export default function OutfitPage() {
   const [liveResult, setLiveResult] = useState<AnalysisResult | null>(null);
   const [liveAnalyzing, setLiveAnalyzing] = useState(false);
   const liveIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const previousResultRef = useRef<AnalysisResult | null>(null);
+
+  // Helper to check if results are meaningfully different
+  const isResultDifferent = useCallback((newResult: AnalysisResult, oldResult: AnalysisResult | null): boolean => {
+    if (!oldResult) return true;
+
+    // Different rating is always a meaningful change
+    if (newResult.colorMatch !== oldResult.colorMatch) return true;
+
+    // Compare detected colors - if the set of colors changed significantly
+    const newColors = new Set(newResult.detectedColors?.map(c => c.toLowerCase()) || []);
+    const oldColors = new Set(oldResult.detectedColors?.map(c => c.toLowerCase()) || []);
+
+    // Check if colors are different (not just reordered)
+    if (newColors.size !== oldColors.size) return true;
+
+    let matchCount = 0;
+    newColors.forEach(color => {
+      if (oldColors.has(color)) matchCount++;
+    });
+
+    // If less than 60% colors match, consider it a different outfit
+    const similarity = oldColors.size > 0 ? matchCount / oldColors.size : 0;
+    if (similarity < 0.6) return true;
+
+    return false;
+  }, []);
 
   // Load BaZi colors from sessionStorage
   useEffect(() => {
@@ -128,14 +155,18 @@ export default function OutfitPage() {
 
       if (response.ok) {
         const data = await response.json();
-        setLiveResult(data);
+        // Only update if result is meaningfully different (prevents flashing)
+        if (isResultDifferent(data, previousResultRef.current)) {
+          setLiveResult(data);
+          previousResultRef.current = data;
+        }
       }
     } catch (err) {
       console.error('Live analysis error:', err);
     } finally {
       setLiveAnalyzing(false);
     }
-  }, [cameraReady, liveAnalyzing, capturePhoto, baziColors]);
+  }, [cameraReady, liveAnalyzing, capturePhoto, baziColors, isResultDifferent]);
 
   // Live mode interval effect
   useEffect(() => {
@@ -276,9 +307,11 @@ export default function OutfitPage() {
     if (isLiveMode) {
       setIsLiveMode(false);
       setLiveResult(null);
+      previousResultRef.current = null; // Reset for next live session
     } else {
       setIsLiveMode(true);
       setResult(null);
+      previousResultRef.current = null; // Start fresh
     }
   };
 
