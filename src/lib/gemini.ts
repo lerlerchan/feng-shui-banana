@@ -103,10 +103,10 @@ export async function analyzeOutfitStream(
 ): Promise<void> {
   const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
   const cleanBase64 = stripDataUrlPrefix(imageBase64);
-  
+
   const luckyColorNames = luckyColors.map(c => c.color).join(', ');
   const unluckyColorNames = unluckyColors.map(c => c.color).join(', ');
-  
+
   const prompt = `You are a friendly Feng Shui fashion advisor. Analyze this outfit photo.
 
 Lucky colors for today: ${luckyColorNames}
@@ -128,7 +128,118 @@ Keep it brief and encouraging!`;
       },
     },
   ]);
-  
+
+  for await (const chunk of result.stream) {
+    const text = chunk.text();
+    if (text) {
+      onChunk(text);
+    }
+  }
+}
+
+// Directional Analysis Data Interface
+export interface DirectionalAnalysisData {
+  sittingDirection: {
+    primaryDirection: string;
+    alternateDirections: string[];
+    element: string;
+    strength: string;
+    reason: string;
+  };
+  deskPosition: {
+    primaryDirection: string;
+    alternateDirections: string[];
+    element: string;
+    strength: string;
+    reason: string;
+  };
+  colorZones: Array<{
+    direction: string;
+    colors: { color: string; code: string; element: string }[];
+    purpose: string;
+    priority: string;
+  }>;
+  wealthCorner: {
+    direction: string;
+    element: string;
+    enhancementColors: { color: string; code: string; element: string }[];
+    items: string[];
+    advice: string;
+  };
+}
+
+// Workspace streaming analysis with directional recommendations
+export async function analyzeWorkspaceStream(
+  imageBase64: string,
+  luckyColors: { color: string; code: string }[],
+  unluckyColors: { color: string; code: string }[],
+  directionalAnalysis: DirectionalAnalysisData | null,
+  onChunk: (text: string) => void
+): Promise<void> {
+  const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+  const cleanBase64 = stripDataUrlPrefix(imageBase64);
+
+  const luckyColorNames = luckyColors.map(c => c.color).join(', ');
+  const unluckyColorNames = unluckyColors.map(c => c.color).join(', ');
+
+  // Build directional context
+  let directionalContext = '';
+  if (directionalAnalysis) {
+    const highPriorityZones = directionalAnalysis.colorZones
+      .filter(z => z.priority === 'high')
+      .map(z => `${z.direction} (${z.colors.map(c => c.color).join(', ')})`)
+      .join('; ');
+
+    directionalContext = `
+
+PERSONALIZED DIRECTIONAL RECOMMENDATIONS based on user's BaZi chart:
+- Best sitting direction (which way to face): ${directionalAnalysis.sittingDirection.primaryDirection} (${directionalAnalysis.sittingDirection.element} element) - ${directionalAnalysis.sittingDirection.reason}
+- Best desk position in room: ${directionalAnalysis.deskPosition.primaryDirection} sector (${directionalAnalysis.deskPosition.element} element) - ${directionalAnalysis.deskPosition.reason}
+- Wealth corner location: ${directionalAnalysis.wealthCorner.direction} - ${directionalAnalysis.wealthCorner.advice}
+- High-priority color zones: ${highPriorityZones}
+`;
+  }
+
+  const prompt = `You are a Feng Shui workspace consultant analyzing an office/workspace photo in REAL-TIME.
+
+FENG SHUI ANALYSIS GUIDELINES:
+User's lucky colors based on their BaZi (八字/Four Pillars): ${luckyColorNames}
+Colors to avoid or minimize: ${unluckyColorNames}
+${directionalContext}
+
+ANALYSIS TASK:
+Provide conversational, real-time feedback about the workspace as you see it. Focus on:
+
+1. CURRENT STATE: What you observe in the workspace (colors, furniture, layout, elements visible)
+
+2. DIRECTIONAL SETUP: Comment on the desk position and orientation if visible. Relate it to the recommended ${directionalAnalysis?.sittingDirection.primaryDirection || 'optimal'} direction for facing.
+
+3. COLOR ALIGNMENT:
+   - Identify colors currently visible in the workspace
+   - How well they align with lucky colors: ${luckyColorNames}
+   - Where you see lucky vs unlucky colors
+   - Specific feedback on color placement in different zones
+
+4. SPECIFIC RECOMMENDATIONS:
+   - Sitting direction: "If you face ${directionalAnalysis?.sittingDirection.primaryDirection || 'the optimal direction'}, you enhance your ${directionalAnalysis?.sittingDirection.element || 'personal'} energy and boost ${directionalAnalysis?.sittingDirection.reason?.split('support')[1]?.trim() || 'luck'}"
+   - Desk position: "Placing your desk in the ${directionalAnalysis?.deskPosition.primaryDirection || 'recommended'} area would..."
+   - Wealth corner: "The ${directionalAnalysis?.wealthCorner.direction || 'SE'} corner is your wealth zone: ${directionalAnalysis?.wealthCorner.advice || 'activate with wood elements'}"
+   - Color placement: "Add ${luckyColorNames} items in ${directionalAnalysis?.colorZones?.[0]?.direction || 'key'} areas for best effect"
+
+5. QUICK WINS: 2-3 easy, actionable changes they can make immediately
+
+TONE: Conversational, encouraging, practical. Reference specific things you see! Make recommendations feel personal and achievable.`;
+
+  const result = await model.generateContentStream([
+    prompt,
+    {
+      inlineData: {
+        mimeType: 'image/jpeg',
+        data: cleanBase64,
+      },
+    },
+  ]);
+
   for await (const chunk of result.stream) {
     const text = chunk.text();
     if (text) {

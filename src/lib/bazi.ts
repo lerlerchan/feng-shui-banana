@@ -1,7 +1,7 @@
 // BaZi calculation logic using lunar-javascript
 // Reference: https://github.com/china-testing/bazi/blob/master/bazi.py
 import { Solar } from 'lunar-javascript';
-import { Element, ELEMENTS, getLuckyColors } from './elements';
+import { Element, ELEMENTS, getLuckyColors, getUnluckyColors } from './elements';
 
 const HEAVENLY_STEMS = ['甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', '壬', '癸'];
 const HEAVENLY_STEMS_PINYIN = ['Jia', 'Yi', 'Bing', 'Ding', 'Wu', 'Ji', 'Geng', 'Xin', 'Ren', 'Gui'];
@@ -58,6 +58,60 @@ const CONTROLLED_BY: Record<Element, Element> = {
   wood: 'metal', fire: 'water', earth: 'wood', metal: 'fire', water: 'earth',
 };
 
+// Directional Analysis - Bagua Direction Mapping
+export type Direction = 'N' | 'NE' | 'E' | 'SE' | 'S' | 'SW' | 'W' | 'NW';
+
+export interface DirectionInfo {
+  direction: Direction;
+  degrees: string;
+  element: Element;
+  chinese: string;
+  pinyin: string;
+  trigram: string;
+  attributes: string[];
+}
+
+export const BAGUA_DIRECTIONS: Record<Direction, DirectionInfo> = {
+  'N': { direction: 'N', degrees: '337.5° - 22.5°', element: 'water', chinese: '坎', pinyin: 'Kan', trigram: 'Water', attributes: ['Career', 'Life Path', 'Wisdom'] },
+  'NE': { direction: 'NE', degrees: '22.5° - 67.5°', element: 'earth', chinese: '艮', pinyin: 'Gen', trigram: 'Mountain', attributes: ['Knowledge', 'Self-Cultivation', 'Spirituality'] },
+  'E': { direction: 'E', degrees: '67.5° - 112.5°', element: 'wood', chinese: '震', pinyin: 'Zhen', trigram: 'Thunder', attributes: ['Health', 'Family', 'New Beginnings'] },
+  'SE': { direction: 'SE', degrees: '112.5° - 157.5°', element: 'wood', chinese: '巽', pinyin: 'Xun', trigram: 'Wind', attributes: ['Wealth', 'Abundance', 'Prosperity'] },
+  'S': { direction: 'S', degrees: '157.5° - 202.5°', element: 'fire', chinese: '离', pinyin: 'Li', trigram: 'Fire', attributes: ['Fame', 'Recognition', 'Passion'] },
+  'SW': { direction: 'SW', degrees: '202.5° - 247.5°', element: 'earth', chinese: '坤', pinyin: 'Kun', trigram: 'Earth', attributes: ['Love', 'Relationships', 'Partnerships'] },
+  'W': { direction: 'W', degrees: '247.5° - 292.5°', element: 'metal', chinese: '兑', pinyin: 'Dui', trigram: 'Lake', attributes: ['Children', 'Creativity', 'Completion'] },
+  'NW': { direction: 'NW', degrees: '292.5° - 337.5°', element: 'metal', chinese: '乾', pinyin: 'Qian', trigram: 'Heaven', attributes: ['Helpful People', 'Travel', 'Leadership'] }
+};
+
+export interface DirectionalRecommendation {
+  primaryDirection: Direction;
+  alternateDirections: Direction[];
+  element: Element;
+  strength: 'excellent' | 'good' | 'moderate';
+  reason: string;
+}
+
+export interface ColorPlacementZone {
+  direction: Direction;
+  colors: { color: string; code: string; element: Element }[];
+  purpose: string;
+  priority: 'high' | 'medium' | 'low';
+}
+
+export interface WealthCornerRecommendation {
+  direction: Direction;
+  element: Element;
+  enhancementColors: { color: string; code: string; element: Element }[];
+  items: string[];
+  advice: string;
+}
+
+export interface DirectionalAnalysis {
+  sittingDirection: DirectionalRecommendation;
+  deskPosition: DirectionalRecommendation;
+  colorZones: ColorPlacementZone[];
+  wealthCorner: WealthCornerRecommendation;
+}
+
 export interface Pillar {
   stem: string;
   stemPinyin: string;
@@ -94,6 +148,7 @@ export interface BaziAnalysis {
   unluckyColors: { color: string; code: string; element: Element }[];
   dayMaster: string;
   dayMasterElement: Element;
+  directionalAnalysis: DirectionalAnalysis;
 }
 
 function createPillar(stem: string, branch: string): Pillar {
@@ -137,6 +192,210 @@ function calculateElementScores(chart: BaziChart): ElementBalance {
   });
 
   return scores;
+}
+
+// Helper mapping for generating cycle in directions
+const DIRECTION_GENERATED_BY: Record<Element, Element> = {
+  wood: 'water', fire: 'wood', earth: 'fire', metal: 'earth', water: 'metal'
+};
+
+// Calculate best sitting direction based on lucky elements
+function calculateBestSittingDirection(
+  luckyElements: Element[],
+  unluckyElements: Element[]
+): DirectionalRecommendation {
+  const scoredDirections: { direction: Direction; score: number; element: Element }[] = [];
+
+  Object.entries(BAGUA_DIRECTIONS).forEach(([dir, info]) => {
+    const direction = dir as Direction;
+    let score = 0;
+
+    // Primary lucky element gets highest score
+    if (info.element === luckyElements[0]) {
+      score = 100;
+    } else if (luckyElements.includes(info.element)) {
+      score = 70;
+    } else if (unluckyElements.includes(info.element)) {
+      score = -50;
+    } else {
+      score = 30; // Neutral
+    }
+
+    // Boost score for career-related directions (N, SE)
+    if (direction === 'N' || direction === 'SE') {
+      score += 20;
+    }
+
+    scoredDirections.push({ direction, score, element: info.element });
+  });
+
+  // Sort by score
+  scoredDirections.sort((a, b) => b.score - a.score);
+
+  const best = scoredDirections[0];
+  const alternates = scoredDirections.slice(1, 4).map(d => d.direction);
+
+  let strength: 'excellent' | 'good' | 'moderate' = 'moderate';
+  if (best.score >= 100) strength = 'excellent';
+  else if (best.score >= 70) strength = 'good';
+
+  const dirInfo = BAGUA_DIRECTIONS[best.direction];
+  const reason = `This direction aligns with your lucky ${best.element} element, supporting ${dirInfo.attributes.join(', ').toLowerCase()}.`;
+
+  return {
+    primaryDirection: best.direction,
+    alternateDirections: alternates,
+    element: best.element,
+    strength,
+    reason
+  };
+}
+
+// Calculate best desk position in room
+function calculateBestDeskPosition(luckyElements: Element[]): DirectionalRecommendation {
+  const scoredPositions: { direction: Direction; score: number; element: Element }[] = [];
+
+  Object.entries(BAGUA_DIRECTIONS).forEach(([dir, info]) => {
+    const direction = dir as Direction;
+    let score = 0;
+
+    if (info.element === luckyElements[0]) {
+      score = 100;
+    } else if (luckyElements.includes(info.element)) {
+      score = 70;
+    } else {
+      score = 30;
+    }
+
+    // Prefer command position directions (back to wall, view of door)
+    if (['NE', 'E', 'SE', 'S'].includes(direction)) {
+      score += 15;
+    }
+
+    scoredPositions.push({ direction, score, element: info.element });
+  });
+
+  scoredPositions.sort((a, b) => b.score - a.score);
+
+  const best = scoredPositions[0];
+  const alternates = scoredPositions.slice(1, 3).map(d => d.direction);
+
+  let strength: 'excellent' | 'good' | 'moderate' = 'moderate';
+  if (best.score >= 100) strength = 'excellent';
+  else if (best.score >= 70) strength = 'good';
+
+  const dirInfo = BAGUA_DIRECTIONS[best.direction];
+  const reason = `Place your desk in the ${best.direction} sector of your room to harness ${best.element} energy for ${dirInfo.attributes[0].toLowerCase()}.`;
+
+  return {
+    primaryDirection: best.direction,
+    alternateDirections: alternates,
+    element: best.element,
+    strength,
+    reason
+  };
+}
+
+// Calculate color placement zones for all 8 directions
+function calculateColorPlacementZones(
+  luckyElements: Element[],
+  unluckyElements: Element[],
+  baziAnalysis: BaziAnalysis
+): ColorPlacementZone[] {
+  const zones: ColorPlacementZone[] = [];
+
+  Object.entries(BAGUA_DIRECTIONS).forEach(([dir, info]) => {
+    const direction = dir as Direction;
+    const dirElement = info.element;
+
+    let colors: { color: string; code: string; element: Element }[] = [];
+    let priority: 'high' | 'medium' | 'low' = 'low';
+    let purpose = '';
+
+    if (luckyElements.includes(dirElement)) {
+      colors = baziAnalysis.luckyColors.filter(c => c.element === dirElement);
+      priority = dirElement === luckyElements[0] ? 'high' : 'medium';
+      purpose = `Enhance your ${dirElement} element to boost ${info.attributes[0].toLowerCase()}`;
+    } else if (dirElement === luckyElements[0]) {
+      colors = baziAnalysis.luckyColors.filter(c => c.element === luckyElements[0]);
+      priority = 'high';
+      purpose = `Activate your primary lucky element (${luckyElements[0]}) in the ${info.attributes[0].toLowerCase()} sector`;
+    } else {
+      const supportingElement = DIRECTION_GENERATED_BY[dirElement];
+      colors = baziAnalysis.luckyColors.filter(c => c.element === supportingElement).slice(0, 2);
+      priority = 'low';
+      purpose = `Support the ${dirElement} energy with ${supportingElement} colors`;
+    }
+
+    zones.push({
+      direction,
+      colors,
+      purpose,
+      priority
+    });
+  });
+
+  zones.sort((a, b) => {
+    const priorityOrder = { high: 3, medium: 2, low: 1 };
+    return priorityOrder[b.priority] - priorityOrder[a.priority];
+  });
+
+  return zones;
+}
+
+// Calculate wealth corner recommendation
+function calculateWealthCorner(
+  luckyElements: Element[],
+  baziAnalysis: BaziAnalysis
+): WealthCornerRecommendation {
+  const direction: Direction = 'SE';
+  const element: Element = 'wood';
+
+  let enhancementColors: { color: string; code: string; element: Element }[] = [];
+  let items: string[] = [];
+  let advice = '';
+
+  if (luckyElements.includes('wood')) {
+    enhancementColors = baziAnalysis.luckyColors.filter(c => c.element === 'wood');
+    advice = 'Your wood element is lucky! Maximize your wealth corner with green plants, wooden furniture, and vertical elements.';
+    items = ['Live plants', 'Wooden desk organizer', 'Green/teal accessories', 'Bamboo items'];
+  } else if (luckyElements.includes('water')) {
+    enhancementColors = [
+      ...baziAnalysis.luckyColors.filter(c => c.element === 'water'),
+      ...baziAnalysis.luckyColors.filter(c => c.element === 'wood').slice(0, 2)
+    ];
+    advice = 'Your lucky water element nourishes the wealth corner! Combine blue/black with green for prosperity.';
+    items = ['Small water fountain', 'Blue & green items', 'Fish imagery', 'Flowing shapes'];
+  } else if (luckyElements.includes('fire')) {
+    enhancementColors = baziAnalysis.luckyColors.filter(c => c.element === 'wood');
+    advice = 'Balance your fire element luck with wood. Add plants and green tones to activate wealth without draining energy.';
+    items = ['Green plants', 'Wood + red accents', 'Candles near plants', 'Upward-growing plants'];
+  } else {
+    enhancementColors = getLuckyColors(['wood']);
+    advice = 'Activate the traditional wealth corner with wood element colors and items for prosperity.';
+    items = ['Healthy plants', 'Wooden items', 'Green color accents', 'Growth symbols'];
+  }
+
+  return {
+    direction,
+    element,
+    enhancementColors,
+    items,
+    advice
+  };
+}
+
+// Calculate all directional recommendations
+function calculateDirectionalAnalysis(baziAnalysis: BaziAnalysis): DirectionalAnalysis {
+  const luckyElements = baziAnalysis.luckyElements;
+  const unluckyElements = baziAnalysis.unluckyElements;
+
+  return {
+    sittingDirection: calculateBestSittingDirection(luckyElements, unluckyElements),
+    deskPosition: calculateBestDeskPosition(luckyElements),
+    colorZones: calculateColorPlacementZones(luckyElements, unluckyElements, baziAnalysis),
+    wealthCorner: calculateWealthCorner(luckyElements, baziAnalysis)
+  };
 }
 
 // Determine Day Master strength (强弱判断)
@@ -235,12 +494,24 @@ export function calculateBazi(birthDate: string, birthTime?: string): BaziAnalys
 
   // Get colors for lucky and unlucky elements
   const luckyColors = getLuckyColors(luckyElements);
-  const unluckyColors = getLuckyColors(unluckyElements);
+  const unluckyColors = getUnluckyColors(strongestElement);
+
+  // Create a temporary BaziAnalysis object for directional calculation
+  const tempAnalysis: BaziAnalysis = {
+    chart, elementBalance, strongestElement, weakestElement,
+    dayMasterStrength, luckyElements, unluckyElements,
+    luckyColors, unluckyColors, dayMaster, dayMasterElement,
+    directionalAnalysis: null as any // Placeholder, will be set below
+  };
+
+  // Calculate directional analysis
+  const directionalAnalysis = calculateDirectionalAnalysis(tempAnalysis);
 
   return {
     chart, elementBalance, strongestElement, weakestElement,
     dayMasterStrength, luckyElements, unluckyElements,
     luckyColors, unluckyColors, dayMaster, dayMasterElement,
+    directionalAnalysis,
   };
 }
 
