@@ -1297,191 +1297,201 @@ export default function WorkspacePage() {
 
             {/* 360 Combined Results */}
             {combined360Result && (
-              <div className="bg-white p-3 sm:p-4 rounded-xl shadow-sm border border-[var(--sepia-200)] lg:flex-1 overflow-y-auto">
-                <h3 className="font-serif text-sm text-[var(--sepia-800)] mb-2 sm:mb-3">360° Feng Shui Analysis</h3>
+              <div className="bg-white rounded-xl shadow-sm border border-[var(--sepia-200)] lg:flex-1 flex flex-col overflow-hidden">
+                {/* Scrollable Content */}
+                <div className="flex-1 overflow-y-auto p-3 sm:p-4">
+                  <h3 className="font-serif text-sm text-[var(--sepia-800)] mb-2 sm:mb-3">360° Feng Shui Analysis</h3>
 
-                <div className="flex items-center gap-2 mb-3">
-                  <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${getColorMatchStyles(combined360Result.overallScore)}`}>
-                    {getColorMatchIcon(combined360Result.overallScore)} {getColorMatchLabel(combined360Result.overallScore)}
-                  </span>
-                </div>
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${getColorMatchStyles(combined360Result.overallScore)}`}>
+                      {getColorMatchIcon(combined360Result.overallScore)} {getColorMatchLabel(combined360Result.overallScore)}
+                    </span>
+                  </div>
 
-                {/* Overall Analysis as bullets */}
-                <div className="mb-3">
-                  {Array.isArray(combined360Result.overallAnalysis) ? (
-                    <ul className="space-y-1">
-                      {combined360Result.overallAnalysis.map((point, i) => (
-                        <li key={i} className="flex items-start gap-2 text-[var(--sepia-700)] text-xs sm:text-sm">
-                          <span className="text-amber-500 mt-0.5">•</span>
-                          <span>{point}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <p className="text-[var(--sepia-700)] text-xs sm:text-sm leading-relaxed">{combined360Result.overallAnalysis}</p>
-                  )}
-                </div>
-
-                {combined360Result.flyingStarInsights && (
-                  <div className="mb-3 p-2 bg-amber-50 rounded-lg border border-amber-200">
-                    <p className="text-xs text-amber-800 font-medium mb-1">2026 Flying Stars</p>
-                    {Array.isArray(combined360Result.flyingStarInsights) ? (
-                      <ul className="space-y-0.5">
-                        {combined360Result.flyingStarInsights.map((insight, i) => (
-                          <li key={i} className="flex items-start gap-1.5 text-xs text-amber-800">
-                            <span>•</span>
-                            <span>{insight}</span>
+                  {/* Overall Analysis as bullets */}
+                  <div className="mb-3">
+                    {Array.isArray(combined360Result.overallAnalysis) ? (
+                      <ul className="space-y-1">
+                        {combined360Result.overallAnalysis.map((point, i) => (
+                          <li key={i} className="flex items-start gap-2 text-[var(--sepia-700)] text-xs sm:text-sm">
+                            <span className="text-amber-500 mt-0.5">•</span>
+                            <span>{point}</span>
                           </li>
                         ))}
                       </ul>
                     ) : (
-                      <p className="text-xs text-amber-800">{combined360Result.flyingStarInsights}</p>
+                      <p className="text-[var(--sepia-700)] text-xs sm:text-sm leading-relaxed">{combined360Result.overallAnalysis}</p>
                     )}
                   </div>
-                )}
 
-                {/* Direction Breakdown */}
-                {combined360Result.directionBreakdown?.length > 0 && (
-                  <div className="mb-3">
-                    <p className="text-xs text-[var(--sepia-600)] mb-1.5">By Direction</p>
-                    <div className="space-y-2">
-                      {combined360Result.directionBreakdown.map((db, i) => (
-                        <div key={i} className="p-2 bg-[var(--sepia-50)] rounded-lg">
-                          <div className="flex items-center justify-between mb-1">
-                            <span className="text-xs font-medium text-[var(--sepia-800)]">{getDirectionName(db.direction)}</span>
-                            <span className={`px-2 py-0.5 rounded text-xs ${getColorMatchStyles(db.score)}`}>{db.score}</span>
-                          </div>
-                          {/* Observations as bullets */}
-                          {db.observations ? (
-                            <ul className="space-y-0.5 mb-1">
-                              {db.observations.map((obs, j) => (
-                                <li key={j} className="flex items-start gap-1.5 text-xs text-[var(--sepia-600)]">
-                                  <span className="text-[var(--sepia-400)]">•</span>
-                                  <span>{obs}</span>
-                                </li>
-                              ))}
-                            </ul>
-                          ) : db.analysis ? (
-                            <p className="text-xs text-[var(--sepia-600)] mb-1">{db.analysis}</p>
-                          ) : null}
-                          {/* Flying Star Note */}
-                          {db.flyingStarNote && (
-                            <p className="text-xs text-amber-700 italic mb-1">⭐ {db.flyingStarNote}</p>
-                          )}
-                          {/* Recommendations */}
-                          {db.recommendations?.length > 0 && (
-                            <div className="mt-1 pt-1 border-t border-[var(--sepia-200)]">
-                              {db.recommendations.map((rec, j) => (
-                                <p key={j} className="text-xs text-green-700">→ {rec}</p>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                      ))}
+                  {combined360Result.flyingStarInsights && (
+                    <div className="mb-3 p-2 bg-amber-50 rounded-lg border border-amber-200">
+                      <p className="text-xs text-amber-800 font-medium mb-1">2026 Flying Stars</p>
+                      {Array.isArray(combined360Result.flyingStarInsights) ? (
+                        <ul className="space-y-0.5">
+                          {combined360Result.flyingStarInsights.map((insight, i) => (
+                            <li key={i} className="flex items-start gap-1.5 text-xs text-amber-800">
+                              <span>•</span>
+                              <span>{insight}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <p className="text-xs text-amber-800">{combined360Result.flyingStarInsights}</p>
+                      )}
                     </div>
-                  </div>
-                )}
+                  )}
 
-                {/* Prioritized Recommendations */}
-                {combined360Result.prioritizedRecommendations?.length > 0 && (
-                  <div>
-                    <p className="text-xs text-[var(--sepia-600)] mb-1.5">Top Recommendations</p>
-                    <ul className="space-y-1">
-                      {combined360Result.prioritizedRecommendations.slice(0, 5).map((rec, i) => (
-                        <li key={i} className="flex items-start gap-1.5 text-[var(--sepia-700)] text-xs">
-                          <span className="text-amber-500 font-bold">{i + 1}.</span>
-                          <span>{rec}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
+                  {/* Direction Breakdown */}
+                  {combined360Result.directionBreakdown?.length > 0 && (
+                    <div className="mb-3">
+                      <p className="text-xs text-[var(--sepia-600)] mb-1.5">By Direction</p>
+                      <div className="space-y-2">
+                        {combined360Result.directionBreakdown.map((db, i) => (
+                          <div key={i} className="p-2 bg-[var(--sepia-50)] rounded-lg">
+                            <div className="flex items-center justify-between mb-1">
+                              <span className="text-xs font-medium text-[var(--sepia-800)]">{getDirectionName(db.direction)}</span>
+                              <span className={`px-2 py-0.5 rounded text-xs ${getColorMatchStyles(db.score)}`}>{db.score}</span>
+                            </div>
+                            {/* Observations as bullets */}
+                            {db.observations ? (
+                              <ul className="space-y-0.5 mb-1">
+                                {db.observations.map((obs, j) => (
+                                  <li key={j} className="flex items-start gap-1.5 text-xs text-[var(--sepia-600)]">
+                                    <span className="text-[var(--sepia-400)]">•</span>
+                                    <span>{obs}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                            ) : db.analysis ? (
+                              <p className="text-xs text-[var(--sepia-600)] mb-1">{db.analysis}</p>
+                            ) : null}
+                            {/* Flying Star Note */}
+                            {db.flyingStarNote && (
+                              <p className="text-xs text-amber-700 italic mb-1">⭐ {db.flyingStarNote}</p>
+                            )}
+                            {/* Recommendations */}
+                            {db.recommendations?.length > 0 && (
+                              <div className="mt-1 pt-1 border-t border-[var(--sepia-200)]">
+                                {db.recommendations.map((rec, j) => (
+                                  <p key={j} className="text-xs text-green-700">→ {rec}</p>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
 
-                {/* Generate Report Button for 360 */}
-                <button
-                  onClick={generateReport}
-                  disabled={generatingReport}
-                  className="w-full mt-3 py-2 px-3 bg-gradient-to-r from-[var(--sepia-600)] to-[var(--sepia-700)] text-white rounded-lg hover:from-[var(--sepia-700)] hover:to-[var(--sepia-800)] font-medium text-xs transition-all flex items-center justify-center gap-2 disabled:opacity-50"
-                >
-                  <span>📜</span>
-                  {generatingReport ? 'Generating...' : 'Generate Full Report'}
-                </button>
+                  {/* Prioritized Recommendations */}
+                  {combined360Result.prioritizedRecommendations?.length > 0 && (
+                    <div>
+                      <p className="text-xs text-[var(--sepia-600)] mb-1.5">Top Recommendations</p>
+                      <ul className="space-y-1">
+                        {combined360Result.prioritizedRecommendations.slice(0, 5).map((rec, i) => (
+                          <li key={i} className="flex items-start gap-1.5 text-[var(--sepia-700)] text-xs">
+                            <span className="text-amber-500 font-bold">{i + 1}.</span>
+                            <span>{rec}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+
+                {/* Sticky Report Button for 360 */}
+                <div className="p-3 sm:p-4 pt-0 border-t border-[var(--sepia-100)] bg-white">
+                  <button
+                    onClick={generateReport}
+                    disabled={generatingReport}
+                    className="w-full py-2.5 px-3 bg-gradient-to-r from-[var(--sepia-600)] to-[var(--sepia-700)] text-white rounded-lg hover:from-[var(--sepia-700)] hover:to-[var(--sepia-800)] font-medium text-xs transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                  >
+                    <span>📜</span>
+                    {generatingReport ? 'Generating...' : 'Generate Full Report'}
+                  </button>
+                </div>
               </div>
             )}
 
             {/* Single Analysis Results */}
             {currentResult && !combined360Result && (
-              <div className="bg-white p-3 sm:p-4 rounded-xl shadow-sm border border-[var(--sepia-200)] lg:flex-1 overflow-y-auto">
-                <div className="flex items-center justify-between mb-2 sm:mb-3">
-                  <h3 className="font-serif text-sm text-[var(--sepia-800)]">Feng Shui Analysis</h3>
-                  {isLiveMode && (
-                    <div className="flex items-center gap-1 text-xs text-[var(--sepia-500)]">
-                      <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
-                      Live
+              <div className="bg-white rounded-xl shadow-sm border border-[var(--sepia-200)] lg:flex-1 flex flex-col overflow-hidden">
+                {/* Scrollable Content */}
+                <div className="flex-1 overflow-y-auto p-3 sm:p-4">
+                  <div className="flex items-center justify-between mb-2 sm:mb-3">
+                    <h3 className="font-serif text-sm text-[var(--sepia-800)]">Feng Shui Analysis</h3>
+                    {isLiveMode && (
+                      <div className="flex items-center gap-1 text-xs text-[var(--sepia-500)]">
+                        <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
+                        Live
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${getColorMatchStyles(currentResult.colorMatch)}`}>
+                      {getColorMatchIcon(currentResult.colorMatch)} {getColorMatchLabel(currentResult.colorMatch)}
+                    </span>
+                    {currentResult.reason && (
+                      <span className="text-xs text-[var(--sepia-600)]">{currentResult.reason}</span>
+                    )}
+                  </div>
+
+                  <p className="text-[var(--sepia-700)] text-xs sm:text-sm leading-relaxed mb-3">{currentResult.analysis}</p>
+
+                  {currentResult.flyingStarNotes && (
+                    <div className="mb-3 p-2 bg-amber-50 rounded-lg border border-amber-200">
+                      <p className="text-xs text-amber-800">
+                        <span className="font-medium">2026 Flying Stars:</span> {currentResult.flyingStarNotes}
+                      </p>
+                    </div>
+                  )}
+
+                  {currentResult.elementAlignment && (
+                    <div className="mb-3">
+                      <p className="text-xs text-[var(--sepia-600)] mb-1">Dominant Elements</p>
+                      <p className="text-xs text-[var(--sepia-700)]">{currentResult.elementAlignment}</p>
+                    </div>
+                  )}
+
+                  {currentResult.detectedColors?.length > 0 && (
+                    <div className="mb-3">
+                      <p className="text-xs text-[var(--sepia-600)] mb-1.5">Detected Colors</p>
+                      <div className="flex flex-wrap gap-1">
+                        {currentResult.detectedColors.map((color, i) => (
+                          <span key={i} className="px-2 py-0.5 rounded-full bg-[var(--sepia-100)] text-[var(--sepia-700)] text-xs">{color}</span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {currentResult.suggestions?.length > 0 && (
+                    <div>
+                      <p className="text-xs text-[var(--sepia-600)] mb-1.5">Feng Shui Recommendations</p>
+                      <ul className="space-y-1">
+                        {currentResult.suggestions.slice(0, 4).map((suggestion, i) => (
+                          <li key={i} className="flex items-start gap-1.5 text-[var(--sepia-700)] text-xs">
+                            <span className="text-[var(--sepia-400)]">•</span>
+                            <span>{suggestion}</span>
+                          </li>
+                        ))}
+                      </ul>
                     </div>
                   )}
                 </div>
 
-                <div className="flex items-center gap-2 mb-2">
-                  <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${getColorMatchStyles(currentResult.colorMatch)}`}>
-                    {getColorMatchIcon(currentResult.colorMatch)} {getColorMatchLabel(currentResult.colorMatch)}
-                  </span>
-                  {currentResult.reason && (
-                    <span className="text-xs text-[var(--sepia-600)]">{currentResult.reason}</span>
-                  )}
+                {/* Sticky Report Button */}
+                <div className="p-3 sm:p-4 pt-0 border-t border-[var(--sepia-100)] bg-white">
+                  <button
+                    onClick={generateReport}
+                    disabled={generatingReport}
+                    className="w-full py-2.5 px-3 bg-gradient-to-r from-[var(--sepia-600)] to-[var(--sepia-700)] text-white rounded-lg hover:from-[var(--sepia-700)] hover:to-[var(--sepia-800)] font-medium text-xs transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                  >
+                    <span>📜</span>
+                    {generatingReport ? 'Generating...' : 'Generate Full Report'}
+                  </button>
                 </div>
-
-                <p className="text-[var(--sepia-700)] text-xs sm:text-sm leading-relaxed mb-3">{currentResult.analysis}</p>
-
-                {currentResult.flyingStarNotes && (
-                  <div className="mb-3 p-2 bg-amber-50 rounded-lg border border-amber-200">
-                    <p className="text-xs text-amber-800">
-                      <span className="font-medium">2026 Flying Stars:</span> {currentResult.flyingStarNotes}
-                    </p>
-                  </div>
-                )}
-
-                {currentResult.elementAlignment && (
-                  <div className="mb-3">
-                    <p className="text-xs text-[var(--sepia-600)] mb-1">Dominant Elements</p>
-                    <p className="text-xs text-[var(--sepia-700)]">{currentResult.elementAlignment}</p>
-                  </div>
-                )}
-
-                {currentResult.detectedColors?.length > 0 && (
-                  <div className="mb-3">
-                    <p className="text-xs text-[var(--sepia-600)] mb-1.5">Detected Colors</p>
-                    <div className="flex flex-wrap gap-1">
-                      {currentResult.detectedColors.map((color, i) => (
-                        <span key={i} className="px-2 py-0.5 rounded-full bg-[var(--sepia-100)] text-[var(--sepia-700)] text-xs">{color}</span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {currentResult.suggestions?.length > 0 && (
-                  <div>
-                    <p className="text-xs text-[var(--sepia-600)] mb-1.5">Feng Shui Recommendations</p>
-                    <ul className="space-y-1">
-                      {currentResult.suggestions.slice(0, 4).map((suggestion, i) => (
-                        <li key={i} className="flex items-start gap-1.5 text-[var(--sepia-700)] text-xs">
-                          <span className="text-[var(--sepia-400)]">•</span>
-                          <span>{suggestion}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-
-                {/* Generate Report Button */}
-                <button
-                  onClick={generateReport}
-                  disabled={generatingReport}
-                  className="w-full mt-3 py-2 px-3 bg-gradient-to-r from-[var(--sepia-600)] to-[var(--sepia-700)] text-white rounded-lg hover:from-[var(--sepia-700)] hover:to-[var(--sepia-800)] font-medium text-xs transition-all flex items-center justify-center gap-2 disabled:opacity-50"
-                >
-                  <span>📜</span>
-                  {generatingReport ? 'Generating...' : 'Generate Full Report'}
-                </button>
               </div>
             )}
 
