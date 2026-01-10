@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, useCallback } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 interface AnalysisResult {
   analysis: string;
@@ -229,8 +230,9 @@ export default function OutfitPage() {
       {/* Header */}
       <header className="border-b border-[var(--sepia-200)] bg-white/80 backdrop-blur-sm sticky top-0 z-50">
         <div className="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
-          <Link href="/" className="text-2xl font-serif text-[var(--sepia-800)]">
-            <span className="font-bold">Feng Shui</span> Banana
+          <Link href="/" className="flex items-center gap-2">
+            <Image src="/logo.png" alt="Feng Shui Banana" width={40} height={40} className="rounded-full" />
+            <span className="text-2xl font-serif text-[var(--sepia-800)]"><span className="font-bold">Feng Shui</span> Banana</span>
           </Link>
           <nav className="flex gap-6">
             <Link href="/bazi" className="text-[var(--sepia-600)] hover:text-[var(--sepia-800)] transition-colors">
