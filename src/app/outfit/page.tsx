@@ -359,7 +359,7 @@ export default function OutfitPage() {
           <Link href="/" className="flex items-center gap-2">
             <Image src="/logo.png" alt="Feng Shui Banana" width={28} height={28} className="rounded-full sm:w-8 sm:h-8" />
             <span className="text-lg sm:text-xl font-serif text-[var(--sepia-800)]">
-              <span className="font-bold">Feng Shui</span> <span className="hidden xs:inline">Banana</span>
+              <span className="font-bold">Feng Shui</span> Banana
             </span>
           </Link>
 

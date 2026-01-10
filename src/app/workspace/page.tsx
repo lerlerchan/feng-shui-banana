@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, useCallback } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 interface AnalysisResult {
   analysis: string;
@@ -229,9 +230,12 @@ export default function WorkspacePage() {
     <div className="min-h-screen bg-[var(--sepia-50)]">
       {/* Header */}
       <header className="border-b border-[var(--sepia-200)] bg-white/80 backdrop-blur-sm sticky top-0 z-50">
-        <div className="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
-          <Link href="/" className="text-2xl font-serif text-[var(--sepia-800)]">
-            <span className="font-bold">Feng Shui</span> Banana
+        <div className="max-w-6xl mx-auto px-4 py-3 sm:py-4 flex justify-between items-center">
+          <Link href="/" className="flex items-center gap-2">
+            <Image src="/logo.png" alt="Feng Shui Banana" width={32} height={32} className="rounded-full sm:w-10 sm:h-10" />
+            <span className="text-xl sm:text-2xl font-serif text-[var(--sepia-800)]">
+              <span className="font-bold">Feng Shui</span> Banana
+            </span>
           </Link>
           <nav className="flex gap-6">
             <Link href="/bazi" className="text-[var(--sepia-600)] hover:text-[var(--sepia-800)] transition-colors">
@@ -241,7 +245,7 @@ export default function WorkspacePage() {
               Outfit Check
             </Link>
             <Link href="/workspace" className="text-[var(--sepia-800)] font-medium">
-              Workspace Check
+              Workspace
             </Link>
           </nav>
         </div>
