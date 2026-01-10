@@ -8,7 +8,10 @@ interface AnalysisResult {
   analysis: string;
   detectedColors: string[];
   colorMatch: 'excellent' | 'good' | 'neutral' | 'poor';
+  reason: string;
+  flyingStarNotes: string;
   suggestions: string[];
+  elementAlignment: string;
 }
 
 interface BaziColors {
@@ -210,14 +213,14 @@ export default function WorkspacePage() {
         return;
       }
 
-      const response = await fetch('/api/gemini/analyze', {
+      const response = await fetch('/api/gemini/workspace-analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           image: imageData,
           luckyColors: baziColors?.luckyColors || [],
           unluckyColors: baziColors?.unluckyColors || [],
-          context: 'workspace',
+          directionalAnalysis: directionalAnalysis,
         }),
       });
 
@@ -230,7 +233,7 @@ export default function WorkspacePage() {
     } finally {
       setAnalyzing(false);
     }
-  }, [mode, capturePhoto, uploadedImage, baziColors]);
+  }, [mode, capturePhoto, uploadedImage, baziColors, directionalAnalysis]);
 
   const getColorMatchStyles = (match: string) => {
     switch (match) {
@@ -518,18 +521,38 @@ export default function WorkspacePage() {
 
             {/* Analysis Results */}
             {result && (
-              <div className="bg-white p-3 sm:p-4 rounded-xl shadow-sm border border-[var(--sepia-200)] lg:flex-1">
-                <h3 className="font-serif text-sm text-[var(--sepia-800)] mb-2 sm:mb-3">Analysis</h3>
+              <div className="bg-white p-3 sm:p-4 rounded-xl shadow-sm border border-[var(--sepia-200)] lg:flex-1 overflow-y-auto">
+                <h3 className="font-serif text-sm text-[var(--sepia-800)] mb-2 sm:mb-3">Feng Shui Analysis</h3>
 
-                <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${getColorMatchStyles(result.colorMatch)}`}>
-                  {getColorMatchIcon(result.colorMatch)} {getColorMatchLabel(result.colorMatch)}
-                </span>
+                <div className="flex items-center gap-2 mb-2">
+                  <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${getColorMatchStyles(result.colorMatch)}`}>
+                    {getColorMatchIcon(result.colorMatch)} {getColorMatchLabel(result.colorMatch)}
+                  </span>
+                  {result.reason && (
+                    <span className="text-xs text-[var(--sepia-600)]">{result.reason}</span>
+                  )}
+                </div>
 
-                <p className="text-[var(--sepia-700)] text-xs sm:text-sm leading-relaxed mt-2 mb-3">{result.analysis}</p>
+                <p className="text-[var(--sepia-700)] text-xs sm:text-sm leading-relaxed mb-3">{result.analysis}</p>
+
+                {result.flyingStarNotes && (
+                  <div className="mb-3 p-2 bg-amber-50 rounded-lg border border-amber-200">
+                    <p className="text-xs text-amber-800">
+                      <span className="font-medium">2026 Flying Stars:</span> {result.flyingStarNotes}
+                    </p>
+                  </div>
+                )}
+
+                {result.elementAlignment && (
+                  <div className="mb-3">
+                    <p className="text-xs text-[var(--sepia-600)] mb-1">Dominant Elements</p>
+                    <p className="text-xs text-[var(--sepia-700)]">{result.elementAlignment}</p>
+                  </div>
+                )}
 
                 {result.detectedColors?.length > 0 && (
                   <div className="mb-3">
-                    <p className="text-xs text-[var(--sepia-600)] mb-1.5">Detected</p>
+                    <p className="text-xs text-[var(--sepia-600)] mb-1.5">Detected Colors</p>
                     <div className="flex flex-wrap gap-1">
                       {result.detectedColors.map((color, i) => (
                         <span key={i} className="px-2 py-0.5 rounded-full bg-[var(--sepia-100)] text-[var(--sepia-700)] text-xs">{color}</span>
@@ -540,7 +563,7 @@ export default function WorkspacePage() {
 
                 {result.suggestions?.length > 0 && (
                   <div>
-                    <p className="text-xs text-[var(--sepia-600)] mb-1.5">Suggestions</p>
+                    <p className="text-xs text-[var(--sepia-600)] mb-1.5">Feng Shui Recommendations</p>
                     <ul className="space-y-1">
                       {result.suggestions.slice(0, 4).map((suggestion, i) => (
                         <li key={i} className="flex items-start gap-1.5 text-[var(--sepia-700)] text-xs">
