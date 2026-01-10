@@ -8,7 +8,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'No report provided' }, { status: 400 });
     }
 
-    const prompt = `You are a fun, lively Feng Shui consultant from Singapore! Convert this ${type === 'workspace' ? 'workspace' : 'outfit'} Feng Shui report into a SINGLISH speech script - entertaining, humorous, and full of personality!
+    const scriptPrompt = `You are a fun, lively Feng Shui consultant from Singapore! Convert this ${type === 'workspace' ? 'workspace' : 'outfit'} Feng Shui report into a SINGLISH speech script - entertaining, humorous, and full of personality!
 
 ## SINGLISH STYLE GUIDE (VERY IMPORTANT!):
 - Use Singlish particles naturally: "lah", "lor", "leh", "mah", "sia", "hor", "ah"
@@ -36,14 +36,14 @@ ${report}
 
 ## Your entertaining Singlish speech script:`;
 
-    // First, generate the script text
+    // First, generate the script text using Gemini 2.0 Flash
     const textResponse = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }],
+          contents: [{ parts: [{ text: scriptPrompt }] }],
         }),
       }
     );
@@ -55,23 +55,20 @@ ${report}
     const textData = await textResponse.json();
     const script = textData.candidates?.[0]?.content?.parts?.[0]?.text || '';
 
-    // Now generate audio using Gemini 2.0 Flash with audio output
+    // Now generate audio using Gemini 2.5 Flash TTS (better quality)
     let audioBase64: string | null = null;
 
     try {
-      const audioResponse = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
+      // Gemini 2.5 Flash TTS with style prompt for lively Singlish delivery
+      const ttsResponse = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${process.env.GEMINI_API_KEY}`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             contents: [
               {
-                parts: [
-                  {
-                    text: `Read the following script aloud in a lively, energetic Singaporean accent. Be expressive and fun, like a friendly kopitiam auntie giving advice! Add natural pauses and emphasis where appropriate.\n\nScript:\n${script}`,
-                  },
-                ],
+                parts: [{ text: script }],
               },
             ],
             generationConfig: {
@@ -79,23 +76,87 @@ ${report}
               speechConfig: {
                 voiceConfig: {
                   prebuiltVoiceConfig: {
-                    voiceName: 'Kore', // Energetic voice
+                    voiceName: 'Kore', // Energetic, expressive voice
                   },
                 },
+                // Style prompt for Singlish delivery
+                multiSpeakerVoiceConfig: {
+                  speakerVoiceConfigs: [
+                    {
+                      speaker: 'default',
+                      voiceConfig: {
+                        prebuiltVoiceConfig: {
+                          voiceName: 'Kore',
+                        },
+                      },
+                    },
+                  ],
+                },
               },
+            },
+            // System instruction for speaking style
+            systemInstruction: {
+              parts: [
+                {
+                  text: 'Speak in a lively, energetic Singaporean accent. Be expressive, warm, and fun - like a friendly kopitiam auntie giving advice! Use natural pauses, vary your pitch for emphasis, and sound genuinely excited when sharing good news. Add slight dramatic pauses before important points.',
+                },
+              ],
             },
           }),
         }
       );
 
-      if (audioResponse.ok) {
-        const audioData = await audioResponse.json();
+      if (ttsResponse.ok) {
+        const ttsData = await ttsResponse.json();
         // Extract audio from response
-        const audioPart = audioData.candidates?.[0]?.content?.parts?.find(
-          (part: { inlineData?: { mimeType: string; data: string } }) => part.inlineData?.mimeType?.startsWith('audio/')
+        const audioPart = ttsData.candidates?.[0]?.content?.parts?.find(
+          (part: { inlineData?: { mimeType: string; data: string } }) =>
+            part.inlineData?.mimeType?.startsWith('audio/')
         );
         if (audioPart?.inlineData?.data) {
           audioBase64 = audioPart.inlineData.data;
+        }
+      } else {
+        // Fallback to Gemini 2.0 Flash if 2.5 TTS not available
+        console.log('Gemini 2.5 TTS not available, falling back to 2.0 Flash');
+        const fallbackResponse = await fetch(
+          `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [
+                {
+                  parts: [
+                    {
+                      text: `Read this script aloud in a lively, energetic Singaporean accent:\n\n${script}`,
+                    },
+                  ],
+                },
+              ],
+              generationConfig: {
+                responseModalities: ['AUDIO'],
+                speechConfig: {
+                  voiceConfig: {
+                    prebuiltVoiceConfig: {
+                      voiceName: 'Kore',
+                    },
+                  },
+                },
+              },
+            }),
+          }
+        );
+
+        if (fallbackResponse.ok) {
+          const fallbackData = await fallbackResponse.json();
+          const audioPart = fallbackData.candidates?.[0]?.content?.parts?.find(
+            (part: { inlineData?: { mimeType: string; data: string } }) =>
+              part.inlineData?.mimeType?.startsWith('audio/')
+          );
+          if (audioPart?.inlineData?.data) {
+            audioBase64 = audioPart.inlineData.data;
+          }
         }
       }
     } catch (audioError) {
