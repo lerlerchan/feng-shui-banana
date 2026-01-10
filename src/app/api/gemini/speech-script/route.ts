@@ -1,5 +1,39 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+// Convert raw PCM (L16) to WAV format by adding header
+function pcmToWav(pcmBase64: string, sampleRate: number = 24000, channels: number = 1, bitsPerSample: number = 16): string {
+  const pcmData = Buffer.from(pcmBase64, 'base64');
+  const dataLength = pcmData.length;
+  const byteRate = sampleRate * channels * (bitsPerSample / 8);
+  const blockAlign = channels * (bitsPerSample / 8);
+
+  // WAV header is 44 bytes
+  const wavHeader = Buffer.alloc(44);
+
+  // "RIFF" chunk descriptor
+  wavHeader.write('RIFF', 0);
+  wavHeader.writeUInt32LE(36 + dataLength, 4); // File size - 8
+  wavHeader.write('WAVE', 8);
+
+  // "fmt " sub-chunk
+  wavHeader.write('fmt ', 12);
+  wavHeader.writeUInt32LE(16, 16); // Subchunk1Size (16 for PCM)
+  wavHeader.writeUInt16LE(1, 20); // AudioFormat (1 = PCM)
+  wavHeader.writeUInt16LE(channels, 22); // NumChannels
+  wavHeader.writeUInt32LE(sampleRate, 24); // SampleRate
+  wavHeader.writeUInt32LE(byteRate, 28); // ByteRate
+  wavHeader.writeUInt16LE(blockAlign, 32); // BlockAlign
+  wavHeader.writeUInt16LE(bitsPerSample, 34); // BitsPerSample
+
+  // "data" sub-chunk
+  wavHeader.write('data', 36);
+  wavHeader.writeUInt32LE(dataLength, 40); // Subchunk2Size
+
+  // Combine header and PCM data
+  const wavBuffer = Buffer.concat([wavHeader, pcmData]);
+  return wavBuffer.toString('base64');
+}
+
 export async function POST(request: NextRequest) {
   try {
     const { report, type } = await request.json();
@@ -114,9 +148,11 @@ ${report}
             part.inlineData?.mimeType?.startsWith('audio/')
         );
         if (audioPart?.inlineData?.data) {
-          audioBase64 = audioPart.inlineData.data;
+          // Convert PCM to WAV format for browser playback
+          const pcmData = audioPart.inlineData.data;
+          audioBase64 = pcmToWav(pcmData, 24000, 1, 16);
           audioSource = 'gemini-2.5-flash-tts';
-          console.log('SUCCESS: Got audio from Gemini 2.5 TTS, length:', audioBase64?.length);
+          console.log('SUCCESS: Got audio from Gemini 2.5 TTS, PCM length:', pcmData.length, 'WAV length:', audioBase64?.length);
         } else {
           console.log('WARNING: Gemini 2.5 TTS response OK but no audio part found');
         }
@@ -164,9 +200,11 @@ ${report}
               part.inlineData?.mimeType?.startsWith('audio/')
           );
           if (audioPart?.inlineData?.data) {
-            audioBase64 = audioPart.inlineData.data;
+            // Convert PCM to WAV format for browser playback
+            const pcmData = audioPart.inlineData.data;
+            audioBase64 = pcmToWav(pcmData, 24000, 1, 16);
             audioSource = 'gemini-2.0-flash';
-            console.log('SUCCESS: Got audio from Gemini 2.0 Flash, length:', audioBase64?.length);
+            console.log('SUCCESS: Got audio from Gemini 2.0 Flash, PCM length:', pcmData.length, 'WAV length:', audioBase64?.length);
           } else {
             console.log('WARNING: Gemini 2.0 Flash response OK but no audio part found');
           }
