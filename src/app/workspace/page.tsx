@@ -105,6 +105,12 @@ export default function WorkspacePage() {
   const orientationListenerRef = useRef<((event: DeviceOrientationEvent) => void) | null>(null);
   const SWEET_SPOT_THRESHOLD = 10; // degrees from exact cardinal for instant capture
 
+  // Report modal states
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [reportContent, setReportContent] = useState<string | null>(null);
+  const [generatingReport, setGeneratingReport] = useState(false);
+  const lastCapturedImageRef = useRef<string | null>(null);
+
   // Load BaZi colors and directional analysis from sessionStorage
   useEffect(() => {
     const stored = sessionStorage.getItem('baziResult');
@@ -702,6 +708,76 @@ export default function WorkspacePage() {
     lastCapturedDirectionRef.current = null;
     setIsInSweetSpot(false);
   };
+
+  // Generate detailed workspace report
+  const generateReport = useCallback(async () => {
+    setGeneratingReport(true);
+    setShowReportModal(true);
+    setReportContent(null);
+
+    try {
+      if (is360Mode && captures360.size === 4) {
+        // 360 mode - send all 4 images
+        const images = Array.from(captures360.entries()).map(([direction, image]) => ({
+          direction,
+          image,
+        }));
+
+        const response = await fetch('/api/gemini/workspace-report', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            images,
+            is360Mode: true,
+            luckyColors: baziColors?.luckyColors || [],
+            unluckyColors: baziColors?.unluckyColors || [],
+            directionalAnalysis,
+          }),
+        });
+
+        if (!response.ok) throw new Error('Failed to generate report');
+        const data = await response.json();
+        setReportContent(data.report);
+      } else {
+        // Single image mode
+        let imageData: string | null = null;
+        if (mode === 'camera') {
+          imageData = capturePhoto();
+        } else {
+          imageData = uploadedImage;
+        }
+
+        if (!imageData) {
+          setReportContent('Unable to capture image for report.');
+          setGeneratingReport(false);
+          return;
+        }
+
+        lastCapturedImageRef.current = imageData;
+
+        const response = await fetch('/api/gemini/workspace-report', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            singleImage: imageData,
+            is360Mode: false,
+            luckyColors: baziColors?.luckyColors || [],
+            unluckyColors: baziColors?.unluckyColors || [],
+            directionalAnalysis,
+          }),
+        });
+
+        if (!response.ok) throw new Error('Failed to generate report');
+        const data = await response.json();
+        setReportContent(data.report);
+      }
+    } catch (err) {
+      console.error('Report generation error:', err);
+      setReportContent('Failed to generate report. Please try again.');
+    } finally {
+      setGeneratingReport(false);
+    }
+  }, [is360Mode, captures360, mode, capturePhoto, uploadedImage, baziColors, directionalAnalysis]);
 
   const getColorMatchStyles = (match: string) => {
     switch (match) {
@@ -1320,6 +1396,16 @@ export default function WorkspacePage() {
                     </ul>
                   </div>
                 )}
+
+                {/* Generate Report Button for 360 */}
+                <button
+                  onClick={generateReport}
+                  disabled={generatingReport}
+                  className="w-full mt-3 py-2 px-3 bg-gradient-to-r from-[var(--sepia-600)] to-[var(--sepia-700)] text-white rounded-lg hover:from-[var(--sepia-700)] hover:to-[var(--sepia-800)] font-medium text-xs transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                >
+                  <span>📜</span>
+                  {generatingReport ? 'Generating...' : 'Generate Full Report'}
+                </button>
               </div>
             )}
 
@@ -1386,6 +1472,16 @@ export default function WorkspacePage() {
                     </ul>
                   </div>
                 )}
+
+                {/* Generate Report Button */}
+                <button
+                  onClick={generateReport}
+                  disabled={generatingReport}
+                  className="w-full mt-3 py-2 px-3 bg-gradient-to-r from-[var(--sepia-600)] to-[var(--sepia-700)] text-white rounded-lg hover:from-[var(--sepia-700)] hover:to-[var(--sepia-800)] font-medium text-xs transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                >
+                  <span>📜</span>
+                  {generatingReport ? 'Generating...' : 'Generate Full Report'}
+                </button>
               </div>
             )}
 
@@ -1452,6 +1548,94 @@ export default function WorkspacePage() {
                 <span>🧭</span>
                 Allow Access
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Report Modal */}
+      {showReportModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+          <div className="bg-[var(--sepia-50)] rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] flex flex-col border border-[var(--sepia-200)] overflow-hidden">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between p-4 border-b border-[var(--sepia-200)] bg-white">
+              <div className="flex items-center gap-3">
+                <span className="text-2xl">📜</span>
+                <div>
+                  <h2 className="font-serif text-lg text-[var(--sepia-800)]">Workspace Feng Shui Report</h2>
+                  <p className="text-xs text-[var(--sepia-500)]">
+                    {is360Mode ? '360° comprehensive analysis' : 'Your personalized space analysis'}
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowReportModal(false)}
+                className="p-2 hover:bg-[var(--sepia-100)] rounded-full transition-colors"
+              >
+                <svg className="w-5 h-5 text-[var(--sepia-600)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Modal Content */}
+            <div className="flex-1 overflow-y-auto p-4 sm:p-6">
+              {generatingReport ? (
+                <div className="flex flex-col items-center justify-center py-12">
+                  <div className="relative">
+                    <div className="w-16 h-16 border-4 border-[var(--sepia-200)] rounded-full"></div>
+                    <div className="absolute inset-0 w-16 h-16 border-4 border-[var(--sepia-600)] border-t-transparent rounded-full animate-spin"></div>
+                  </div>
+                  <p className="mt-4 text-[var(--sepia-700)] font-medium">Consulting the Flying Stars...</p>
+                  <p className="text-sm text-[var(--sepia-500)] mt-1">Generating your comprehensive report</p>
+                </div>
+              ) : reportContent ? (
+                <div className="prose prose-sm max-w-none prose-headings:font-serif prose-headings:text-[var(--sepia-800)] prose-p:text-[var(--sepia-700)] prose-li:text-[var(--sepia-700)] prose-strong:text-[var(--sepia-800)]">
+                  <div
+                    className="report-content"
+                    dangerouslySetInnerHTML={{
+                      __html: reportContent
+                        .replace(/^### (.*$)/gim, '<h3 class="text-lg font-serif text-[var(--sepia-800)] mt-4 mb-2">$1</h3>')
+                        .replace(/^## (.*$)/gim, '<h2 class="text-xl font-serif text-[var(--sepia-800)] mt-5 mb-3">$1</h2>')
+                        .replace(/^# (.*$)/gim, '<h1 class="text-2xl font-serif text-[var(--sepia-900)] mt-6 mb-4">$1</h1>')
+                        .replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold text-[var(--sepia-800)]">$1</strong>')
+                        .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                        .replace(/^- (.*$)/gim, '<li class="ml-4 text-[var(--sepia-700)]">$1</li>')
+                        .replace(/^(\d+)\. (.*$)/gim, '<li class="ml-4 text-[var(--sepia-700)]"><span class="font-medium">$1.</span> $2</li>')
+                        .replace(/\n\n/g, '</p><p class="text-[var(--sepia-700)] leading-relaxed mb-3">')
+                        .replace(/\n/g, '<br/>')
+                    }}
+                  />
+                </div>
+              ) : (
+                <div className="text-center py-8 text-[var(--sepia-500)]">
+                  No report content available.
+                </div>
+              )}
+            </div>
+
+            {/* Modal Footer */}
+            <div className="p-4 border-t border-[var(--sepia-200)] bg-white flex gap-3">
+              <button
+                onClick={() => setShowReportModal(false)}
+                className="flex-1 py-2.5 border border-[var(--sepia-300)] text-[var(--sepia-700)] rounded-lg hover:bg-[var(--sepia-50)] font-medium text-sm transition-colors"
+              >
+                Close
+              </button>
+              {reportContent && !generatingReport && (
+                <button
+                  onClick={() => {
+                    navigator.clipboard.writeText(reportContent);
+                    alert('Report copied to clipboard!');
+                  }}
+                  className="flex-1 py-2.5 bg-[var(--sepia-700)] text-white rounded-lg hover:bg-[var(--sepia-800)] font-medium text-sm transition-colors flex items-center justify-center gap-2"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                  </svg>
+                  Copy Report
+                </button>
+              )}
             </div>
           </div>
         </div>
