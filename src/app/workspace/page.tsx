@@ -24,13 +24,6 @@ interface DirectionalRecommendation {
   reason: string;
 }
 
-interface ColorPlacementZone {
-  direction: string;
-  colors: { color: string; code: string; element: string }[];
-  purpose: string;
-  priority: 'high' | 'medium' | 'low';
-}
-
 interface WealthCornerRecommendation {
   direction: string;
   element: string;
@@ -42,7 +35,6 @@ interface WealthCornerRecommendation {
 interface DirectionalAnalysisData {
   sittingDirection: DirectionalRecommendation;
   deskPosition: DirectionalRecommendation;
-  colorZones: ColorPlacementZone[];
   wealthCorner: WealthCornerRecommendation;
 }
 
@@ -59,10 +51,8 @@ export default function WorkspacePage() {
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const [cameraReady, setCameraReady] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
-  const [facingMode, setFacingMode] = useState<'user' | 'environment'>('user');
-  const [streamingText, setStreamingText] = useState<string>('');
-  const [isStreaming, setIsStreaming] = useState(false);
-  const [pollingInterval, setPollingInterval] = useState<ReturnType<typeof setInterval> | null>(null);
+  const [facingMode, setFacingMode] = useState<'user' | 'environment'>('environment');
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [directionalAnalysis, setDirectionalAnalysis] = useState<DirectionalAnalysisData | null>(null);
 
   // Load BaZi colors and directional analysis from sessionStorage
@@ -81,9 +71,8 @@ export default function WorkspacePage() {
 
   // Initialize camera when mode is 'camera'
   const startCamera = useCallback(async () => {
-    // Prevent multiple simultaneous camera initializations
     if (cameraInitializingRef.current) return;
-    if (streamRef.current) return; // Already have a stream
+    if (streamRef.current) return;
 
     cameraInitializingRef.current = true;
 
@@ -124,7 +113,7 @@ export default function WorkspacePage() {
   // Flip camera between selfie and environment
   const flipCamera = useCallback(async () => {
     stopCamera();
-    setFacingMode((prev: 'user' | 'environment') => prev === 'user' ? 'environment' : 'user');
+    setFacingMode((prev) => prev === 'user' ? 'environment' : 'user');
   }, [stopCamera]);
 
   // Handle mode changes
@@ -136,7 +125,6 @@ export default function WorkspacePage() {
     }
 
     return () => {
-      // Use ref for cleanup to avoid stale closure
       if (streamRef.current) {
         streamRef.current.getTracks().forEach(track => track.stop());
         streamRef.current = null;
@@ -180,15 +168,11 @@ export default function WorkspacePage() {
     reader.readAsDataURL(file);
   }, []);
 
-  // Handle file input change
   const handleFileInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      handleFileUpload(file);
-    }
+    if (file) handleFileUpload(file);
   }, [handleFileUpload]);
 
-  // Handle drag and drop
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(true);
@@ -203,9 +187,7 @@ export default function WorkspacePage() {
     e.preventDefault();
     setIsDragging(false);
     const file = e.dataTransfer.files?.[0];
-    if (file) {
-      handleFileUpload(file);
-    }
+    if (file) handleFileUpload(file);
   }, [handleFileUpload]);
 
   // Analyze workspace
@@ -216,7 +198,6 @@ export default function WorkspacePage() {
 
     try {
       let imageData: string | null = null;
-
       if (mode === 'camera') {
         imageData = capturePhoto();
       } else {
@@ -224,28 +205,23 @@ export default function WorkspacePage() {
       }
 
       if (!imageData) {
-        setError('No image available. Please capture or upload an image first.');
+        setError('No image available.');
         setAnalyzing(false);
         return;
       }
 
       const response = await fetch('/api/gemini/analyze', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           image: imageData,
           luckyColors: baziColors?.luckyColors || [],
           unluckyColors: baziColors?.unluckyColors || [],
-          context: 'workspace', // Add context to differentiate from outfit analysis
+          context: 'workspace',
         }),
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to analyze workspace');
-      }
-
+      if (!response.ok) throw new Error('Failed to analyze workspace');
       const data = await response.json();
       setResult(data);
     } catch (err) {
@@ -256,560 +232,338 @@ export default function WorkspacePage() {
     }
   }, [mode, capturePhoto, uploadedImage, baziColors]);
 
-  // Start streaming analysis with polling
-  const startStreamingAnalysis = useCallback(async () => {
-    if (!baziColors) {
-      setError('Please complete BaZi analysis first to get directional recommendations.');
-      return;
-    }
-
-    setIsStreaming(true);
-    setStreamingText('');
-    setError(null);
-
-    const captureAndStream = async () => {
-      const imageData = capturePhoto();
-      if (!imageData) return;
-
-      try {
-        const response = await fetch('/api/gemini/workspace-stream', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            image: imageData,
-            luckyColors: baziColors?.luckyColors || [],
-            unluckyColors: baziColors?.unluckyColors || [],
-            directionalAnalysis: directionalAnalysis,
-            context: 'workspace'
-          }),
-        });
-
-        if (!response.ok) throw new Error('Stream failed');
-
-        const reader = response.body?.getReader();
-        const decoder = new TextDecoder();
-
-        if (!reader) return;
-
-        setStreamingText(''); // Reset for new capture
-
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-
-          const chunk = decoder.decode(value);
-          const lines = chunk.split('\n');
-
-          for (const line of lines) {
-            if (line.startsWith('data: ')) {
-              try {
-                const data = JSON.parse(line.slice(6));
-                if (data.text) {
-                  setStreamingText((prev: string) => prev + data.text);
-                }
-                if (data.done) {
-                  return;
-                }
-                if (data.error) {
-                  setError(data.error);
-                  return;
-                }
-              } catch (parseError) {
-                // Ignore parse errors for SSE events
-              }
-            }
-          }
-        }
-      } catch (err) {
-        console.error('Streaming error:', err);
-        setError('Streaming analysis failed. Please try again.');
-      }
-    };
-
-    // Initial capture
-    await captureAndStream();
-
-    // Set up polling (every 3 seconds)
-    const interval = setInterval(async () => {
-      await captureAndStream();
-    }, 3000);
-
-    setPollingInterval(interval);
-  }, [baziColors, directionalAnalysis, capturePhoto]);
-
-  const stopStreamingAnalysis = useCallback(() => {
-    if (pollingInterval) {
-      clearInterval(pollingInterval);
-      setPollingInterval(null);
-    }
-    setIsStreaming(false);
-  }, [pollingInterval]);
-
-  // Get color match badge styles
   const getColorMatchStyles = (match: string) => {
     switch (match) {
-      case 'excellent':
-        return 'bg-green-100 text-green-800 border-green-300';
-      case 'good':
-        return 'bg-blue-100 text-blue-800 border-blue-300';
-      case 'neutral':
-        return 'bg-yellow-100 text-yellow-800 border-yellow-300';
-      case 'poor':
-        return 'bg-red-100 text-red-800 border-red-300';
-      default:
-        return 'bg-gray-100 text-gray-800 border-gray-300';
+      case 'excellent': return 'bg-green-500 text-white';
+      case 'good': return 'bg-blue-500 text-white';
+      case 'neutral': return 'bg-yellow-500 text-white';
+      case 'poor': return 'bg-red-500 text-white';
+      default: return 'bg-gray-500 text-white';
     }
   };
 
   const getColorMatchLabel = (match: string) => {
     switch (match) {
-      case 'excellent':
-        return 'Excellent Match';
-      case 'good':
-        return 'Good Match';
-      case 'neutral':
-        return 'Neutral';
-      case 'poor':
-        return 'Poor Match';
-      default:
-        return match;
+      case 'excellent': return 'Excellent';
+      case 'good': return 'Good';
+      case 'neutral': return 'Neutral';
+      case 'poor': return 'Poor';
+      default: return match;
+    }
+  };
+
+  const getColorMatchIcon = (match: string) => {
+    switch (match) {
+      case 'excellent': return '✨';
+      case 'good': return '👍';
+      case 'neutral': return '😐';
+      case 'poor': return '⚠️';
+      default: return '❓';
     }
   };
 
   return (
-    <div className="min-h-screen bg-[var(--sepia-50)]">
-      {/* Header */}
-      <header className="border-b border-[var(--sepia-200)] bg-white/80 backdrop-blur-sm sticky top-0 z-50">
-        <div className="max-w-6xl mx-auto px-4 py-3 sm:py-4 flex justify-between items-center">
+    <div className="min-h-screen lg:h-screen flex flex-col lg:overflow-hidden bg-[var(--sepia-50)]">
+      {/* Header - Responsive */}
+      <header className="flex-shrink-0 border-b border-[var(--sepia-200)] bg-white/80 backdrop-blur-sm">
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 py-2 flex justify-between items-center">
           <Link href="/" className="flex items-center gap-2">
-            <Image src="/logo.png" alt="Feng Shui Banana" width={32} height={32} className="rounded-full sm:w-10 sm:h-10" />
-            <span className="text-xl sm:text-2xl font-serif text-[var(--sepia-800)]">
+            <Image src="/logo.png" alt="Feng Shui Banana" width={28} height={28} className="rounded-full sm:w-8 sm:h-8" />
+            <span className="text-lg sm:text-xl font-serif text-[var(--sepia-800)]">
               <span className="font-bold">Feng Shui</span> Banana
             </span>
           </Link>
-          <nav className="flex gap-6">
-            <Link href="/bazi" className="text-[var(--sepia-600)] hover:text-[var(--sepia-800)] transition-colors">
-              BaZi Analysis
-            </Link>
-            <Link href="/outfit" className="text-[var(--sepia-600)] hover:text-[var(--sepia-800)] transition-colors">
-              Outfit Check
-            </Link>
-            <Link href="/workspace" className="text-[var(--sepia-800)] font-medium">
-              Workspace
-            </Link>
-          </nav>
-        </div>
-      </header>
 
-      <main className="max-w-4xl mx-auto px-4 py-8">
-        {/* Page Title */}
-        <div className="text-center mb-8 animate-fade-in">
-          <div className="text-5xl mb-4">🖥️</div>
-          <h1 className="text-3xl font-serif text-[var(--sepia-900)] mb-2">
-            Workspace Analysis
-          </h1>
-          <p className="text-[var(--sepia-600)]">
-            Capture or upload your workspace to see how it aligns with your lucky colors
-          </p>
-        </div>
-
-        {/* BaZi Colors Display */}
-        {baziColors && (baziColors.luckyColors.length > 0 || baziColors.unluckyColors.length > 0) && (
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-[var(--sepia-200)] mb-6 animate-fade-in" style={{animationDelay: '0.1s'}}>
-            <h3 className="font-serif text-lg text-[var(--sepia-800)] mb-4">Your BaZi Colors</h3>
-            <div className="grid grid-cols-2 gap-4">
-              {baziColors.luckyColors.length > 0 && (
-                <div>
-                  <p className="text-sm text-[var(--sepia-600)] mb-2">Lucky Colors</p>
-                  <div className="flex flex-wrap gap-2">
-                    {baziColors.luckyColors.map((c, i) => (
-                      <div
-                        key={i}
-                        className="flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--sepia-100)] border border-[var(--sepia-200)]"
-                      >
-                        <span
-                          className="w-4 h-4 rounded-full border border-[var(--sepia-300)]"
-                          style={{ backgroundColor: c.code }}
-                        />
-                        <span className="text-sm text-[var(--sepia-700)]">{c.color}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-              {baziColors.unluckyColors.length > 0 && (
-                <div>
-                  <p className="text-sm text-[var(--sepia-600)] mb-2">Unlucky Colors</p>
-                  <div className="flex flex-wrap gap-2">
-                    {baziColors.unluckyColors.map((c, i) => (
-                      <div
-                        key={i}
-                        className="flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--sepia-100)] border border-[var(--sepia-200)]"
-                      >
-                        <span
-                          className="w-4 h-4 rounded-full border border-[var(--sepia-300)]"
-                          style={{ backgroundColor: c.code }}
-                        />
-                        <span className="text-sm text-[var(--sepia-700)]">{c.color}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* No BaZi Warning */}
-        {!baziColors && (
-          <div className="bg-[var(--sepia-100)] p-4 rounded-xl border border-[var(--sepia-300)] mb-6 animate-fade-in" style={{animationDelay: '0.1s'}}>
-            <p className="text-[var(--sepia-700)] text-center">
-              No BaZi analysis found.{' '}
-              <Link href="/bazi" className="text-[var(--sepia-800)] font-medium underline hover:text-[var(--sepia-900)]">
-                Get your BaZi analysis first
-              </Link>{' '}
-              for personalized color recommendations.
-            </p>
-          </div>
-        )}
-
-        {/* Directional Recommendations Display */}
-        {directionalAnalysis && (
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-[var(--sepia-200)] mb-6 animate-fade-in" style={{animationDelay: '0.15s'}}>
-            <h3 className="font-serif text-lg text-[var(--sepia-800)] mb-4">Your Directional Recommendations</h3>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Sitting Direction */}
-              <div className="p-4 bg-[var(--sepia-50)] rounded-lg border border-[var(--sepia-200)]">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="text-2xl">🧭</span>
-                  <h4 className="font-medium text-[var(--sepia-800)]">Sitting Direction</h4>
-                </div>
-                <p className="text-lg font-semibold text-[var(--sepia-900)] mb-1">
-                  Face {directionalAnalysis.sittingDirection.primaryDirection}
-                </p>
-                <p className="text-sm text-[var(--sepia-600)] mb-2">
-                  {directionalAnalysis.sittingDirection.reason}
-                </p>
-                <span className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${
-                  directionalAnalysis.sittingDirection.strength === 'excellent' ? 'bg-green-100 text-green-800' :
-                  directionalAnalysis.sittingDirection.strength === 'good' ? 'bg-blue-100 text-blue-800' :
-                  'bg-yellow-100 text-yellow-800'
-                }`}>
-                  {directionalAnalysis.sittingDirection.strength} match
-                </span>
-              </div>
-
-              {/* Desk Position */}
-              <div className="p-4 bg-[var(--sepia-50)] rounded-lg border border-[var(--sepia-200)]">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="text-2xl">🪑</span>
-                  <h4 className="font-medium text-[var(--sepia-800)]">Desk Position</h4>
-                </div>
-                <p className="text-lg font-semibold text-[var(--sepia-900)] mb-1">
-                  {directionalAnalysis.deskPosition.primaryDirection} Sector
-                </p>
-                <p className="text-sm text-[var(--sepia-600)]">
-                  {directionalAnalysis.deskPosition.reason}
-                </p>
-              </div>
-
-              {/* Wealth Corner */}
-              <div className="p-4 bg-[var(--sepia-50)] rounded-lg border border-[var(--sepia-200)] md:col-span-2">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="text-2xl">💰</span>
-                  <h4 className="font-medium text-[var(--sepia-800)]">Wealth Corner ({directionalAnalysis.wealthCorner.direction})</h4>
-                </div>
-                <p className="text-sm text-[var(--sepia-700)] mb-3">
-                  {directionalAnalysis.wealthCorner.advice}
-                </p>
-                <div className="flex flex-wrap gap-2 mb-2">
-                  {directionalAnalysis.wealthCorner.enhancementColors.map((c: { color: string; code: string; element: string }, i: number) => (
-                    <div key={i} className="flex items-center gap-1 px-2 py-1 bg-white rounded-full border border-[var(--sepia-200)]">
-                      <span className="w-3 h-3 rounded-full" style={{ backgroundColor: c.code }} />
-                      <span className="text-xs text-[var(--sepia-700)]">{c.color}</span>
-                    </div>
-                  ))}
-                </div>
-                <p className="text-xs text-[var(--sepia-600)]">
-                  Suggested items: {directionalAnalysis.wealthCorner.items.join(', ')}
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Mode Toggle */}
-        <div className="flex justify-center mb-6 animate-fade-in" style={{animationDelay: '0.15s'}}>
-          <div className="inline-flex rounded-lg border border-[var(--sepia-300)] bg-white p-1">
-            <button
-              onClick={() => {
-                setMode('camera');
-                setResult(null);
-                setError(null);
-              }}
-              className={`px-6 py-2 rounded-md text-sm font-medium transition-colors ${
-                mode === 'camera'
-                  ? 'bg-[var(--sepia-700)] text-white'
-                  : 'text-[var(--sepia-600)] hover:text-[var(--sepia-800)]'
-              }`}
-            >
-              Camera
-            </button>
-            <button
-              onClick={() => {
-                setMode('upload');
-                setResult(null);
-                setError(null);
-              }}
-              className={`px-6 py-2 rounded-md text-sm font-medium transition-colors ${
-                mode === 'upload'
-                  ? 'bg-[var(--sepia-700)] text-white'
-                  : 'text-[var(--sepia-600)] hover:text-[var(--sepia-800)]'
-              }`}
-            >
-              Upload
-            </button>
-          </div>
-        </div>
-
-        {/* Camera / Upload Area */}
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-[var(--sepia-200)] mb-6 animate-fade-in" style={{animationDelay: '0.2s'}}>
-          {mode === 'camera' ? (
-            <div className="space-y-4">
-              {/* Video Feed */}
-              <div className="relative aspect-video bg-black rounded-lg overflow-hidden">
-                <video
-                  ref={videoRef}
-                  autoPlay
-                  playsInline
-                  muted
-                  className="w-full h-full object-cover"
-                />
-
-                {/* Camera Flip Button - Overlay on video */}
-                <button
-                  onClick={flipCamera}
-                  disabled={!cameraReady}
-                  className="absolute top-4 right-4 p-3 bg-white/90 hover:bg-white rounded-full shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                  title="Flip camera"
-                >
-                  <svg className="w-6 h-6 text-[var(--sepia-700)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                  </svg>
-                </button>
-
-                {!cameraReady && !error && (
-                  <div className="absolute inset-0 flex items-center justify-center bg-[var(--sepia-900)]/80">
-                    <div className="text-center text-white">
-                      <div className="animate-spin w-8 h-8 border-2 border-white border-t-transparent rounded-full mx-auto mb-2" />
-                      <p>Starting {facingMode === 'user' ? 'selfie' : 'environment'} camera...</p>
-                    </div>
-                  </div>
-                )}
-              </div>
-              {/* Hidden canvas for capturing */}
-              <canvas ref={canvasRef} className="hidden" />
-              {/* Control Buttons */}
-              <div className="flex gap-2">
-                <button
-                  onClick={isStreaming ? stopStreamingAnalysis : startStreamingAnalysis}
-                  disabled={!cameraReady}
-                  className={`flex-1 py-4 rounded-lg font-medium text-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-colors ${
-                    isStreaming
-                      ? 'bg-red-600 hover:bg-red-700 text-white'
-                      : 'bg-[var(--sepia-700)] hover:bg-[var(--sepia-800)] text-white'
-                  }`}
-                >
-                  {isStreaming ? (
-                    <>
-                      <span className="w-5 h-5 border-2 border-white rounded-sm animate-pulse" />
-                      Stop Live
-                    </>
-                  ) : (
-                    <>
-                      <span className="text-xl">🎥</span>
-                      Live Analysis
-                    </>
-                  )}
-                </button>
-                <button
-                  onClick={analyzeWorkspace}
-                  disabled={!cameraReady || analyzing}
-                  className="flex-1 py-4 bg-[var(--sepia-600)] text-white rounded-lg hover:bg-[var(--sepia-700)] transition-colors font-medium text-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                >
-                  {analyzing ? (
-                    <>
-                      <span className="animate-spin w-5 h-5 border-2 border-white border-t-transparent rounded-full" />
-                      Analyzing...
-                    </>
-                  ) : (
-                    'Capture & Analyze'
-                  )}
-                </button>
-              </div>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {/* Upload Area */}
-              <div
-                onClick={() => fileInputRef.current?.click()}
-                onDragOver={handleDragOver}
-                onDragLeave={handleDragLeave}
-                onDrop={handleDrop}
-                className={`relative aspect-video rounded-lg border-2 border-dashed transition-colors cursor-pointer flex items-center justify-center ${
-                  isDragging
-                    ? 'border-[var(--sepia-500)] bg-[var(--sepia-100)]'
-                    : 'border-[var(--sepia-300)] bg-[var(--sepia-50)] hover:border-[var(--sepia-400)] hover:bg-[var(--sepia-100)]'
+          <div className="flex items-center gap-2 sm:gap-4">
+            {/* Mode Toggle */}
+            <div className="inline-flex rounded-lg border border-[var(--sepia-300)] bg-white p-0.5">
+              <button
+                onClick={() => { setMode('camera'); setResult(null); setError(null); }}
+                className={`px-2 sm:px-4 py-1 sm:py-1.5 rounded-md text-xs sm:text-sm font-medium transition-colors ${
+                  mode === 'camera' ? 'bg-[var(--sepia-700)] text-white' : 'text-[var(--sepia-600)]'
                 }`}
               >
-                {uploadedImage ? (
-                  <img
-                    src={uploadedImage}
-                    alt="Uploaded workspace"
-                    className="w-full h-full object-contain rounded-lg"
-                  />
-                ) : (
-                  <div className="text-center p-8">
-                    <div className="text-4xl mb-4">📤</div>
-                    <p className="text-[var(--sepia-700)] font-medium mb-2">
-                      Click or drag to upload
-                    </p>
-                    <p className="text-sm text-[var(--sepia-500)]">
-                      Supports JPG, PNG, GIF
-                    </p>
-                  </div>
-                )}
-              </div>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                onChange={handleFileInputChange}
-                className="hidden"
-              />
-              {/* Analyze Button */}
-              <button
-                onClick={analyzeWorkspace}
-                disabled={!uploadedImage || analyzing}
-                className="w-full py-4 bg-[var(--sepia-700)] text-white rounded-lg hover:bg-[var(--sepia-800)] transition-colors font-medium text-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-              >
-                {analyzing ? (
-                  <>
-                    <span className="animate-spin w-5 h-5 border-2 border-white border-t-transparent rounded-full" />
-                    Analyzing...
-                  </>
-                ) : (
-                  'Analyze Workspace'
-                )}
+                Camera
               </button>
-              {uploadedImage && (
-                <button
-                  onClick={() => {
-                    setUploadedImage(null);
-                    setResult(null);
-                    setError(null);
-                  }}
-                  className="w-full py-2 text-[var(--sepia-600)] hover:text-[var(--sepia-800)] transition-colors text-sm"
-                >
-                  Clear image
-                </button>
-              )}
+              <button
+                onClick={() => { setMode('upload'); setResult(null); setError(null); }}
+                className={`px-2 sm:px-4 py-1 sm:py-1.5 rounded-md text-xs sm:text-sm font-medium transition-colors ${
+                  mode === 'upload' ? 'bg-[var(--sepia-700)] text-white' : 'text-[var(--sepia-600)]'
+                }`}
+              >
+                Upload
+              </button>
             </div>
-          )}
+
+            {/* Desktop Nav */}
+            <nav className="hidden md:flex gap-4">
+              <Link href="/bazi" className="text-sm text-[var(--sepia-600)] hover:text-[var(--sepia-800)]">BaZi</Link>
+              <Link href="/outfit" className="text-sm text-[var(--sepia-600)] hover:text-[var(--sepia-800)]">Outfit</Link>
+              <Link href="/workspace" className="text-sm text-[var(--sepia-800)] font-medium">Workspace</Link>
+            </nav>
+
+            {/* Mobile Menu Button */}
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="md:hidden p-1.5 text-[var(--sepia-600)]"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                {mobileMenuOpen ? (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                ) : (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                )}
+              </svg>
+            </button>
+          </div>
         </div>
 
-        {/* Streaming Analysis Display */}
-        {isStreaming && streamingText && (
-          <div className="bg-gradient-to-br from-blue-50 to-purple-50 p-6 rounded-xl shadow-sm border-2 border-blue-200 mb-6 animate-fade-in">
-            <div className="flex items-center gap-2 mb-4">
-              <span className="relative flex h-3 w-3">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-3 w-3 bg-blue-500"></span>
-              </span>
-              <h2 className="text-lg font-serif text-[var(--sepia-900)]">Live Analysis</h2>
-            </div>
-            <div className="prose prose-sm max-w-none text-[var(--sepia-800)] leading-relaxed whitespace-pre-wrap">
-              {streamingText}
-            </div>
+        {/* Mobile Menu Dropdown */}
+        {mobileMenuOpen && (
+          <div className="md:hidden border-t border-[var(--sepia-200)] bg-white px-4 py-2">
+            <nav className="flex flex-col gap-2">
+              <Link href="/bazi" className="text-sm text-[var(--sepia-600)] py-1">BaZi Analysis</Link>
+              <Link href="/outfit" className="text-sm text-[var(--sepia-600)] py-1">Outfit Check</Link>
+              <Link href="/workspace" className="text-sm text-[var(--sepia-800)] font-medium py-1">Workspace</Link>
+            </nav>
           </div>
         )}
+      </header>
 
-        {/* Error Display */}
-        {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-xl mb-6 animate-fade-in">
-            <div className="flex items-start gap-3">
-              <span className="text-xl">⚠️</span>
-              <p>{error}</p>
-            </div>
-          </div>
-        )}
+      {/* Main Content - Responsive Layout */}
+      <main className="flex-1 overflow-auto lg:overflow-hidden">
+        <div className="h-full max-w-7xl mx-auto px-3 sm:px-4 py-3 flex flex-col lg:flex-row gap-3 lg:gap-4">
+          {/* Left Column - Video/Upload */}
+          <div className="flex-1 flex flex-col min-w-0 min-h-[50vh] lg:min-h-0">
+            <div className="flex-1 bg-white rounded-xl shadow-sm border border-[var(--sepia-200)] overflow-hidden flex flex-col">
+              {mode === 'camera' ? (
+                <>
+                  {/* Video Container */}
+                  <div className="flex-1 relative bg-black min-h-[40vh] lg:min-h-0">
+                    <video ref={videoRef} autoPlay playsInline muted className="absolute inset-0 w-full h-full object-cover" />
 
-        {/* Results Card */}
-        {result && (
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-[var(--sepia-200)] animate-fade-in">
-            <h2 className="text-xl font-serif text-[var(--sepia-900)] mb-4">Analysis Results</h2>
-
-            {/* Color Match Badge */}
-            <div className="mb-6">
-              <span
-                className={`inline-block px-4 py-2 rounded-full text-sm font-medium border ${getColorMatchStyles(
-                  result.colorMatch
-                )}`}
-              >
-                {getColorMatchLabel(result.colorMatch)}
-              </span>
-            </div>
-
-            {/* Analysis Text */}
-            <div className="mb-6">
-              <h3 className="text-sm font-medium text-[var(--sepia-600)] mb-2">Analysis</h3>
-              <p className="text-[var(--sepia-800)] leading-relaxed">{result.analysis}</p>
-            </div>
-
-            {/* Detected Colors */}
-            {result.detectedColors && result.detectedColors.length > 0 && (
-              <div className="mb-6">
-                <h3 className="text-sm font-medium text-[var(--sepia-600)] mb-2">Detected Colors</h3>
-                <div className="flex flex-wrap gap-2">
-                  {result.detectedColors.map((color, i) => (
-                    <span
-                      key={i}
-                      className="px-3 py-1 rounded-full bg-[var(--sepia-100)] text-[var(--sepia-700)] text-sm border border-[var(--sepia-200)]"
+                    {/* Camera Flip Button */}
+                    <button
+                      onClick={flipCamera}
+                      disabled={!cameraReady}
+                      className="absolute top-2 sm:top-3 right-2 sm:right-3 p-2 bg-white/90 hover:bg-white rounded-full shadow-lg transition-all disabled:opacity-50"
+                      title="Flip camera"
                     >
-                      {color}
-                    </span>
-                  ))}
+                      <svg className="w-5 h-5 text-[var(--sepia-700)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                      </svg>
+                    </button>
+
+                    {!cameraReady && !error && (
+                      <div className="absolute inset-0 flex items-center justify-center bg-[var(--sepia-900)]/80">
+                        <div className="text-center text-white">
+                          <div className="animate-spin w-8 h-8 border-2 border-white border-t-transparent rounded-full mx-auto mb-2" />
+                          <p className="text-sm">Starting camera...</p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  <canvas ref={canvasRef} className="hidden" />
+
+                  {/* Control Bar */}
+                  <div className="flex-shrink-0 p-2 sm:p-3 border-t border-[var(--sepia-200)] bg-[var(--sepia-50)]">
+                    <button
+                      onClick={analyzeWorkspace}
+                      disabled={!cameraReady || analyzing}
+                      className="w-full py-2 sm:py-2.5 bg-[var(--sepia-700)] text-white rounded-lg hover:bg-[var(--sepia-800)] font-medium text-xs sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    >
+                      {analyzing ? (
+                        <><span className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full" /> Analyzing...</>
+                      ) : (
+                        <><span>📸</span> Capture & Analyze</>
+                      )}
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <>
+                  {/* Upload Area */}
+                  <div
+                    onClick={() => fileInputRef.current?.click()}
+                    onDragOver={handleDragOver}
+                    onDragLeave={handleDragLeave}
+                    onDrop={handleDrop}
+                    className={`flex-1 relative cursor-pointer flex items-center justify-center min-h-[40vh] lg:min-h-0 ${
+                      isDragging ? 'bg-[var(--sepia-100)]' : 'bg-[var(--sepia-50)]'
+                    }`}
+                  >
+                    {uploadedImage ? (
+                      <img src={uploadedImage} alt="Uploaded workspace" className="absolute inset-0 w-full h-full object-contain p-4" />
+                    ) : (
+                      <div className="text-center p-6 sm:p-8">
+                        <div className="text-3xl sm:text-4xl mb-2 sm:mb-3">📤</div>
+                        <p className="text-[var(--sepia-700)] font-medium mb-1 text-sm sm:text-base">Click or drag to upload</p>
+                        <p className="text-xs sm:text-sm text-[var(--sepia-500)]">JPG, PNG, GIF</p>
+                      </div>
+                    )}
+                  </div>
+                  <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileInputChange} className="hidden" />
+
+                  {/* Upload Control Bar */}
+                  <div className="flex-shrink-0 p-2 sm:p-3 border-t border-[var(--sepia-200)] bg-[var(--sepia-50)]">
+                    <div className="flex gap-2">
+                      <button
+                        onClick={analyzeWorkspace}
+                        disabled={!uploadedImage || analyzing}
+                        className="flex-1 py-2 sm:py-2.5 bg-[var(--sepia-700)] text-white rounded-lg hover:bg-[var(--sepia-800)] font-medium text-xs sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                      >
+                        {analyzing ? (
+                          <><span className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full" /> Analyzing...</>
+                        ) : 'Analyze Workspace'}
+                      </button>
+                      {uploadedImage && (
+                        <button
+                          onClick={() => { setUploadedImage(null); setResult(null); setError(null); }}
+                          className="px-3 sm:px-4 py-2 text-[var(--sepia-600)] hover:text-[var(--sepia-800)] border border-[var(--sepia-300)] rounded-lg text-xs sm:text-sm"
+                        >
+                          Clear
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+
+          {/* Right Column - BaZi Colors + Directions + Analysis */}
+          <div className="lg:w-80 flex-shrink-0 flex flex-col gap-3 overflow-y-auto">
+            {/* BaZi Colors */}
+            {baziColors && (baziColors.luckyColors.length > 0 || baziColors.unluckyColors.length > 0) ? (
+              <div className="bg-white p-3 sm:p-4 rounded-xl shadow-sm border border-[var(--sepia-200)]">
+                <h3 className="font-serif text-sm text-[var(--sepia-800)] mb-2 sm:mb-3">Your BaZi Colors</h3>
+                <div className="flex flex-col sm:flex-row lg:flex-col gap-3">
+                  {baziColors.luckyColors.length > 0 && (
+                    <div className="flex-1">
+                      <p className="text-xs text-[var(--sepia-600)] mb-1.5">Lucky</p>
+                      <div className="flex flex-wrap gap-1.5">
+                        {baziColors.luckyColors.map((c, i) => (
+                          <div key={i} className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-green-50 border border-green-200">
+                            <span className="w-3 h-3 rounded-full border" style={{ backgroundColor: c.code }} />
+                            <span className="text-xs text-[var(--sepia-700)]">{c.color}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {baziColors.unluckyColors.length > 0 && (
+                    <div className="flex-1">
+                      <p className="text-xs text-[var(--sepia-600)] mb-1.5">Avoid</p>
+                      <div className="flex flex-wrap gap-1.5">
+                        {baziColors.unluckyColors.map((c, i) => (
+                          <div key={i} className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-red-50 border border-red-200">
+                            <span className="w-3 h-3 rounded-full border" style={{ backgroundColor: c.code }} />
+                            <span className="text-xs text-[var(--sepia-700)]">{c.color}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ) : (
+              <div className="bg-[var(--sepia-100)] p-3 sm:p-4 rounded-xl border border-[var(--sepia-300)]">
+                <p className="text-[var(--sepia-700)] text-sm text-center">
+                  No BaZi analysis found.{' '}
+                  <Link href="/bazi" className="text-[var(--sepia-800)] font-medium underline">Get yours</Link>
+                </p>
+              </div>
+            )}
+
+            {/* Directional Recommendations - Compact */}
+            {directionalAnalysis && (
+              <div className="bg-white p-3 sm:p-4 rounded-xl shadow-sm border border-[var(--sepia-200)]">
+                <h3 className="font-serif text-sm text-[var(--sepia-800)] mb-2 sm:mb-3">Directions</h3>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 p-2 bg-[var(--sepia-50)] rounded-lg">
+                    <span className="text-lg">🧭</span>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs text-[var(--sepia-600)]">Face</p>
+                      <p className="text-sm font-medium text-[var(--sepia-800)] truncate">{directionalAnalysis.sittingDirection.primaryDirection}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 p-2 bg-[var(--sepia-50)] rounded-lg">
+                    <span className="text-lg">🪑</span>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs text-[var(--sepia-600)]">Desk</p>
+                      <p className="text-sm font-medium text-[var(--sepia-800)] truncate">{directionalAnalysis.deskPosition.primaryDirection} Sector</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 p-2 bg-[var(--sepia-50)] rounded-lg">
+                    <span className="text-lg">💰</span>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs text-[var(--sepia-600)]">Wealth Corner</p>
+                      <p className="text-sm font-medium text-[var(--sepia-800)] truncate">{directionalAnalysis.wealthCorner.direction}</p>
+                    </div>
+                  </div>
                 </div>
               </div>
             )}
 
-            {/* Suggestions */}
-            {result.suggestions && result.suggestions.length > 0 && (
-              <div>
-                <h3 className="text-sm font-medium text-[var(--sepia-600)] mb-2">Suggestions</h3>
-                <ul className="space-y-2">
-                  {result.suggestions.map((suggestion, i) => (
-                    <li key={i} className="flex items-start gap-2 text-[var(--sepia-700)]">
-                      <span className="text-[var(--sepia-400)]">•</span>
-                      <span>{suggestion}</span>
-                    </li>
-                  ))}
-                </ul>
+            {/* Error Display */}
+            {error && (
+              <div className="bg-red-50 border border-red-200 text-red-700 p-3 rounded-xl text-sm">
+                <div className="flex items-start gap-2">
+                  <span>⚠️</span>
+                  <p>{error}</p>
+                </div>
+              </div>
+            )}
+
+            {/* Analysis Results */}
+            {result && (
+              <div className="bg-white p-3 sm:p-4 rounded-xl shadow-sm border border-[var(--sepia-200)] lg:flex-1">
+                <h3 className="font-serif text-sm text-[var(--sepia-800)] mb-2 sm:mb-3">Analysis</h3>
+
+                <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${getColorMatchStyles(result.colorMatch)}`}>
+                  {getColorMatchIcon(result.colorMatch)} {getColorMatchLabel(result.colorMatch)}
+                </span>
+
+                <p className="text-[var(--sepia-700)] text-xs sm:text-sm leading-relaxed mt-2 mb-3">{result.analysis}</p>
+
+                {result.detectedColors?.length > 0 && (
+                  <div className="mb-3">
+                    <p className="text-xs text-[var(--sepia-600)] mb-1.5">Detected</p>
+                    <div className="flex flex-wrap gap-1">
+                      {result.detectedColors.map((color, i) => (
+                        <span key={i} className="px-2 py-0.5 rounded-full bg-[var(--sepia-100)] text-[var(--sepia-700)] text-xs">{color}</span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {result.suggestions?.length > 0 && (
+                  <div>
+                    <p className="text-xs text-[var(--sepia-600)] mb-1.5">Suggestions</p>
+                    <ul className="space-y-1">
+                      {result.suggestions.slice(0, 4).map((suggestion, i) => (
+                        <li key={i} className="flex items-start gap-1.5 text-[var(--sepia-700)] text-xs">
+                          <span className="text-[var(--sepia-400)]">•</span>
+                          <span>{suggestion}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Placeholder when no results */}
+            {!result && !error && (
+              <div className="bg-white p-4 rounded-xl shadow-sm border border-[var(--sepia-200)] lg:flex-1 flex items-center justify-center min-h-[120px]">
+                <div className="text-center text-[var(--sepia-500)]">
+                  <div className="text-2xl sm:text-3xl mb-2">🖥️</div>
+                  <p className="text-xs sm:text-sm">Capture your workspace to see analysis</p>
+                </div>
               </div>
             )}
           </div>
-        )}
-
-        {/* Tips Section */}
-        <div className="mt-8 p-6 bg-[var(--sepia-100)] rounded-xl animate-fade-in" style={{animationDelay: '0.3s'}}>
-          <h3 className="font-serif text-lg text-[var(--sepia-800)] mb-2">Tips for Best Results</h3>
-          <ul className="text-[var(--sepia-600)] text-sm leading-relaxed space-y-1">
-            <li>• Ensure good lighting when capturing your workspace</li>
-            <li>• Include your desk, chair, and surrounding area in the frame</li>
-            <li>• Capture from a wide angle to show the overall workspace colors</li>
-            <li>• Remove filters from uploaded images for accurate color analysis</li>
-          </ul>
         </div>
       </main>
     </div>
