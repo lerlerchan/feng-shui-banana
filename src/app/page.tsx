@@ -121,7 +121,8 @@ export default function Home() {
           <p className="text-white/80 text-base sm:text-lg md:text-xl max-w-2xl leading-relaxed mb-8">
             a Wisdom not<br />
             a Superstitious<br /><br />
-            Discover your lucky colors and space with the Five Elements.
+            Ancient FengShui Wisdom meets modern AI.<br />
+            Discover your lucky colors and spaces with the Five Elements.
           </p>
 
           <Link
