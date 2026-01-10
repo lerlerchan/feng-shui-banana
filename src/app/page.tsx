@@ -8,16 +8,16 @@ export default function Home() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <div className="relative h-screen w-full overflow-hidden bg-black">
+    <div className="fixed inset-0 w-screen h-screen overflow-hidden bg-black">
       {/* Background Video */}
       <video
         autoPlay
         loop
         muted
         playsInline
-        className="absolute inset-0 w-full h-full object-cover min-w-full min-h-full"
+        className="absolute top-0 left-0 w-full h-full object-cover"
         poster="/hero-poster.jpg"
-        style={{ objectPosition: 'center center' }}
+        style={{ minWidth: '100%', minHeight: '100%' }}
       >
         <source src="/hero-video.mp4" type="video/mp4" />
       </video>
