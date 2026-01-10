@@ -255,66 +255,6 @@ export default function OutfitPage() {
           </p>
         </div>
 
-        {/* BaZi Colors Display */}
-        {baziColors && (baziColors.luckyColors.length > 0 || baziColors.unluckyColors.length > 0) && (
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-[var(--sepia-200)] mb-6 animate-fade-in" style={{animationDelay: '0.1s'}}>
-            <h3 className="font-serif text-lg text-[var(--sepia-800)] mb-4">Your BaZi Colors</h3>
-            <div className="grid grid-cols-2 gap-4">
-              {baziColors.luckyColors.length > 0 && (
-                <div>
-                  <p className="text-sm text-[var(--sepia-600)] mb-2">Lucky Colors</p>
-                  <div className="flex flex-wrap gap-2">
-                    {baziColors.luckyColors.map((c, i) => (
-                      <div
-                        key={i}
-                        className="flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--sepia-100)] border border-[var(--sepia-200)]"
-                      >
-                        <span
-                          className="w-4 h-4 rounded-full border border-[var(--sepia-300)]"
-                          style={{ backgroundColor: c.code }}
-                        />
-                        <span className="text-sm text-[var(--sepia-700)]">{c.color}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-              {baziColors.unluckyColors.length > 0 && (
-                <div>
-                  <p className="text-sm text-[var(--sepia-600)] mb-2">Unlucky Colors</p>
-                  <div className="flex flex-wrap gap-2">
-                    {baziColors.unluckyColors.map((c, i) => (
-                      <div
-                        key={i}
-                        className="flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--sepia-100)] border border-[var(--sepia-200)]"
-                      >
-                        <span
-                          className="w-4 h-4 rounded-full border border-[var(--sepia-300)]"
-                          style={{ backgroundColor: c.code }}
-                        />
-                        <span className="text-sm text-[var(--sepia-700)]">{c.color}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* No BaZi Warning */}
-        {!baziColors && (
-          <div className="bg-[var(--sepia-100)] p-4 rounded-xl border border-[var(--sepia-300)] mb-6 animate-fade-in" style={{animationDelay: '0.1s'}}>
-            <p className="text-[var(--sepia-700)] text-center">
-              No BaZi analysis found.{' '}
-              <Link href="/bazi" className="text-[var(--sepia-800)] font-medium underline hover:text-[var(--sepia-900)]">
-                Get your BaZi analysis first
-              </Link>{' '}
-              for personalized color recommendations.
-            </p>
-          </div>
-        )}
-
         {/* Mode Toggle */}
         <div className="flex justify-center mb-6 animate-fade-in" style={{animationDelay: '0.15s'}}>
           <div className="inline-flex rounded-lg border border-[var(--sepia-300)] bg-white p-1">
@@ -458,6 +398,66 @@ export default function OutfitPage() {
             </div>
           )}
         </div>
+
+        {/* BaZi Colors Display */}
+        {baziColors && (baziColors.luckyColors.length > 0 || baziColors.unluckyColors.length > 0) && (
+          <div className="bg-white p-6 rounded-xl shadow-sm border border-[var(--sepia-200)] mb-6 animate-fade-in" style={{animationDelay: '0.25s'}}>
+            <h3 className="font-serif text-lg text-[var(--sepia-800)] mb-4">Your BaZi Colors</h3>
+            <div className="grid grid-cols-2 gap-4">
+              {baziColors.luckyColors.length > 0 && (
+                <div>
+                  <p className="text-sm text-[var(--sepia-600)] mb-2">Lucky Colors</p>
+                  <div className="flex flex-wrap gap-2">
+                    {baziColors.luckyColors.map((c, i) => (
+                      <div
+                        key={i}
+                        className="flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--sepia-100)] border border-[var(--sepia-200)]"
+                      >
+                        <span
+                          className="w-4 h-4 rounded-full border border-[var(--sepia-300)]"
+                          style={{ backgroundColor: c.code }}
+                        />
+                        <span className="text-sm text-[var(--sepia-700)]">{c.color}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {baziColors.unluckyColors.length > 0 && (
+                <div>
+                  <p className="text-sm text-[var(--sepia-600)] mb-2">Unlucky Colors</p>
+                  <div className="flex flex-wrap gap-2">
+                    {baziColors.unluckyColors.map((c, i) => (
+                      <div
+                        key={i}
+                        className="flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--sepia-100)] border border-[var(--sepia-200)]"
+                      >
+                        <span
+                          className="w-4 h-4 rounded-full border border-[var(--sepia-300)]"
+                          style={{ backgroundColor: c.code }}
+                        />
+                        <span className="text-sm text-[var(--sepia-700)]">{c.color}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* No BaZi Warning */}
+        {!baziColors && (
+          <div className="bg-[var(--sepia-100)] p-4 rounded-xl border border-[var(--sepia-300)] mb-6 animate-fade-in" style={{animationDelay: '0.25s'}}>
+            <p className="text-[var(--sepia-700)] text-center">
+              No BaZi analysis found.{' '}
+              <Link href="/bazi" className="text-[var(--sepia-800)] font-medium underline hover:text-[var(--sepia-900)]">
+                Get your BaZi analysis first
+              </Link>{' '}
+              for personalized color recommendations.
+            </p>
+          </div>
+        )}
 
         {/* Error Display */}
         {error && (
