@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 
 interface BaziResult {
   chart: {
@@ -51,7 +52,7 @@ export default function BaziResultPage() {
   return (
     <div className='min-h-screen bg-[var(--sepia-50)]'>
       <header className='border-b border-[var(--sepia-200)] bg-white/80 backdrop-blur-sm sticky top-0 z-50'>
-        <div className='max-w-6xl mx-auto px-4 py-4'><Link href='/' className='text-2xl font-serif text-[var(--sepia-800)]'><span className='font-bold'>Feng Shui</span> Banana</Link></div>
+        <div className='max-w-6xl mx-auto px-4 py-4'><Link href='/' className='flex items-center gap-2'><Image src="/logo.png" alt="Feng Shui Banana" width={40} height={40} className="rounded-full" /><span className='text-2xl font-serif text-[var(--sepia-800)]'><span className='font-bold'>Feng Shui</span> Banana</span></Link></div>
       </header>
       <main className='max-w-4xl mx-auto px-4 py-12'>
         <h1 className='text-3xl font-serif text-[var(--sepia-900)] mb-8 text-center'>Your BaZi Chart</h1>

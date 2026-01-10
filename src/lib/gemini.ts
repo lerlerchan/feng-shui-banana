@@ -11,12 +11,19 @@ export interface OutfitAnalysisResult {
   elementAlignment: string;
 }
 
+// Helper to strip data URL prefix from base64 string
+function stripDataUrlPrefix(base64: string): string {
+  const match = base64.match(/^data:image\/\w+;base64,(.+)$/);
+  return match ? match[1] : base64;
+}
+
 export async function analyzeOutfit(
   imageBase64: string,
   luckyColors: { color: string; code: string }[],
   unluckyColors: { color: string; code: string }[]
 ): Promise<OutfitAnalysisResult> {
-  const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+  const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+  const cleanBase64 = stripDataUrlPrefix(imageBase64);
   
   const luckyColorNames = luckyColors.map(c => c.color).join(', ');
   const unluckyColorNames = unluckyColors.map(c => c.color).join(', ');
@@ -47,27 +54,34 @@ Respond in JSON format:
       {
         inlineData: {
           mimeType: 'image/jpeg',
-          data: imageBase64,
+          data: cleanBase64,
         },
       },
     ]);
     
     const response = await result.response;
-    const text = response.text();
-    
+    let text = response.text();
+
+    // Strip markdown code blocks if present
+    text = text.replace(/```json\s*/gi, '').replace(/```\s*/g, '').trim();
+
     // Parse JSON from response
-    const jsonMatch = text.match(/{[sS]*}/);
+    const jsonMatch = text.match(/\{[\s\S]*\}/);
     if (jsonMatch) {
-      return JSON.parse(jsonMatch[0]);
+      try {
+        return JSON.parse(jsonMatch[0]);
+      } catch (parseError) {
+        console.error('JSON parse error:', parseError);
+      }
     }
-    
+
     // Fallback if JSON parsing fails
     return {
       analysis: text,
       detectedColors: [],
       colorMatch: 'neutral',
-      suggestions: ['Unable to parse detailed suggestions'],
-      elementAlignment: 'Analysis in progress',
+      suggestions: ['Please try again for detailed suggestions'],
+      elementAlignment: 'Analysis complete',
     };
   } catch (error) {
     console.error('Gemini API error:', error);
@@ -81,7 +95,8 @@ export async function analyzeOutfitStream(
   unluckyColors: { color: string; code: string }[],
   onChunk: (text: string) => void
 ): Promise<void> {
-  const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+  const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+  const cleanBase64 = stripDataUrlPrefix(imageBase64);
   
   const luckyColorNames = luckyColors.map(c => c.color).join(', ');
   const unluckyColorNames = unluckyColors.map(c => c.color).join(', ');
@@ -103,7 +118,7 @@ Keep it brief and encouraging!`;
     {
       inlineData: {
         mimeType: 'image/jpeg',
-        data: imageBase64,
+        data: cleanBase64,
       },
     },
   ]);
