@@ -57,12 +57,18 @@ ${report}
 
     // Now generate audio using Gemini 2.5 Flash TTS (better quality)
     let audioBase64: string | null = null;
+    let audioSource: string = 'none';
 
     // Embed speaking style in the text for TTS
     const ttsText = `Say in an energetic, lively, and expressive voice with natural pauses: ${script}`;
 
+    console.log('=== TTS DEBUG START ===');
+    console.log('Script length:', script.length);
+    console.log('TTS text preview:', ttsText.substring(0, 100) + '...');
+
     try {
       // Gemini 2.5 Flash TTS - simple format per official docs
+      console.log('Attempting Gemini 2.5 Flash TTS...');
       const ttsResponse = await fetch(
         `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${process.env.GEMINI_API_KEY}`,
         {
@@ -88,8 +94,20 @@ ${report}
         }
       );
 
+      console.log('Gemini 2.5 TTS response status:', ttsResponse.status);
+
       if (ttsResponse.ok) {
         const ttsData = await ttsResponse.json();
+        console.log('Gemini 2.5 TTS response keys:', Object.keys(ttsData));
+        console.log('Candidates count:', ttsData.candidates?.length);
+
+        if (ttsData.candidates?.[0]?.content?.parts) {
+          console.log('Parts count:', ttsData.candidates[0].content.parts.length);
+          ttsData.candidates[0].content.parts.forEach((part: { inlineData?: { mimeType: string; data: string }; text?: string }, i: number) => {
+            console.log(`Part ${i}:`, part.inlineData ? `audio/${part.inlineData.mimeType} (${part.inlineData.data?.length} chars)` : part.text ? 'text' : 'unknown');
+          });
+        }
+
         // Extract audio from response
         const audioPart = ttsData.candidates?.[0]?.content?.parts?.find(
           (part: { inlineData?: { mimeType: string; data: string } }) =>
@@ -97,14 +115,19 @@ ${report}
         );
         if (audioPart?.inlineData?.data) {
           audioBase64 = audioPart.inlineData.data;
+          audioSource = 'gemini-2.5-flash-tts';
+          console.log('SUCCESS: Got audio from Gemini 2.5 TTS, length:', audioBase64?.length);
+        } else {
+          console.log('WARNING: Gemini 2.5 TTS response OK but no audio part found');
         }
       } else {
         // Log the error for debugging
         const errorText = await ttsResponse.text();
-        console.log('Gemini 2.5 TTS error:', ttsResponse.status, errorText);
+        console.log('Gemini 2.5 TTS FAILED:', ttsResponse.status);
+        console.log('Error response:', errorText.substring(0, 500));
 
         // Fallback to Gemini 2.0 Flash if 2.5 TTS not available
-        console.log('Falling back to Gemini 2.0 Flash for audio');
+        console.log('Attempting fallback to Gemini 2.0 Flash...');
         const fallbackResponse = await fetch(
           `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
           {
@@ -130,23 +153,39 @@ ${report}
           }
         );
 
+        console.log('Gemini 2.0 Flash response status:', fallbackResponse.status);
+
         if (fallbackResponse.ok) {
           const fallbackData = await fallbackResponse.json();
+          console.log('Gemini 2.0 Flash response keys:', Object.keys(fallbackData));
+
           const audioPart = fallbackData.candidates?.[0]?.content?.parts?.find(
             (part: { inlineData?: { mimeType: string; data: string } }) =>
               part.inlineData?.mimeType?.startsWith('audio/')
           );
           if (audioPart?.inlineData?.data) {
             audioBase64 = audioPart.inlineData.data;
+            audioSource = 'gemini-2.0-flash';
+            console.log('SUCCESS: Got audio from Gemini 2.0 Flash, length:', audioBase64?.length);
+          } else {
+            console.log('WARNING: Gemini 2.0 Flash response OK but no audio part found');
           }
+        } else {
+          const fallbackError = await fallbackResponse.text();
+          console.log('Gemini 2.0 Flash FAILED:', fallbackResponse.status);
+          console.log('Fallback error:', fallbackError.substring(0, 500));
         }
       }
     } catch (audioError) {
-      console.error('Audio generation error:', audioError);
+      console.error('Audio generation EXCEPTION:', audioError);
       // Continue without audio - fallback to browser speech
     }
 
-    return NextResponse.json({ script, audioBase64 });
+    console.log('=== TTS DEBUG END ===');
+    console.log('Final audio source:', audioSource);
+    console.log('Audio base64 length:', audioBase64?.length || 0);
+
+    return NextResponse.json({ script, audioBase64, audioSource });
   } catch (error) {
     console.error('Speech script generation error:', error);
     return NextResponse.json(
