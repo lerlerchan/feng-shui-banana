@@ -1,7 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { GoogleGenerativeAI } from '@google/generative-ai';
-
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 
 export async function POST(request: NextRequest) {
   try {
@@ -10,8 +7,6 @@ export async function POST(request: NextRequest) {
     if (!report) {
       return NextResponse.json({ error: 'No report provided' }, { status: 400 });
     }
-
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
 
     const prompt = `You are a fun, lively Feng Shui consultant from Singapore! Convert this ${type === 'workspace' ? 'workspace' : 'outfit'} Feng Shui report into a SINGLISH speech script - entertaining, humorous, and full of personality!
 
@@ -41,44 +36,71 @@ ${report}
 
 ## Your entertaining Singlish speech script:`;
 
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    const script = response.text();
+    // First, generate the script text
+    const textResponse = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+        }),
+      }
+    );
 
-    // Generate audio using Google Cloud TTS
+    if (!textResponse.ok) {
+      throw new Error('Failed to generate script');
+    }
+
+    const textData = await textResponse.json();
+    const script = textData.candidates?.[0]?.content?.parts?.[0]?.text || '';
+
+    // Now generate audio using Gemini 2.0 Flash with audio output
     let audioBase64: string | null = null;
 
-    if (process.env.GOOGLE_CLOUD_TTS_API_KEY) {
-      try {
-        const ttsResponse = await fetch(
-          `https://texttospeech.googleapis.com/v1/text:synthesize?key=${process.env.GOOGLE_CLOUD_TTS_API_KEY}`,
-          {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              input: { text: script },
-              voice: {
-                languageCode: 'en-SG', // Singapore English
-                name: 'en-SG-Standard-C', // Female voice, sounds more natural for Singlish
-                ssmlGender: 'FEMALE',
+    try {
+      const audioResponse = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [
+              {
+                parts: [
+                  {
+                    text: `Read the following script aloud in a lively, energetic Singaporean accent. Be expressive and fun, like a friendly kopitiam auntie giving advice! Add natural pauses and emphasis where appropriate.\n\nScript:\n${script}`,
+                  },
+                ],
               },
-              audioConfig: {
-                audioEncoding: 'MP3',
-                speakingRate: 1.05, // Slightly faster for lively feel
-                pitch: 1.5, // Slightly higher pitch for energy
+            ],
+            generationConfig: {
+              responseModalities: ['AUDIO'],
+              speechConfig: {
+                voiceConfig: {
+                  prebuiltVoiceConfig: {
+                    voiceName: 'Kore', // Energetic voice
+                  },
+                },
               },
-            }),
-          }
-        );
-
-        if (ttsResponse.ok) {
-          const ttsData = await ttsResponse.json();
-          audioBase64 = ttsData.audioContent;
+            },
+          }),
         }
-      } catch (ttsError) {
-        console.error('TTS generation error:', ttsError);
-        // Continue without audio - fallback to browser speech
+      );
+
+      if (audioResponse.ok) {
+        const audioData = await audioResponse.json();
+        // Extract audio from response
+        const audioPart = audioData.candidates?.[0]?.content?.parts?.find(
+          (part: { inlineData?: { mimeType: string; data: string } }) => part.inlineData?.mimeType?.startsWith('audio/')
+        );
+        if (audioPart?.inlineData?.data) {
+          audioBase64 = audioPart.inlineData.data;
+        }
       }
+    } catch (audioError) {
+      console.error('Audio generation error:', audioError);
+      // Continue without audio - fallback to browser speech
     }
 
     return NextResponse.json({ script, audioBase64 });

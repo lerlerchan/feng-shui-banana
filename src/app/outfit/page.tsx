@@ -497,14 +497,27 @@ export default function OutfitPage() {
         const data = await response.json();
         setSpeechScript(data.script);
 
-        // If we have audio from Google Cloud TTS, use it
+        // If we have audio from Gemini, use it
         if (data.audioBase64) {
           setSpeechAudio(data.audioBase64);
-          const audio = new Audio(`data:audio/mp3;base64,${data.audioBase64}`);
+          const audio = new Audio(`data:audio/wav;base64,${data.audioBase64}`);
           audioRef.current = audio;
           audio.onended = () => setIsSpeaking(false);
-          audio.onerror = () => setIsSpeaking(false);
-          audio.play();
+          audio.onerror = () => {
+            // Fallback to Web Speech if audio fails
+            const utterance = new SpeechSynthesisUtterance(data.script);
+            utterance.rate = 1.0;
+            utterance.pitch = 1.1;
+            utterance.onend = () => setIsSpeaking(false);
+            window.speechSynthesis.speak(utterance);
+          };
+          audio.play().catch(() => {
+            const utterance = new SpeechSynthesisUtterance(data.script);
+            utterance.rate = 1.0;
+            utterance.pitch = 1.1;
+            utterance.onend = () => setIsSpeaking(false);
+            window.speechSynthesis.speak(utterance);
+          });
           setIsSpeaking(true);
         } else {
           // Fallback to Web Speech API
@@ -531,14 +544,20 @@ export default function OutfitPage() {
       } else {
         // Reuse existing audio/script
         if (speechAudio) {
-          const audio = new Audio(`data:audio/mp3;base64,${speechAudio}`);
+          const audio = new Audio(`data:audio/wav;base64,${speechAudio}`);
           audioRef.current = audio;
           audio.onended = () => setIsSpeaking(false);
           audio.onerror = () => setIsSpeaking(false);
-          audio.play();
+          audio.play().catch(() => {
+            const utterance = new SpeechSynthesisUtterance(speechScript || '');
+            utterance.rate = 1.0;
+            utterance.pitch = 1.1;
+            utterance.onend = () => setIsSpeaking(false);
+            window.speechSynthesis.speak(utterance);
+          });
           setIsSpeaking(true);
         } else {
-          const utterance = new SpeechSynthesisUtterance(speechScript);
+          const utterance = new SpeechSynthesisUtterance(speechScript || '');
           utterance.rate = 1.0;
           utterance.pitch = 1.1;
 
