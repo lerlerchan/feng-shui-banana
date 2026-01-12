@@ -32,7 +32,7 @@ export default function BaziPage() {
           <Link href="/" className="flex items-center gap-2">
             <Image src="/logo.png" alt="Feng Shui Banana" width={32} height={32} className="rounded-full sm:w-10 sm:h-10" />
             <span className="text-xl sm:text-2xl font-serif text-[var(--sepia-800)]">
-              <span className="font-bold">Feng Shui</span> <span className="hidden xs:inline">Banana</span>
+              <span className="font-bold">Feng Shui</span> Banana
             </span>
           </Link>
 

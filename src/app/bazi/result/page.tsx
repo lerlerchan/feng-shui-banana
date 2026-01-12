@@ -73,7 +73,7 @@ export default function BaziResultPage() {
           <Link href="/" className="flex items-center gap-2">
             <Image src="/logo.png" alt="Feng Shui Banana" width={32} height={32} className="rounded-full sm:w-10 sm:h-10" />
             <span className="text-xl sm:text-2xl font-serif text-[var(--sepia-800)]">
-              <span className="font-bold">Feng Shui</span> <span className="hidden xs:inline">Banana</span>
+              <span className="font-bold">Feng Shui</span> Banana
             </span>
           </Link>
 
@@ -178,6 +178,9 @@ export default function BaziResultPage() {
         <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
           <Link href="/outfit" className="px-6 sm:px-8 py-3 sm:py-4 bg-[var(--sepia-700)] text-white rounded-lg text-center text-sm sm:text-base font-medium">
             Check My Outfit
+          </Link>
+          <Link href="/workspace" className="px-6 sm:px-8 py-3 sm:py-4 bg-[var(--sepia-700)] text-white rounded-lg text-center text-sm sm:text-base font-medium">
+            Check My Space
           </Link>
           <Link href="/bazi" className="px-6 sm:px-8 py-3 sm:py-4 border-2 border-[var(--sepia-400)] text-[var(--sepia-700)] rounded-lg text-center text-sm sm:text-base font-medium">
             New Analysis
